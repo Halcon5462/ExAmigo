@@ -5,7 +5,6 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
-import './App.css';
 
 function App() {
     const [user, setUser] = useState(null);
