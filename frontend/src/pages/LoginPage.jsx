@@ -19,12 +19,12 @@ const LoginPage = ({ onLogin }) => {
         try {
             if (isLogin) {
                 // ВХОД
-                const response = await api.post('/login/', { email, password });
+                const response = await api.post('/account/login/', { email, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
             } else {
                 // РЕГИСТРАЦИЯ
-                const response = await api.post('/register/', { email, name, password });
+                const response = await api.post('/account/register/', { email, name, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
             }

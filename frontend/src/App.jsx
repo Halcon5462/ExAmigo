@@ -18,7 +18,7 @@ function App() {
             if (token && storedUser) {
                 try {
                     // Проверяем что токен валидный
-                    const response = await api.get('/profile/');
+                    const response = await api.get('/account/profile/');
                     setUser(response.data);
                     localStorage.setItem('user', JSON.stringify(response.data));
                 } catch (err) {
