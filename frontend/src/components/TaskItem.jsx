@@ -3,50 +3,50 @@ import React, { useState } from 'react';
 
 const TaskItem = ({ task }) => {
     const [userAnswer, setUserAnswer] = useState('');
-    const [status, setStatus] = useState(null);
+    const [result, setResult] = useState(null);
 
-    const handleCheckAnswer = () => {
+    const checkAnswer = () => {
         if (userAnswer.trim().toLowerCase() === task.answer.trim().toLowerCase()) {
-            setStatus('success');
+            setResult('correct');
         } else {
-            setStatus('error');
+            setResult('wrong');
         }
     };
 
     return (
-        <div style={styles.card}>
+        <div className="task-card" style={styles.card}>
             <div style={styles.header}>
-                <h4>Задание №{task.order_KIM}</h4>
-                <span style={styles.badge}>Сложность: {task.difficulty}/5</span>
+                <strong>Задание №{task.order_KIM}</strong>
+                <span style={styles.difficulty}>Сложность: {task.difficulty}/5</span>
+            </div>
+            <p className="task-type"><em>Тип: {task.type}</em></p>
+            <div className="task-description" style={styles.desc}>
+                {task.description}
             </div>
 
-            <p style={styles.description}>{task.description}</p>
-
-            <div style={styles.interactionArea}>
+            <div style={styles.controls}>
                 <input
                     type="text"
-                    placeholder="Введите ответ..."
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
+                    placeholder="Ваш ответ..."
                     style={styles.input}
                 />
-                <button onClick={handleCheckAnswer} style={styles.button}>Проверить</button>
+                <button onClick={checkAnswer} style={styles.btn}>Ответить</button>
             </div>
 
-            {status === 'success' && <p style={{color: 'green'}}>Верно!</p>}
-            {status === 'error' && <p style={{color: 'red'}}>Неверно, попробуйте еще раз.</p>}
+            {result === 'correct' && <p style={{color: 'green'}}>✅ Верно!</p>}
+            {result === 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
         </div>
     );
 };
 
 const styles = {
-    card: { border: '1px solid #ccc', padding: '15px', marginBottom: '15px', borderRadius: '8px' },
-    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-    badge: { background: '#eee', padding: '5px 10px', borderRadius: '4px', fontSize: '12px' },
-    description: { whiteSpace: 'pre-wrap', margin: '15px 0' },
-    interactionArea: { display: 'flex', gap: '10px' },
-    input: { padding: '8px', flex: 1, borderRadius: '4px', border: '1px solid #ccc' },
-    button: { padding: '8px 15px', cursor: 'pointer', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }
+    card: { border: '1px solid #ddd', borderRadius: '8px', padding: '15px', marginBottom: '15px', backgroundColor: '#fff' },
+    header: { display: 'flex', justifyContent: 'space-between', marginBottom: '10px' },
+    desc: { whiteSpace: 'pre-wrap', margin: '10px 0', lineHeight: '1.5' },
+    input: { padding: '8px', border: '1px solid #ccc', borderRadius: '4px', marginRight: '10px' },
+    btn: { padding: '8px 15px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }
 };
 
 export default TaskItem;

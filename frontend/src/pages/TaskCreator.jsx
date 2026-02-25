@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../utils/api';
 
 
 const TaskCreator = () => {
@@ -11,81 +12,36 @@ const TaskCreator = () => {
         answer: ''
     });
 
-    const [statusMessage, setStatusMessage] = useState('');
-
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Предотвращаем перезагрузку страницы
-        setStatusMessage('Отправка...');
-
+        e.preventDefault();
         try {
-            const response = await fetch('http://localhost:8000/api/tasks/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                setStatusMessage('Задание успешно создано!');
-                setFormData({
-                    subject: '', order_KIM: 1, type: '', difficulty: 1, description: '', answer: ''
-                });
-            } else {
-                const errorData = await response.json();
-                console.error("Ошибки валидации DRF:", errorData);
-                setStatusMessage('Ошибка при создании задания. Проверьте консоль.');
-            }
-        } catch (error) {
-            console.error("Сетевая ошибка:", error);
-            setStatusMessage('Сетевая ошибка при обращении к серверу.');
+            await api.post('/tasks/', formData);
+            alert('Задание создано!');
+            setFormData({ subject: '', order_KIM: 1, type: '', difficulty: 1, description: '', answer: '' });
+        } catch (err) {
+            alert('Ошибка при сохранении: ' + JSON.stringify(err.response?.data));
         }
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
     return (
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <h2>Создать новое задание</h2>
-            <form onSubmit={handleSubmit} style={styles.form}>
-
-                <label>Предмет:</label>
-                <input required type="text" name="subject" value={formData.subject} onChange={handleChange} />
-
-                <label>Номер задания из КИМ:</label>
-                <input required type="number" min="1" name="order_KIM" value={formData.order_KIM} onChange={handleChange} />
-
-                <label>Тип задания:</label>
-                <input required type="text" name="type" value={formData.type} onChange={handleChange} />
-
-                <label>Сложность (1-5):</label>
-                <input required type="number" min="1" max="5" name="difficulty" value={formData.difficulty} onChange={handleChange} />
-
-                <label>Описание задания:</label>
-                <textarea required name="description" rows="5" value={formData.description} onChange={handleChange}></textarea>
-
-                <label>Правильный ответ:</label>
-                <input required type="text" name="answer" value={formData.answer} onChange={handleChange} />
-
-                <button type="submit" style={styles.submitBtn}>Создать задание</button>
+        <div style={{ maxWidth: '500px' }}>
+            <h1>Новое задание</h1>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <input name="subject" placeholder="Предмет" onChange={handleChange} value={formData.subject} required />
+                <input name="order_KIM" type="number" placeholder="№ КИМ" onChange={handleChange} value={formData.order_KIM} required />
+                <input name="type" placeholder="Тип задания" onChange={handleChange} value={formData.type} required />
+                <input name="difficulty" type="number" min="1" max="5" placeholder="Сложность (1-5)" onChange={handleChange} value={formData.difficulty} required />
+                <textarea name="description" placeholder="Условие задания" onChange={handleChange} value={formData.description} required rows={5} />
+                <input name="answer" placeholder="Верный ответ" onChange={handleChange} value={formData.answer} required />
+                <button type="submit" style={{ padding: '10px', cursor: 'pointer' }}>Опубликовать</button>
             </form>
-
-            {statusMessage && <p style={{ marginTop: '15px', fontWeight: 'bold' }}>{statusMessage}</p>}
         </div>
     );
-};
-
-const styles = {
-    form: { display: 'flex', flexDirection: 'column', gap: '10px' },
-    submitBtn: { padding: '10px', background: '#28a745', color: 'white', border: 'none', cursor: 'pointer', marginTop: '10px' }
 };
 
 export default TaskCreator;

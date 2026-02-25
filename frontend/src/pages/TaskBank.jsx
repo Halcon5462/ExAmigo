@@ -1,59 +1,42 @@
 import React, { useEffect, useState } from 'react';
+import api from '../utils/api';
 import TaskItem from '../components/TaskItem';
 
 
 const TaskBank = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchTasks = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/api/tasks/');
-            if (!response.ok) throw new Error('Ошибка при загрузке данных');
-
-            const data = await response.json();
-            setTasks(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const response = await api.get('/tasks/');
+                setTasks(response.data);
+            } catch (err) {
+                console.error("Ошибка загрузки заданий:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
         fetchTasks();
     }, []);
 
-    const groupedTasks = tasks.reduce((acc, task) => {
-        if (!acc[task.subject]) {
-            acc[task.subject] = [];
-        }
-        acc[task.subject].push(task);
-        return acc;
-    }, {});
+    const subjects = [...new Set(tasks.map(t => t.subject))];
 
-    if (loading) return <p>Загрузка заданий...</p>;
-    if (error) return <p>Ошибка: {error}</p>;
+    if (loading) return <div>Загрузка банка заданий...</div>;
 
     return (
-        <div>
-            <h2>Банк заданий</h2>
-            {Object.keys(groupedTasks).map((subject, index) => (
-                <div key={index} style={{ marginBottom: '40px' }}>
-                    <h3 style={{ borderBottom: '2px solid #333', paddingBottom: '5px' }}>
-                        Раздел: {subject}
-                    </h3>
-
-                    <div className="task-list">
-                        {groupedTasks[subject].map((task) => (
-                            <TaskItem key={task.id} task={task} />
-                        ))}
-                    </div>
-                </div>
+        <div className="task-bank">
+            <h1>Банк заданий</h1>
+            {subjects.map(subject => (
+                <section key={subject} style={{ marginBottom: '30px' }}>
+                    <h2 style={{ borderBottom: '2px solid #007bff' }}>{subject}</h2>
+                    {tasks
+                        .filter(t => t.subject === subject)
+                        .map(task => <TaskItem key={task.id} task={task} />)
+                    }
+                </section>
             ))}
-
-            {tasks.length === 0 && <p>Заданий пока нет.</p>}
         </div>
     );
 };
