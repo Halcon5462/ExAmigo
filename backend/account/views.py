@@ -1,9 +1,10 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, RegisterSerializer
-from .models import UserAccount
+from .serializers import UserSerializer, RegisterSerializer, UserAchievementSerializer, UserAchievementProgressSerializer
+from .models import UserAccount, UserAchievement, UserAchievementProgress
 
 
 class RegisterView(generics.GenericAPIView):
@@ -38,3 +39,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             user = UserAccount.objects.get(email=request.data['email'])
             response.data['user'] = UserSerializer(user).data
         return response
+
+class UserAchievementListView(generics.ListAPIView):
+    serializer_class = UserAchievementSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserAchievement.objects.filter(user=self.request.user)
+
+class UserProgressListView(generics.ListAPIView):
+    serializer_class = UserAchievementProgressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return UserAchievementProgress.objects.filter(user=self.request.user)

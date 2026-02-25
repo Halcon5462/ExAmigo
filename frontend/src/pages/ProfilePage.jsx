@@ -1,18 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import AchievementsList from '../components/AchievementsList.jsx';
 
 const ProfilePage = ({ user: initialUser, onLogout }) => {
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
+    const [achievements, setAchievements] = useState([]);
+    const [progress, setProgress] = useState([]);
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchProfile = async () => {
+        const fetchData = async () => {
             try {
-                const response = await api.get('/account/profile/');
-                setUser(response.data);
-                localStorage.setItem('user', JSON.stringify(response.data));
+                const requests = [
+                    api.get('/account/user-achievements/'),
+                    api.get('/account/user-progress/')
+                ];
+
+                if (!initialUser) {
+                    requests.push(api.get('/account/profile/'));
+                }
+
+                const results = await Promise.all(requests);
+
+                setAchievements(results[0].data);
+                setProgress(results[1].data);
+
+                if (!initialUser && results[2]) {
+                    setUser(results[2].data);
+                    localStorage.setItem('user', JSON.stringify(results[2].data));
+                }
             } catch (err) {
                 console.error('Failed to fetch profile:', err);
                 if (err.response?.status === 401) {
@@ -24,11 +43,7 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
             }
         };
 
-        if (!initialUser) {
-            fetchProfile();
-        } else {
-            setLoading(false);
-        }
+        fetchData();
     }, [initialUser, onLogout, navigate]);
 
     const handleLogout = () => {
@@ -68,6 +83,11 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
                     Выйти из аккаунта
                 </button>
             </div>
+
+            <AchievementsList
+                achievements={achievements}
+                progress={progress}
+            />
         </div>
     );
 };
