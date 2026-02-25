@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
+import TaskBank from './pages/TaskBank';
+import TaskCreator from './pages/TaskCreator';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
 
@@ -17,7 +19,6 @@ function App() {
 
             if (token && storedUser) {
                 try {
-                    // Проверяем что токен валидный
                     const response = await api.get('/account/profile/');
                     setUser(response.data);
                     localStorage.setItem('user', JSON.stringify(response.data));
@@ -52,14 +53,27 @@ function App() {
     return (
         <BrowserRouter>
             <div className="app">
+                {user && (
+                    <nav className="navbar" style={{ display: 'flex', gap: '15px', padding: '15px', background: '#f5f5f5', marginBottom: '20px' }}>
+                        <Link to="/">Главная</Link>
+                        <Link to="/tasks">Банк заданий</Link>
+                        <Link to="/tasks/create">Создать задание</Link>
+                        <Link to="/profile">Профиль</Link>
+                    </nav>
+                )}
+
                 <Routes>
                     <Route
                         path="/login"
-                        element={<LoginPage onLogin={handleLogin} />}
+                        element={!user ? <LoginPage onLogin={handleLogin} /> : <Navigate to="/" replace />}
                     />
 
                     <Route element={<ProtectedRoute user={user} />}>
                         <Route path="/" element={<HomePage user={user} />} />
+
+                        <Route path="/tasks" element={<TaskBank />} />
+                        <Route path="/tasks/create" element={<TaskCreator />} />
+
                         <Route
                             path="/profile"
                             element={<ProfilePage user={user} onLogout={handleLogout} />}
