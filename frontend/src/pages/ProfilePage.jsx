@@ -15,12 +15,12 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
         const fetchData = async () => {
             try {
                 const requests = [
-                    api.get('/user-achievements/'),
-                    api.get('/user-progress/')
+                    api.get('/account/user-achievements/'),
+                    api.get('/account/user-progress/')
                 ];
 
                 if (!initialUser) {
-                    requests.push(api.get('/profile/'));
+                    requests.push(api.get('/account/profile/'));
                 }
 
                 const results = await Promise.all(requests);
