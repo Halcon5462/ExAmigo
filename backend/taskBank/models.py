@@ -8,7 +8,6 @@ class Task(models.Model):
     type = models.CharField(max_length=100, verbose_name="Тип задания из КИМ")
     difficulty = models.PositiveIntegerField(verbose_name="Сложность от 1 до 5")
     description = models.TextField(verbose_name="Описание задания")
-    answer = models.CharField(max_length=255, verbose_name="Праивльный ответ")
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -27,3 +26,12 @@ class Task(models.Model):
 
     def str(self):
         return f"{self.subject} - №{self.order_KIM} ({self.difficulty})"
+
+class TaskCorrectAnswer(models.Model):
+    task = models.ForeignKey(
+        Task,
+        on_delete=models.CASCADE,
+        related_name='correct_answers',
+    )
+    answer_text = models.TextField(max_length=25, verbose_name='Правильный ответ')
+    
