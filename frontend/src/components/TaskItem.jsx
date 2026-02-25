@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
+import api from '../utils/api';
 
 
 const TaskItem = ({ task }) => {
     const [userAnswer, setUserAnswer] = useState('');
     const [result, setResult] = useState(null);
 
-    const checkAnswer = () => {
-        if (userAnswer.trim().toLowerCase() === task.answer.trim().toLowerCase()) {
-            setResult('correct');
-        } else {
-            setResult('wrong');
+    const checkAnswer = async () => {
+        if (!userAnswer.trim()) return;
+
+        try {
+            const response = await api.post(
+                `/taskBank/tasks/${task.id}/check/`,
+                { answer: userAnswer }
+            );
+
+            setResult(response.data.correct ? 'correct' : 'wrong');
+
+        } catch (err) {
+            console.error("Ошибка проверки:", err);
+            setResult(null);
         }
     };
 
