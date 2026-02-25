@@ -26,8 +26,13 @@ class TaskSet(models.Model):
     tasks = models.ManyToManyField('Task', through='TaskSetItem', related_name='taskSets')
     average_difficulty = models.FloatField(default=0.0)
     subject = models.CharField(max_length=100)
-    is_public = models.BooleanField(default=False)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_task_sets', on_delete=models.CASCADE)
+    is_public = models.BooleanField(default=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='created_task_sets',
+        on_delete=models.SET_NULL, 
+        null=True,
+        )
 
     def __str__(self):
         return f"{self.name} ({self.subject})"
