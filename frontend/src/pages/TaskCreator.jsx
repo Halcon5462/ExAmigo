@@ -15,7 +15,7 @@ const TaskCreator = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/tasks/', formData);
+            await api.post('/taskBank/tasks/', formData);
             alert('Задание создано!');
             setFormData({ subject: '', order_KIM: 1, type: '', difficulty: 1, description: '', answer: '' });
         } catch (err) {

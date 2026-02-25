@@ -10,7 +10,7 @@ const TaskBank = () => {
     useEffect(() => {
         const fetchTasks = async () => {
             try {
-                const response = await api.get('/tasks/');
+                const response = await api.get('/taskBank/tasks/');
                 setTasks(response.data);
             } catch (err) {
                 console.error("Ошибка загрузки заданий:", err);
