@@ -76,6 +76,7 @@ class TaskSubmitView(APIView):
 
         is_correct = task.correct_answers.filter(answer_text=user_answer).exists()
         reward = 0
+        first_time = False
 
         with transaction.atomic():
             TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
@@ -83,8 +84,13 @@ class TaskSubmitView(APIView):
                 progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
                     reward = 10
+                    first_time = True
                     # user.wallet.balance += reward
                     # user.wallet.save()
                     # можно добавить про ачивки
 
-        return Response({"correct": is_correct, "reward": reward})
+        return Response({
+            "correct": is_correct,
+            "reward": reward,
+            "first_time": first_time,
+        })

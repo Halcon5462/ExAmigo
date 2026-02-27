@@ -5,21 +5,26 @@ import api from '../utils/api';
 const TaskItem = ({ task }) => {
     const [userAnswer, setUserAnswer] = useState('');
     const [result, setResult] = useState(null);
+    const [reward, setReward] = useState(0);
 
     const checkAnswer = async () => {
         if (!userAnswer.trim()) return;
 
         try {
             const response = await api.post(
-                `/taskBank/tasks/${task.id}/check/`,
+                `/tasks-progress/${task.id}/submit/`, 
                 { answer: userAnswer }
             );
 
-            setResult(response.data.correct ? 'correct' : 'wrong');
+            const { correct, reward } = response.data;
+
+            setResult(correct ? 'correct' : 'wrong');
+            setReward(reward);
 
         } catch (err) {
             console.error("Ошибка проверки:", err);
             setResult(null);
+            setReward(0);
         }
     };
 
@@ -48,7 +53,11 @@ const TaskItem = ({ task }) => {
                 <button onClick={checkAnswer} style={styles.btn}>Ответить</button>
             </div>
 
-            {result === 'correct' && <p style={{color: 'green'}}>✅ Верно!</p>}
+            {result === 'correct' && (
+                <p style={{color: 'green'}}>
+                    ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}
+                </p>
+            )}
             {result === 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
         </div>
     );
