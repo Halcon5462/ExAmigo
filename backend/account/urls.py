@@ -11,5 +11,6 @@ urlpatterns = [
     path('profile/', ProfileView.as_view(), name='profile'),
     path('user-achievements/', UserAchievementListView.as_view(), name='user-achievements'),
     path('user-progress/', UserProgressListView.as_view(), name='user-progress'),
+    path('task-progress/<int:pk>/submit/', TaskSubmitView.as_view(), name='task-submit'),
     
 ]
