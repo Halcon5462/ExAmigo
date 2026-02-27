@@ -8,6 +8,11 @@ class Task(models.Model):
     type = models.CharField(max_length=100, verbose_name="Тип задания из КИМ")
     difficulty = models.PositiveIntegerField(verbose_name="Сложность от 1 до 5")
     description = models.TextField(verbose_name="Описание задания")
+    image = models.ImageField(
+        upload_to='tasks/images/', 
+        blank=True,
+        null=True,
+    )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -24,7 +29,7 @@ class Task(models.Model):
         verbose_name_plural = "Задания"
 
 
-    def str(self):
+    def __str__(self):
         return f"{self.subject} - №{self.order_KIM} ({self.difficulty})"
 
 class TaskCorrectAnswer(models.Model):
