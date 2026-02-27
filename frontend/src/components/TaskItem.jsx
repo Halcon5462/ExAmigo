@@ -59,10 +59,13 @@ const TaskItem = ({ task }) => {
             {result == 'correct' && (
                 <p style={{color: 'green'}}>
                     ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
-                    {firstTime == false && "Вы уже проходили эту задачу ранее."}
+                    {/* {firstTime == false && "Вы уже проходили эту задачу ранее."} */}
                 </p>
             )}
             {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
+            {task.already_solved && (
+                <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
+            )}
         </div>
     );
 };
