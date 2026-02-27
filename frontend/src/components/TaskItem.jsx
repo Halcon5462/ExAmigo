@@ -6,25 +6,28 @@ const TaskItem = ({ task }) => {
     const [userAnswer, setUserAnswer] = useState('');
     const [result, setResult] = useState(null);
     const [reward, setReward] = useState(0);
+    const [firstTime, setFirstTime] = useState(null);
 
     const checkAnswer = async () => {
         if (!userAnswer.trim()) return;
 
         try {
             const response = await api.post(
-                `/tasks-progress/${task.id}/submit/`, 
+                `/account/tasks-progress/${task.id}/submit/`,
                 { answer: userAnswer }
             );
 
-            const { correct, reward } = response.data;
+            const { correct, reward, first_time } = response.data;
 
             setResult(correct ? 'correct' : 'wrong');
             setReward(reward);
+            setFirstTime(first_time);
 
         } catch (err) {
             console.error("Ошибка проверки:", err);
             setResult(null);
             setReward(0);
+            setFirstTime(null);
         }
     };
 
@@ -53,12 +56,13 @@ const TaskItem = ({ task }) => {
                 <button onClick={checkAnswer} style={styles.btn}>Ответить</button>
             </div>
 
-            {result === 'correct' && (
+            {result == 'correct' && (
                 <p style={{color: 'green'}}>
-                    ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}
+                    ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
+                    {firstTime == false && "Вы уже проходили эту задачу ранее."}
                 </p>
             )}
-            {result === 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
+            {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
         </div>
     );
 };
