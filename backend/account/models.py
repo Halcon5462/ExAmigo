@@ -88,3 +88,16 @@ class UserAchievementProgress(models.Model):
     @property
     def is_completed(self):
         return self.current_value >= self.achievement.target
+
+
+class TaskAttempt(models.Model):
+    '''
+    Просто решение, бесконечное кол-во на одно задание
+    '''
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attempts")
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    answer = models.TextField()
+    is_correct = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
