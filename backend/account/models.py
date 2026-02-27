@@ -101,3 +101,13 @@ class TaskAttempt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class TaskProgress(models.Model):
+    '''
+    Первое верное решение
+    '''
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="task_progress")
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    first_solved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "task")
