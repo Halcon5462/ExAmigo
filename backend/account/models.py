@@ -20,6 +20,17 @@ class UserAccountManager(BaseUserManager):
         return user
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
+    """
+    Модель пользователя.
+
+    Использую email как логин.
+
+    Поля:
+    - email: уникальный, для входа
+    - name: имя пользователя
+    - is_active: активен ли аккаунт
+    - is_staff: доступ в админку
+    """
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
