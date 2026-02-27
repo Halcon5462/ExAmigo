@@ -2,7 +2,7 @@ from django.urls import path
 from .views import RegisterView, ProfileView, CustomTokenObtainPairView, UserAchievementListView, UserProgressListView
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.urls import path
-from taskBank.views import TaskSubmitView
+from account.views import TaskSubmitView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),

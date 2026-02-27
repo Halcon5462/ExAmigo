@@ -13,7 +13,7 @@ const TaskItem = ({ task }) => {
 
         try {
             const response = await api.post(
-                `/account/tasks-progress/${task.id}/submit/`,
+                `/account/task-progress/${task.id}/submit/`,
                 { answer: userAnswer }
             );
 

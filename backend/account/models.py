@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from taskBank.models import Task
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, name, password=None):
@@ -94,7 +95,11 @@ class TaskAttempt(models.Model):
     '''
     Просто решение, бесконечное кол-во на одно задание
     '''
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attempts")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, 
+        related_name="attempts",
+    )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
     answer = models.TextField()
     is_correct = models.BooleanField()
@@ -105,7 +110,11 @@ class TaskProgress(models.Model):
     '''
     Первое верное решение
     '''
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="task_progress")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, 
+        related_name="task_progress",
+    )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
     first_solved_at = models.DateTimeField(auto_now_add=True)
 
