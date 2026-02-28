@@ -74,7 +74,7 @@
 
 
 <div class="viewcode-block" id="TaskCorrectAnswerSerializer">
-<a class="viewcode-back" href="../../taskBank.html#taskBank.views.TaskCorrectAnswerSerializer">[docs]</a>
+<a class="viewcode-back" href="../../taskBank.html#taskBank.serializers.TaskCorrectAnswerSerializer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskCorrectAnswerSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
     <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">TaskCorrectAnswer</span>
@@ -83,7 +83,7 @@
 
 
 <div class="viewcode-block" id="TaskSerializer">
-<a class="viewcode-back" href="../../taskBank.html#taskBank.views.TaskSerializer">[docs]</a>
+<a class="viewcode-back" href="../../taskBank.html#taskBank.serializers.TaskSerializer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TaskSerializer</span><span class="p">(</span><span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span><span class="p">):</span>
     <span class="n">correct_answers</span> <span class="o">=</span> <span class="n">TaskCorrectAnswerSerializer</span><span class="p">(</span><span class="n">many</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -92,7 +92,7 @@
         <span class="n">fields</span> <span class="o">=</span> <span class="s1">&#39;__all__&#39;</span>
 
 <div class="viewcode-block" id="TaskSerializer.create">
-<a class="viewcode-back" href="../../taskBank.html#taskBank.views.TaskSerializer.create">[docs]</a>
+<a class="viewcode-back" href="../../taskBank.html#taskBank.serializers.TaskSerializer.create">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validated_data</span><span class="p">):</span>
         <span class="n">answers_data</span> <span class="o">=</span> <span class="n">validated_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;correct_answers&quot;</span><span class="p">)</span>
         <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">validated_data</span><span class="p">)</span>
