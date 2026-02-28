@@ -74,7 +74,12 @@ class TaskSubmitView(APIView):
         if not user_answer:
             return Response({"error": "Answer required"}, status=400)
 
-        is_correct = task.correct_answers.filter(answer_text=user_answer).exists()
+        cleaned_user_answer = "".join(user_answer.split()).lower()
+
+        is_correct = any(
+            "".join(a.answer_text.split()).lower() == cleaned_user_answer
+            for a in task.correct_answers.all()
+        )
         reward = 0
         first_time = False
 
