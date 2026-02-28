@@ -12,6 +12,8 @@ class TaskCorrectAnswerSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     correct_answers = TaskCorrectAnswerSerializer(many=True)
     already_solved = serializers.SerializerMethodField()
+    author_name = serializers.CharField(source="author.name", read_only=True)
+    author_email = serializers.EmailField(source="author.email", read_only=True)
 
     class Meta:
         model = Task
