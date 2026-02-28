@@ -11,7 +11,7 @@ const TaskBank = () => {
         orderKIM: '',
         type: '',
         difficulty: '',
-        author: ''
+        author: '',
     });
 
     useEffect(() => {
@@ -20,7 +20,7 @@ const TaskBank = () => {
                 const response = await api.get('/taskBank/tasks/');
                 setTasks(response.data);
             } catch (err) {
-                console.error("РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё Р·Р°РґР°РЅРёР№:", err);
+                console.error(err);
             } finally {
                 setLoading(false);
             }
