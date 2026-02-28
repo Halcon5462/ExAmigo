@@ -39,7 +39,7 @@ const TaskItem = ({ task }) => {
             </div>
             <p className="task-type"><em>Тип: {task.type}</em></p>
             {task.image && (
-                <img src={task.image} alt='Ошибка загрузки картинки' style={{height: '200px'}} />
+                <img src={task.image} alt='Ошибка загрузки картинки' style={{maxHeight: '200px'}} />
             )}
             <div className="task-description" style={styles.desc}>
                 {task.description}
