@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from taskBank.models import Task
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, name, password=None):
@@ -20,6 +21,17 @@ class UserAccountManager(BaseUserManager):
         return user
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
+    """
+    Модель пользователя.
+
+    Использую email как логин.
+
+    Поля:
+    - email: уникальный, для входа
+    - name: имя пользователя
+    - is_active: активен ли аккаунт
+    - is_staff: доступ в админку
+    """
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -77,3 +89,34 @@ class UserAchievementProgress(models.Model):
     @property
     def is_completed(self):
         return self.current_value >= self.achievement.target
+
+
+class TaskAttempt(models.Model):
+    '''
+    Просто решение, бесконечное кол-во на одно задание
+    '''
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, 
+        related_name="attempts",
+    )
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    answer = models.TextField()
+    is_correct = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class TaskProgress(models.Model):
+    '''
+    Первое верное решение
+    '''
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE, 
+        related_name="task_progress",
+    )
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    first_solved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "task")

@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
+import api from '../utils/api';
 
 
 const TaskItem = ({ task }) => {
     const [userAnswer, setUserAnswer] = useState('');
     const [result, setResult] = useState(null);
+    const [reward, setReward] = useState(0);
+    const [firstTime, setFirstTime] = useState(null);
 
-    const checkAnswer = () => {
-        if (userAnswer.trim().toLowerCase() === task.answer.trim().toLowerCase()) {
-            setResult('correct');
-        } else {
-            setResult('wrong');
+    const checkAnswer = async () => {
+        if (!userAnswer.trim()) return;
+
+        try {
+            const response = await api.post(
+                `/account/task-progress/${task.id}/submit/`,
+                { answer: userAnswer }
+            );
+
+            const { correct, reward, first_time } = response.data;
+
+            setResult(correct ? 'correct' : 'wrong');
+            setReward(reward);
+            setFirstTime(first_time);
+
+        } catch (err) {
+            console.error("Ошибка проверки:", err);
+            setResult(null);
+            setReward(0);
+            setFirstTime(null);
         }
     };
 
@@ -20,6 +38,9 @@ const TaskItem = ({ task }) => {
                 <span style={styles.difficulty}>Сложность: {task.difficulty}/5</span>
             </div>
             <p className="task-type"><em>Тип: {task.type}</em></p>
+            {task.image && (
+                <img src={task.image} alt='Ошибка загрузки картинки' style={{maxHeight: '200px'}} />
+            )}
             <div className="task-description" style={styles.desc}>
                 {task.description}
             </div>
@@ -35,8 +56,16 @@ const TaskItem = ({ task }) => {
                 <button onClick={checkAnswer} style={styles.btn}>Ответить</button>
             </div>
 
-            {result === 'correct' && <p style={{color: 'green'}}>✅ Верно!</p>}
-            {result === 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
+            {result == 'correct' && (
+                <p style={{color: 'green'}}>
+                    ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
+                    {/* {firstTime == false && "Вы уже проходили эту задачу ранее."} */}
+                </p>
+            )}
+            {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
+            {task.already_solved && (
+                <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
+            )}
         </div>
     );
 };

@@ -1,10 +1,19 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .serializers import UserSerializer, RegisterSerializer, UserAchievementSerializer, UserAchievementProgressSerializer
 from .models import UserAccount, UserAchievement, UserAchievementProgress
+
+from rest_framework.views import APIView
+from django.db import transaction
+
+from .models import Task
+from account.models import TaskAttempt, TaskProgress
+
 
 
 class RegisterView(generics.GenericAPIView):
@@ -53,3 +62,40 @@ class UserProgressListView(generics.ListAPIView):
 
     def get_queryset(self):
         return UserAchievementProgress.objects.filter(user=self.request.user)
+
+class TaskSubmitView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        task = Task.objects.get(pk=pk)
+        user = request.user
+        user_answer = request.data.get("answer", "").strip()
+
+        if not user_answer:
+            return Response({"error": "Answer required"}, status=400)
+
+        cleaned_user_answer = "".join(user_answer.split()).lower()
+
+        is_correct = any(
+            "".join(a.answer_text.split()).lower() == cleaned_user_answer
+            for a in task.correct_answers.all()
+        )
+        reward = 0
+        first_time = False
+
+        with transaction.atomic():
+            TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
+            if is_correct:
+                progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
+                if created:
+                    reward = 10
+                    first_time = True
+                    # user.wallet.balance += reward
+                    # user.wallet.save()
+                    # можно добавить про ачивки
+
+        return Response({
+            "correct": is_correct,
+            "reward": reward,
+            "first_time": first_time,
+        })
