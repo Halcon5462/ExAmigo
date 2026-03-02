@@ -4,7 +4,7 @@ from .models import UserWallet, WalletTransaction
 
 class UserWalletSerializer(serializers.ModelSerializer):
     """Сериализатор для кошелька пользователя"""
-    username = serializers.CharField(source='user.username', read_only=True)
+    username = serializers.CharField(source='user.name', read_only=True)
 
     class Meta:
         model = UserWallet

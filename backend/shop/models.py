@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
@@ -38,7 +39,7 @@ class UserWallet(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Кошелек {self.user.username}: {self.balance} очков"
+        return f"Кошелек {self.user.name}: {self.balance} очков"
 
 
 class WalletTransaction(models.Model):

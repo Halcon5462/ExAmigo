@@ -1,3 +1,5 @@
+from django.db import models
+
 class TransactionReason(models.TextChoices):
     """Причины транзакций"""
     TASK_COMPLETE = 'task_complete', 'Выполнение задачи'
