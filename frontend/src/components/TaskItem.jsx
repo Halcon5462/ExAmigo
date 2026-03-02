@@ -44,6 +44,11 @@ const TaskItem = ({ task }) => {
             <div className="task-description" style={styles.desc}>
                 {task.description}
             </div>
+            {task.file && (
+                <a download={task.file} style={{display: 'block'}} >
+                    <button>Скачать файл</button>
+                </a>
+            )}
 
             <div style={styles.controls}>
                 <input
