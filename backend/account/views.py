@@ -63,6 +63,7 @@ class UserProgressListView(generics.ListAPIView):
     def get_queryset(self):
         return UserAchievementProgress.objects.filter(user=self.request.user)
 
+
 class TaskSubmitView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -88,14 +89,28 @@ class TaskSubmitView(APIView):
             if is_correct:
                 progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
-                    reward = 10
                     first_time = True
-                    # user.wallet.balance += reward
-                    # user.wallet.save()
-                    # можно добавить про ачивки
+                    reward = 10
 
-        return Response({
+                    # Начисляем очки через WalletService
+                    from shop.services import WalletService
+                    try:
+                        transaction_data = WalletService.add_task_reward(
+                            user=user,
+                            task_difficulty=task.difficulty,  # предполагается что есть поле difficulty
+                            task_title=task.title
+                        )
+                        reward = transaction_data['amount']
+                    except Exception as e:
+                        print(f"Error awarding points: {e}")
+
+        response_data = {
             "correct": is_correct,
-            "reward": reward,
             "first_time": first_time,
-        })
+            "reward": reward if first_time else 0
+        }
+
+        if first_time and 'transaction_data' in locals():
+            response_data["new_balance"] = transaction_data["new_balance"]
+
+        return Response(response_data)
