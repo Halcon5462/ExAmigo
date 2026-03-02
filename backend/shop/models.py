@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from .choices import TransactionReason
 
 User = get_user_model()
 
@@ -50,14 +51,6 @@ class WalletTransaction(models.Model):
         reason: Причина транзакции
         created_at: Дата и время транзакции
     """
-
-    class TransactionReason(models.TextChoices):
-        """Причины транзакций"""
-        TASK_COMPLETE = 'task_complete', 'Выполнение задачи'
-        ACHIEVEMENT = 'achievement', 'Получение ачивки'
-        BONUS = 'bonus', 'Бонус'
-        PURCHASE = 'purchase', 'Покупка'
-        ADMIN_ADJUSTMENT = 'admin_adjustment', 'Корректировка администратора'
 
     wallet = models.ForeignKey(
         UserWallet,
