@@ -19,7 +19,7 @@ class UserWallet(models.Model):
         updated_at: Дата последнего обновления
     """
     user = models.OneToOneField(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='wallet',
         verbose_name='Пользователь'
