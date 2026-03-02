@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import AchievementsList from '../components/AchievementsList.jsx';
+import UserBalance from '../components/UserBalance.jsx'; // Добавить
 
 const ProfilePage = ({ user: initialUser, onLogout }) => {
     const [user, setUser] = useState(initialUser);
@@ -62,6 +63,9 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
     return (
         <div className="profile-container">
             <h1>Профиль пользователя</h1>
+
+            {/*  нужно блок добавить */}
+            <UserBalance />
 
             <div className="profile-card">
                 <div className="profile-field">
