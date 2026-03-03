@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import TaskBank from './pages/TaskBank';
 import TaskCreator from './pages/TaskCreator';
+import TaskSetCreator from './pages/TaskSetCreator';
+import TaskSetList from './pages/TaskSetList';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
 
@@ -59,6 +61,7 @@ function App() {
                         <Link to="/tasks">Банк заданий</Link>
                         <Link to="/tasks/create">Создать задание</Link>
                         <Link to="/profile">Профиль</Link>
+                        <Link to="/tasksets">Список комплектов</Link>
                     </nav>
                 )}
 
@@ -73,6 +76,8 @@ function App() {
 
                         <Route path="/tasks" element={<TaskBank />} />
                         <Route path="/tasks/create" element={<TaskCreator />} />
+                        <Route path="/tasksets/create" element={<TaskSetCreator />} />
+                        <Route path="/tasksets" element={<TaskSetList />} />
 
                         <Route
                             path="/profile"

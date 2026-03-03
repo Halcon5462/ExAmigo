@@ -2,8 +2,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
-from .models import Task, TaskCorrectAnswer
-from .serializers import TaskSerializer
+from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
+from .serializers import TaskSerializer, TaskSetSerializer
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.prefetch_related("correct_answers").all()
@@ -19,3 +19,9 @@ class TaskViewSet(ModelViewSet):
         ).exists()
 
         return Response({"correct": is_correct})
+
+
+class TaskSetViewSet(ModelViewSet):
+    """CRUD for TaskSet (комплекты заданий)"""
+    queryset = TaskSet.objects.prefetch_related('items__task').all()
+    serializer_class = TaskSetSerializer
