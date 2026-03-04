@@ -7,6 +7,7 @@ import TaskBank from './pages/TaskBank';
 import TaskCreator from './pages/TaskCreator';
 import TaskSetCreator from './pages/TaskSetCreator';
 import TaskSetList from './pages/TaskSetList';
+import TaskSetPlayer from './pages/TaskSetPlayer';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
 
@@ -78,6 +79,7 @@ function App() {
                         <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
                         <Route path="/tasksets" element={<TaskSetList />} />
+                        <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
 
                         <Route
                             path="/profile"

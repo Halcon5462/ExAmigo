@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 
 const TaskSetList = () => {
   const [tasksets, setTasksets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTaskSets = async () => {
@@ -34,16 +36,8 @@ const TaskSetList = () => {
           {set.subject && <p><strong>Предмет:</strong> {set.subject}</p>}
           <p><strong>Автор:</strong> {set.author_name || set.author_email || 'Аноним'}</p>
           <p><strong>Публичный:</strong> {set.is_public ? 'Да' : 'Нет'}</p>
-          {set.items && set.items.length > 0 && (
-            <div>
-              <strong>Задания в комплекте:</strong>
-              <ul>
-                {set.items.map(item => (
-                  <li key={item.id}>#{item.order} – Задание ID {item.task}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <p><strong>Заданий:</strong> {set.items?.length || 0}</p>
+          <button onClick={() => navigate(`/tasksets/play/${set.id}`)}>Начать</button>
         </div>
       ))}
     </div>
