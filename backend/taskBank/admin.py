@@ -1,32 +1,34 @@
 from django.contrib import admin
-from .models import Task, TaskCorrectAnswer
+from .models import (
+    Task,
+    TaskCorrectAnswer,
+    TaskSet,
+    TaskSetItem
+)
 
 
 class TaskCorrectAnswerInline(admin.TabularInline):
     model = TaskCorrectAnswer
-    extra = 1 
+    extra = 1
+
+
+class TaskSetItemInline(admin.TabularInline):
+    model = TaskSetItem
+    extra = 1
+    autocomplete_fields = ["task"]
+
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
+    list_display = ("subject", "order_KIM", "difficulty", "author")
+    list_filter = ("subject", "difficulty")
+    search_fields = ("description",)
     inlines = [TaskCorrectAnswerInline]
-    
-    list_display = ('id', 'subject', 'order_KIM', 'difficulty', 'author', 'created_at')
 
-    list_filter = ('subject', 'difficulty', 'author')
 
-    search_fields = ('subject', 'description', 'author__email')
-
-    list_editable = ('difficulty',)
-
-    readonly_fields = ('created_at',)
-
-@admin.register(TaskCorrectAnswer)
-class TaskCorrectAnswerAdmin(admin.ModelAdmin):
-
-    list_display = ('id', 'task', 'answer_text')
-    
-    list_filter = ('task__subject', 'task')
-    
-    search_fields = ('answer_text',)
-    
-    autocomplete_fields = ('task',)
+@admin.register(TaskSet)
+class TaskSetAdmin(admin.ModelAdmin):
+    list_display = ("name", "subject", "is_public", "author")
+    list_filter = ("subject", "is_public")
+    search_fields = ("name",)
+    inlines = [TaskSetItemInline]
