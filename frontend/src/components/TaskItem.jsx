@@ -31,11 +31,23 @@ const TaskItem = ({ task, onAnswered }) => {
   };
 
   return (
-    <div style={{ border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
-      <p>
-        <strong>№{task._order}</strong>{" "}
-        | Предмет: {task.subject} | Тип: {task.type} | Сложность: {task.difficulty}
-      </p>
+    <div className="task-card" style={styles.card}>
+      <div style={styles.header}>
+          <strong>Задание №{task.order_KIM}</strong>
+          <span style={styles.difficulty}>Сложность: {task.difficulty}/5</span>
+      </div>
+      <p className="task-type"><em>Тип: {task.type}</em></p>
+      {task.image && (
+          <img src={task.image} alt='Ошибка загрузки картинки' style={{maxHeight: '200px'}} />
+      )}
+      <div className="task-description" style={styles.desc}>
+          {task.description}
+      </div>
+      {task.file && (
+          <a download={task.file} style={{display: 'block'}} >
+              <button>Скачать файл</button>
+          </a>
+      )}
 
       {task.image && (
         <img

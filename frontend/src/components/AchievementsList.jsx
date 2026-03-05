@@ -8,7 +8,7 @@ const AchievementsList = ({ achievements = [], progress = [] }) => {
             <div className="achievements-grid">
                 {achievements.map((item) => (
                     <div key={item.id} className="achievement-card earned">
-                        <img src={item.achievement.icon} alt={item.achievement.name} className="achievement-icon" />
+                        <img src={item.achievement.icon} alt={item.achievement.name} className="achievement-icon" style={{height: '100px', borderRadius: '5px'}}/>
                         <div className="achievement-info">
                             <h3>{item.achievement.name} ✓</h3>
                             <p>{item.achievement.description}</p>
@@ -28,7 +28,7 @@ const AchievementsList = ({ achievements = [], progress = [] }) => {
 
                     return (
                         <div key={item.id} className="achievement-card locked">
-                            <img src={item.achievement.icon} alt={item.achievement.name} className="achievement-icon grayscale" />
+                            <img src={item.achievement.icon} alt={item.achievement.name} className="achievement-icon grayscale"/>
                             <div className="achievement-info">
                                 <h3>{item.achievement.name}</h3>
                                 <p>{item.achievement.description}</p>

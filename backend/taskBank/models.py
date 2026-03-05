@@ -13,6 +13,11 @@ class Task(models.Model):
         blank=True,
         null=True,
     )
+    file = models.FileField(
+        upload_to='tasks/files/', 
+        blank=True,
+        null=True,
+    )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
