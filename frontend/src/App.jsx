@@ -63,6 +63,7 @@ function App() {
                         <Link to="/tasks/create">Создать задание</Link>
                         <Link to="/profile">Профиль</Link>
                         <Link to="/tasksets">Список комплектов</Link>
+                        <Link to="/tasksets/create">Сооздать комплект</Link>
                     </nav>
                 )}
 
