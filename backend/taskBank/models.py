@@ -30,7 +30,7 @@ class Task(models.Model):
 
 
     def __str__(self):
-        return f"{self.subject} - №{self.order_KIM} ({self.difficulty})"
+    return f"Задание {self.id}: {self.subject} - №{self.order_KIM} (сложность {self.difficulty}/5)"
 
 class TaskCorrectAnswer(models.Model):
     task = models.ForeignKey(
