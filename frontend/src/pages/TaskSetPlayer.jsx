@@ -42,15 +42,34 @@ const TaskSetPlayer = () => {
     fetchSet();
   }, [id]);
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     const task = tasks[taskIndex];
     if (!currentInput.trim()) return;
-    const input = currentInput.trim().toLowerCase();
-    const isCorrect = (task.correct_answers || []).some(
-      a => a.answer_text.trim().toLowerCase() === input
-    );
-    setChecked(prev => ({ ...prev, [task.id]: isCorrect }));
-    setAnswers(prev => ({ ...prev, [task.id]: currentInput.trim() }));
+
+    try {
+      const resp = await api.post(`/task-progress/${task.id}/submit/`, {
+        answer: currentInput.trim(),
+      });
+
+      const data = resp.data;
+
+      setChecked(prev => ({
+        ...prev,
+        [task.id]: data.correct,
+      }));
+
+      setAnswers(prev => ({
+        ...prev,
+        [task.id]: currentInput.trim(),
+      }));
+
+      if (data.first_time) {
+        console.log(`Получена награда: ${data.reward}`);
+      }
+
+    } catch (error) {
+      console.error("Ошибка отправки ответа:", error);
+    }
   };
 
   const goTo = (index) => {
