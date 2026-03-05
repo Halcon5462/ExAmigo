@@ -21,7 +21,7 @@ const UserBalance = () => {
 
     return (
         <div className="user-balance">
-            <h3>Мои очки: <span>{balance}</span></h3>
+            <h3>Мои Умкоины: <span>{balance}</span></h3>
         </div>
     );
 };
