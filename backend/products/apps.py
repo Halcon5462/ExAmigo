@@ -1,5 +1,9 @@
+apps
+
+
 from django.apps import AppConfig
 
 
-class ProducrsConfig(AppConfig):
-    name = 'products'
+class ProductsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "products"
