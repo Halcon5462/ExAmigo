@@ -21,24 +21,12 @@ class ProductSerializer(serializers.ModelSerializer):
     frame = FrameSerializer(read_only=True)
     background = BackgroundSerializer(read_only=True)
     remaining = serializers.IntegerField(read_only=True)
+    author_name = serializers.CharField(source="author.name", read_only=True)
+    author_email = serializers.EmailField(source="author.email", read_only=True)
 
     class Meta:
         model = Product
-        fields = (
-            "id",
-            "type",
-            "name",
-            "description",
-            "cost",
-            "is_limited",
-            "stock",
-            "sold_count",
-            "remaining",
-            "author",
-            "created_at",
-            "frame",
-            "background",
-        )
+        fields = '__all__'
         read_only_fields = (
             "id",
             "sold_count",

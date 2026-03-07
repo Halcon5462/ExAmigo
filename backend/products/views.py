@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from shop.choices import TransactionReason
 from shop.models import UserWallet, WalletTransaction
+from shop.services import WalletService
 
 from .models import Product
 from .serializers import ProductSerializer, ProductWriteSerializer, PurchaseSerializer
@@ -51,36 +52,33 @@ class ProductViewSet(viewsets.ModelViewSet):
         product = self.get_object()
         serializer = PurchaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        quantity = serializer.validated_data.get("quantity", 1)
 
+        quantity = serializer.validated_data.get("quantity", 1)
         total_cost = product.cost * quantity
 
         try:
             with db_transaction.atomic():
-                wallet, _ = UserWallet.objects.get_or_create(user=request.user)
-                if wallet.balance < total_cost:
-                    return Response(
-                        {"error": "Недостаточно средств на балансе."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
 
-                # Charge user
-                wallet.balance -= total_cost
-                wallet.save(update_fields=["balance", "updated_at"])
-                WalletTransaction.objects.create(
-                    wallet=wallet,
+                # списываем деньги через сервис
+                result = WalletService.change_balance(
+                    user=request.user,
                     amount=-total_cost,
                     reason=TransactionReason.PURCHASE,
                     description=f"Покупка: {product.name} x{quantity}",
                 )
 
+                # покупка продукта
                 product.purchase(quantity=quantity)
+
+        except ValueError:
+            return Response(
+                {"error": "Недостаточно средств на балансе."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         except DjangoValidationError as e:
             detail = e.message_dict if hasattr(e, "message_dict") else {"error": e.messages}
             return Response(detail, status=status.HTTP_400_BAD_REQUEST)
-        except ValueError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -88,7 +86,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 "quantity": quantity,
                 "sold_count": product.sold_count,
                 "total_cost": total_cost,
-                "balance": wallet.balance,
+                "balance": result["new_balance"],
             },
             status=status.HTTP_200_OK,
         )

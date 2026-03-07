@@ -9,7 +9,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await api.get('/digitalShop/products/');
+                const response = await api.get('/products/products/');
                 setProducts(response.data);
             } catch (err) {
                 console.error(err);
