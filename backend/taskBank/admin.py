@@ -116,6 +116,7 @@ class TaskAdmin(admin.ModelAdmin):
     def colored_subject(self, obj):
         colors = {
             'Математика': 'blue',
+            'Профильная математика': 'blue',
             'Русский язык': 'green',
             'Физика': 'purple',
             'Информатика': 'orange',
