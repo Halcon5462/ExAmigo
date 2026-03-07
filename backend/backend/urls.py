@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/taskBank/', include('taskBank.urls')),
     path('api/shop/', include('shop.urls')),
     path('api/products/', include('products.urls')),
+    path('api/digitalShop/', include('products.urls')),
 ]
 
 if settings.DEBUG:
