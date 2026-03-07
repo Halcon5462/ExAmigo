@@ -6,6 +6,9 @@ import ProfilePage from './pages/ProfilePage';
 import TaskBank from './pages/TaskBank';
 import TaskCreator from './pages/TaskCreator';
 import Shop from './pages/Shop';
+import TaskSetCreator from './pages/TaskSetCreator';
+import TaskSetList from './pages/TaskSetList';
+import TaskSetPlayer from './pages/TaskSetPlayer';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
 
@@ -61,6 +64,8 @@ function App() {
                         <Link to="/tasks/create">Создать задание</Link>
                         <Link to="/shop">Магазин</Link>
                         <Link to="/profile">Профиль</Link>
+                        <Link to="/tasksets">Список комплектов</Link>
+                        <Link to="/tasksets/create">Сооздать комплект</Link>
                     </nav>
                 )}
 
@@ -76,7 +81,9 @@ function App() {
                         <Route path="/tasks" element={<TaskBank />} />
                         <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/shop" element={<Shop />} />
-
+                        <Route path="/tasksets/create" element={<TaskSetCreator />} />
+                        <Route path="/tasksets" element={<TaskSetList />} />
+                        <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
                         <Route
                             path="/profile"
                             element={<ProfilePage user={user} onLogout={handleLogout} />}

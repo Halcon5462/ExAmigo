@@ -1,78 +1,88 @@
-import React, { useState } from 'react';
-import api from '../utils/api';
+import React, { useState } from "react";
+import api from "../utils/api";
 
+const TaskItem = ({ task, onAnswered }) => {
+  const [userAnswer, setUserAnswer] = useState("");
+  const [result, setResult] = useState(null);
+  const [reward, setReward] = useState(0);
 
-const TaskItem = ({ task }) => {
-    const [userAnswer, setUserAnswer] = useState('');
-    const [result, setResult] = useState(null);
-    const [reward, setReward] = useState(0);
-    const [firstTime, setFirstTime] = useState(null);
+  const checkAnswer = async () => {
+    if (!userAnswer.trim()) return;
 
-    const checkAnswer = async () => {
-        if (!userAnswer.trim()) return;
+    try {
+      const response = await api.post(
+        `/account/task-progress/${task.id}/submit/`,
+        { answer: userAnswer }
+      );
 
-        try {
-            const response = await api.post(
-                `/account/task-progress/${task.id}/submit/`,
-                { answer: userAnswer }
-            );
+      const { correct, reward } = response.data;
 
-            const { correct, reward, first_time } = response.data;
+      setResult(correct ? "correct" : "wrong");
+      setReward(reward);
 
-            setResult(correct ? 'correct' : 'wrong');
-            setReward(reward);
-            setFirstTime(first_time);
+      // сообщаем родителю результат
+      if (onAnswered) {
+        onAnswered(task.id, userAnswer, correct);
+      }
 
-        } catch (err) {
-            console.error("Ошибка проверки:", err);
-            setResult(null);
-            setReward(0);
-            setFirstTime(null);
-        }
-    };
+    } catch (err) {
+      console.error("Ошибка проверки:", err);
+    }
+  };
 
-    return (
-        <div className="task-card" style={styles.card}>
-            <div style={styles.header}>
-                <strong>Задание №{task.order_KIM}</strong>
-                <span style={styles.difficulty}>Сложность: {task.difficulty}/5</span>
-            </div>
-            <p className="task-type"><em>Тип: {task.type}</em></p>
-            {task.image && (
-                <img src={task.image} alt='Ошибка загрузки картинки' style={{maxHeight: '200px'}} />
-            )}
-            <div className="task-description" style={styles.desc}>
-                {task.description}
-            </div>
-            {task.file && (
-                <a download={task.file} style={{display: 'block'}} >
-                    <button>Скачать файл</button>
-                </a>
-            )}
+  return (
+    <div className="task-card" style={styles.card}>
+      <div style={styles.header}>
+          <strong>Задание №{task.order_KIM}</strong>
+          <span style={styles.difficulty}>Сложность: {task.difficulty}/5</span>
+      </div>
+      <p className="task-type"><em>Тип: {task.type}</em></p>
+      {task.image && (
+          <img src={task.image} alt='Ошибка загрузки картинки' style={{maxHeight: '200px'}} />
+      )}
+      <div className="task-description" style={styles.desc}>
+          {task.description}
+      </div>
+      {task.file && (
+          <a download={task.file} style={{display: 'block'}} >
+              <button>Скачать файл</button>
+          </a>
+      )}
 
-            <div style={styles.controls}>
-                <input
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Ваш ответ..."
-                    style={styles.input}
-                />
-                <button onClick={checkAnswer} style={styles.btn}>Ответить</button>
-            </div>
+      {task.image && (
+        <img
+          src={task.image}
+          alt="task"
+          style={{ maxHeight: "200px", marginBottom: "10px" }}
+        />
+      )}
 
-            {result == 'correct' && (
-                <p style={{color: 'green'}}>
-                    ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
-                    {/* {firstTime == false && "Вы уже проходили эту задачу ранее."} */}
-                </p>
-            )}
-            {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
-            {task.already_solved && (
-                <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
-            )}
-        </div>
-    );
+      <p>{task.description}</p>
+
+      <input
+        type="text"
+        value={userAnswer}
+        onChange={(e) => setUserAnswer(e.target.value)}
+        placeholder="Введите ответ"
+      />
+
+      <button onClick={checkAnswer} style={{ marginLeft: "10px" }}>
+        Проверить
+      </button>
+
+      {result === "correct" && (
+        <p style={{ color: "green" }}>
+          ✅ Верно! {reward > 0 && `+${reward} монет`}
+        </p>
+      )}
+
+      {result === "wrong" && (
+        <p style={{ color: "red" }}>
+          ❌ Неверно
+        </p>
+      )}
+    </div>
+  );
 };
 
 const styles = {

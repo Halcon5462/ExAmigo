@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, TaskCorrectAnswer
+from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
 from account.models import TaskProgress
 
 
@@ -36,3 +36,41 @@ class TaskSerializer(serializers.ModelSerializer):
         if user.is_authenticated:
             return TaskProgress.objects.filter(user=user, task=obj).exists()
         return False
+
+class TaskSetItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskSetItem
+        fields = ['id', 'task', 'order']
+
+class TaskSetSerializer(serializers.ModelSerializer):
+    items = TaskSetItemSerializer(many=True, required=False)
+    author_name = serializers.CharField(source='author.name', read_only=True)
+    author_email = serializers.EmailField(source='author.email', read_only=True)
+
+    class Meta:
+        model = TaskSet
+        fields = ['id', 'name', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
+        read_only_fields = ['author', 'created_at']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items', [])
+        # set author from context
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            validated_data['author'] = request.user
+        taskset = TaskSet.objects.create(**validated_data)
+        for item in items_data:
+            TaskSetItem.objects.create(task_set=taskset, **item)
+        return taskset
+
+    def update(self, instance, validated_data):
+        items_data = validated_data.pop('items', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        if items_data is not None:
+            # clear existing items and recreate
+            instance.items.all().delete()
+            for item in items_data:
+                TaskSetItem.objects.create(task_set=instance, **item)
+        return instance
