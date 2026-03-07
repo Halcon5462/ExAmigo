@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/account/', include('account.urls')),
     path('api/taskBank/', include('taskBank.urls')),
     path('api/shop/', include('shop.urls')),
+    path('api/products/', include('products.urls')),
 ]
 
 if settings.DEBUG:
