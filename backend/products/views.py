@@ -1,3 +1,95 @@
-from django.shortcuts import render
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction as db_transaction
+from django.db.models import F, Q
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-# Create your views here.
+from shop.choices import TransactionReason
+from shop.models import UserWallet, WalletTransaction
+
+from .models import Product
+from .serializers import ProductSerializer, ProductWriteSerializer, PurchaseSerializer
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return bool(request.user and request.user.is_staff)
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.select_related("author").all()
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action in {"create", "update", "partial_update"}:
+            return ProductWriteSerializer
+        if self.action == "purchase":
+            return PurchaseSerializer
+        return ProductSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        product_type = self.request.query_params.get("type")
+        if product_type:
+            qs = qs.filter(type=product_type)
+
+        available = self.request.query_params.get("available")
+        if available in {"1", "true", "True", "yes", "on"}:
+            qs = qs.filter(
+                Q(is_limited=False)
+                | Q(is_limited=True, stock__isnull=False, sold_count__lt=F("stock"))
+            )
+
+        return qs.order_by("-created_at")
+
+    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
+    def purchase(self, request, pk=None):
+        product = self.get_object()
+        serializer = PurchaseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        quantity = serializer.validated_data.get("quantity", 1)
+
+        total_cost = product.cost * quantity
+
+        try:
+            with db_transaction.atomic():
+                wallet, _ = UserWallet.objects.get_or_create(user=request.user)
+                if wallet.balance < total_cost:
+                    return Response(
+                        {"error": "Недостаточно средств на балансе."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                # Charge user
+                wallet.balance -= total_cost
+                wallet.save(update_fields=["balance", "updated_at"])
+                WalletTransaction.objects.create(
+                    wallet=wallet,
+                    amount=-total_cost,
+                    reason=TransactionReason.PURCHASE,
+                    description=f"Покупка: {product.name} x{quantity}",
+                )
+
+                product.purchase(quantity=quantity)
+
+        except DjangoValidationError as e:
+            detail = e.message_dict if hasattr(e, "message_dict") else {"error": e.messages}
+            return Response(detail, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(
+            {
+                "product_id": product.id,
+                "quantity": quantity,
+                "sold_count": product.sold_count,
+                "total_cost": total_cost,
+                "balance": wallet.balance,
+            },
+            status=status.HTTP_200_OK,
+        )
+
