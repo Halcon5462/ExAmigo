@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'account',
     'taskBank',
     'shop',
-    'products',
+    'products.apps.ProductsConfig',
 ]
 
 MIDDLEWARE = [
