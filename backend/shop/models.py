@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .choices import TransactionReason
+from products.models import Product
 
 User = get_user_model()
 
@@ -83,6 +84,38 @@ class WalletTransaction(models.Model):
     def __str__(self):
         sign = "+" if self.amount > 0 else ""
         return f"{sign}{self.amount} очков - {self.get_reason_display()}"
+
+
+class UserProduct(models.Model):
+    """
+    Факт покупки: каждый пользователь может купить один и тот же товар
+    только один раз (unique_together).
+
+    Attributes:
+        user: Связь с пользователем
+        product: Продукт
+        purchased_at: Время покупки
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='products',
+        verbose_name='Пользователь'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="owners",
+        verbose_name="Товар",
+    )
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "product")
+        ordering = ["-purchased_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user} — {self.product}"
 
 
 @receiver(post_save, sender=User)
