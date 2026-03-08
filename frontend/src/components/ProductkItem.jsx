@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductkItem = ({ product }) => {
+const ProductkItem = ({ product, onPurchase, purchasing }) => {
     const image = product?.frame?.icon_frame
         || product?.background?.image_background
         || product?.icon_frame
@@ -51,6 +51,15 @@ const ProductkItem = ({ product }) => {
                     <span style={styles.unavailable}>Нет в наличии</span>
                 )}
             </div>
+
+            {onPurchase && (
+                <button
+                    onClick={() => onPurchase(product)}
+                    disabled={!available || purchasing}
+                >
+                    {purchasing ? 'Покупка...' : `Купить за ${product?.cost ?? 0} очков`}
+                </button>
+            )}
         </div>
     );
 };
