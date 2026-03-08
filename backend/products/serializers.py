@@ -101,3 +101,11 @@ class ProductWriteSerializer(serializers.ModelSerializer):
 class PurchaseSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1, default=1, required=False)
 
+
+class PurchaseResponseSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    product_name = serializers.CharField()
+    new_balance = serializers.IntegerField()
+    user_product_id = serializers.IntegerField()
+    purchased_at = serializers.DateTimeField()
+
