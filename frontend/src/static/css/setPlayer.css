@@ -1,0 +1,32 @@
+.task-info{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+    color:var(--light-blue);
+}
+
+.progress{
+    font-weight:bold;
+}
+
+.task-container{
+    max-width:900px;
+    margin:60px auto;
+}
+
+.set-nav{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-bottom: 10px;
+}
+
+.arrow{
+    color: var(--light-blue);
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover{
+        color: #495565;
+        transition: 0.3s;
+    }
+}

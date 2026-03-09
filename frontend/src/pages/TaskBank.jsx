@@ -90,13 +90,15 @@ const TaskBank = () => {
                 </select>
             </div>
             {displayedSubjects.map(subject => (
-                <section key={subject} style={{ marginBottom: '30px' }}>
-                    <h2 style={{ borderBottom: '2px solid #007bff' }}>{subject}</h2>
+                <div className="task-container">
+                    <div class="task-info">
+                        <span>{subject} </span>
+                    </div>
                     {filteredTasks
                         .filter(t => t.subject === subject)
                         .map(task => <TaskItem key={task.id} task={task} />)
                     }
-                </section>
+                </div>
             ))}
         </div>
     );
