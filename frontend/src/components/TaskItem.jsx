@@ -48,24 +48,13 @@ const TaskItem = ({ task, onAnswered }) => {
               <button>Скачать файл</button>
           </a>
       )}
-
-      {task.image && (
-        <img
-          src={task.image}
-          alt="task"
-          style={{ maxHeight: "200px", marginBottom: "10px" }}
-        />
-      )}
-
       <p>{task.description}</p>
-
       <input
         type="text"
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
         placeholder="Введите ответ"
       />
-
       <button onClick={checkAnswer} style={{ marginLeft: "10px" }}>
         Проверить
       </button>

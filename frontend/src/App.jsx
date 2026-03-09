@@ -11,6 +11,7 @@ import TaskSetList from './pages/TaskSetList';
 import TaskSetPlayer from './pages/TaskSetPlayer';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
+import Header from './components/Header'
 
 function App() {
     const [user, setUser] = useState(null);
@@ -56,19 +57,8 @@ function App() {
 
     return (
         <BrowserRouter>
-            <div className="app">
-                {user && (
-                    <nav className="navbar" style={{ display: 'flex', gap: '15px', padding: '15px', background: '#f5f5f5', marginBottom: '20px' }}>
-                        <Link to="/">Главная</Link>
-                        <Link to="/tasks">Банк заданий</Link>
-                        <Link to="/tasks/create">Создать задание</Link>
-                        <Link to="/shop">Магазин</Link>
-                        <Link to="/profile">Профиль</Link>
-                        <Link to="/tasksets">Список комплектов</Link>
-                        <Link to="/tasksets/create">Сооздать комплект</Link>
-                    </nav>
-                )}
-
+            <div>
+                <Header />
                 <Routes>
                     <Route
                         path="/login"
