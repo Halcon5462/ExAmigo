@@ -10,6 +10,8 @@
     --light-grey: #E4EFEA;
     --grey: #C1C1C1;
     --dark-grey: #5F5F5F;
+    --light-blue: #64748b;
+    --dark-blue: #495565;
 }
 body {
     font-family: 'Ubuntu', sans-serif;
@@ -17,4 +19,48 @@ body {
     background-color: var(--base-light);
     margin: 0;
     padding: 0;
+}
+.text{
+    color: var(--base-dark);
+    font-weight: 400;
+    font-size: 20px;
+    font-family: 'Sourse Sans 3', sans-serif;
+    line-height: 150%;
+}
+.description_text{
+    color: var(--base-dark);
+    font-weight: 400;
+    font-size: 16px;
+    font-family: 'Sourse Sans 3', sans-serif;
+}
+.text_mini{
+    color: var(--base-dark);
+    font-weight: 300;
+    font-size: 14px;
+    font-family: 'Sourse Sans 3', sans-serif;
+}
+.btn_text{
+    color: var(--base-dark);
+    font-weight: 600;
+    font-size: 16px;
+    font-family: 'Sourse Sans 3', sans-serif;
+}
+
+.btn_green{
+    display: inline-block;
+    height: 40px;
+    padding: 0px 10px;
+    border: none;
+    border-radius: 12px;
+    text-align: center;
+    background-color: var(--green);
+    color: var(--base-light);
+    font-size: 18px;
+    font-family: 'Sourse Sans 3', sans-serif;
+    font-weight: 550;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    &:hover {
+        background-color: var(--dark-green);
+    }
 }

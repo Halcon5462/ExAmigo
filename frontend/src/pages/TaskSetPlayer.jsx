@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import TaskItem from "../components/TaskItem";
+import '../static/css/setPlayer.css'
+
+import { ArrowRightCircle, ArrowLeftCircle } from 'lucide-react';
 
 const TaskSetPlayer = () => {
   const { id } = useParams();
@@ -138,37 +141,36 @@ const TaskSetPlayer = () => {
   const task = tasks[taskIndex];
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>{currentSet?.name}</h2>
-      <p>
-        Задание {taskIndex + 1} из {tasks.length}
-      </p>
+    <div className="task-container">
+      <div className='set-nav'>
+        {taskIndex != 0 &&
+          <ArrowLeftCircle 
+          className="arrow"
+          size={40}
+          onClick={() => goTo(taskIndex - 1)} />
+        }
 
+        {taskIndex < tasks.length - 1 ? (
+            <ArrowRightCircle 
+            className="arrow"
+            size={40}
+            onClick={() => goTo(taskIndex + 1)} />
+        ) : (
+          <button className="btn_green" onClick={() => setScreen("stats")}>
+            Завершить
+          </button>
+        )}
+      </div>
+      <div class="task-info">
+        <span>{task.subject} · {currentSet.name}</span>
+        <span class="progress"> Задание {taskIndex + 1}/{tasks.length}</span>
+      </div>
       {task && (
         <TaskItem
           key={task.id}
           task={task}
           onAnswered={handleAnswered}
         />
-      )}
-
-      <br />
-
-      <button
-        onClick={() => goTo(taskIndex - 1)}
-        disabled={taskIndex === 0}
-      >
-        Назад
-      </button>{" "}
-
-      {taskIndex < tasks.length - 1 ? (
-        <button onClick={() => goTo(taskIndex + 1)}>
-          Далее
-        </button>
-      ) : (
-        <button onClick={() => setScreen("stats")}>
-          Завершить вариант
-        </button>
       )}
     </div>
   );
