@@ -55,10 +55,13 @@ const ProductkItem = ({ product, onPurchase, purchasing }) => {
             {onPurchase && (
                 <button
                     onClick={() => onPurchase(product)}
-                    disabled={!available || purchasing}
+                    disabled={!available || purchasing || product?.already_purchased}
                 >
                     {purchasing ? 'Покупка...' : `Купить за ${product?.cost ?? 0} очков`}
                 </button>
+            )}
+            {product?.already_purchased && (
+                <p style={{ color: 'orange' }}>⚡ Вы уже приобрели этот товар.</p>
             )}
         </div>
     );
