@@ -9,17 +9,31 @@ const TaskCreator = () => {
         type: '',
         difficulty: 1,
         description: '',
-        answer: ''
+        correct_answers: '',
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const payload = {
+            ...formData,
+            order_KIM: parseInt(formData.order_KIM, 10),
+            difficulty: parseInt(formData.difficulty, 10),
+        };
+
         try {
-            await api.post('/taskBank/tasks/', formData);
+            await api.post('/taskBank/tasks/', payload);
             alert('Задание создано!');
-            setFormData({ subject: '', order_KIM: 1, type: '', difficulty: 1, description: '', answer: '' });
+            setFormData({
+                subject: '',
+                order_KIM: 1,
+                type: '',
+                difficulty: 1,
+                description: '',
+                correct_answers: '',
+            });
         } catch (err) {
-            alert('Ошибка при сохранении: ' + JSON.stringify(err.response?.data));
+            alert('Ошибка: ' + JSON.stringify(err.response?.data));
         }
     };
 
@@ -37,7 +51,7 @@ const TaskCreator = () => {
                 <input name="type" placeholder="Тип задания" onChange={handleChange} value={formData.type} required />
                 <input name="difficulty" type="number" min="1" max="5" placeholder="Сложность (1-5)" onChange={handleChange} value={formData.difficulty} required />
                 <textarea name="description" placeholder="Условие задания" onChange={handleChange} value={formData.description} required rows={5} />
-                <input name="answer" placeholder="Верный ответ" onChange={handleChange} value={formData.answer} required />
+                <input name="correct_answers" placeholder="Верный ответ" onChange={handleChange} value={formData.correct_answers} required />
                 <button type="submit" style={{ padding: '10px', cursor: 'pointer' }}>Опубликовать</button>
             </form>
         </div>
