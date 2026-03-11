@@ -1,11 +1,11 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction as db_transaction
-from django.db.models import F, Q
+from django.db.models import F, Q, BooleanField, Exists, OuterRef, Value
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Product
+from .models import Product, UserProduct
 from .serializers import ProductSerializer, ProductWriteSerializer, PurchaseSerializer
 from .services import ProductService
 
@@ -29,6 +29,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+
+        user = self.request.user
+        if user.is_authenticated:
+            qs = qs.annotate(
+                already_purchased=Exists(
+                    UserProduct.objects.filter(
+                        user=user,
+                        product=OuterRef("pk"),
+                    )
+                )
+            )
+        else:
+            qs = qs.annotate(
+                already_purchased=Value(False, output_field=BooleanField())
+            )
 
         product_type = self.request.query_params.get("type")
         if product_type:
