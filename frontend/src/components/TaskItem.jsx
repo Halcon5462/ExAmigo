@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import '../static/css/task.css'
 
-const TaskItem = ({ task, onAnswered }) => {
+const TaskItem = ({ task }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [result, setResult] = useState(null);
   const [reward, setReward] = useState(0);
