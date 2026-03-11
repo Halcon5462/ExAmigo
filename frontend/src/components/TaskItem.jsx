@@ -47,7 +47,7 @@ const TaskItem = ({ task }) => {
           {task.description}
       </div>
       {task.file && (
-          <a download={task.file} >
+          <a href={task.file} download target="_blank" rel="noopener noreferrer">
               <button>Скачать файл</button>
           </a>
       )}
