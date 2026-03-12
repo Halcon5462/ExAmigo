@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/taskBank/', include('taskBank.urls')),
     path('api/shop/', include('shop.urls')),
     path('api/products/', include('products.urls')),
+    path('api/tools/', include('tools.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
