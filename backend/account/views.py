@@ -14,6 +14,8 @@ from django.db import transaction
 from .models import Task
 from account.models import TaskAttempt, TaskProgress
 
+from shop.services import WalletService
+
 
 
 class RegisterView(generics.GenericAPIView):
@@ -100,8 +102,6 @@ class TaskSubmitView(APIView):
                 if created:
                     first_time = True
                     difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, 'easy')
-
-                    from shop.services import WalletService
                     try:
                         transaction_data = WalletService.add_task_reward(
                             user=user,
@@ -115,7 +115,7 @@ class TaskSubmitView(APIView):
         response_data = {
             "correct": is_correct,
             "first_time": first_time,
-            "reward": reward if first_time else 0,
+            "reward": reward,
         }
 
         if transaction_data:
