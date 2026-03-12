@@ -37,7 +37,7 @@ const Shop = () => {
             setProducts(prev =>
                 prev.map(p =>
                     p.id === product.id
-                        ? { ...p, sold_count: response.data.sold_count }
+                        ? { ...p, sold_count: response.data.sold_count, already_purchased: true }  // ← add flag
                         : p
                 )
             );

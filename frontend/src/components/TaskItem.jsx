@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import '../static/css/task.css'
 
-const TaskItem = ({ task, onAnswered }) => {
+const TaskItem = ({ task }) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [result, setResult] = useState(null);
   const [reward, setReward] = useState(0);
@@ -31,6 +31,30 @@ const TaskItem = ({ task, onAnswered }) => {
     }
   };
 
+  const downloadFile = async (url) => {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const fileName = url.split("/").pop();
+
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(blobUrl);
+
+    } catch (error) {
+        console.error("Ошибка скачивания:", error);
+    }
+  };
+
 
   return (
     <div className="task-card">
@@ -47,9 +71,9 @@ const TaskItem = ({ task, onAnswered }) => {
           {task.description}
       </div>
       {task.file && (
-          <a download={task.file} >
-              <button>Скачать файл</button>
-          </a>
+        <button onClick={() => downloadFile(task.file)}>
+          Скачать файл
+        </button>
       )}
       <div className="btn-container">
         <input

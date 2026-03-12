@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction as db_transaction
 
 from shop.choices import TransactionReason
-from shop.models import UserProduct
+from .models import UserProduct
 from shop.services import WalletService
 
 from .models import Product

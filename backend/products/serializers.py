@@ -23,6 +23,7 @@ class ProductSerializer(serializers.ModelSerializer):
     remaining = serializers.IntegerField(read_only=True)
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
+    already_purchased = serializers.BooleanField(read_only=True, default=False)
 
     class Meta:
         model = Product

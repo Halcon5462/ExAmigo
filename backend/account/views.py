@@ -14,6 +14,8 @@ from django.db import transaction
 from .models import Task
 from account.models import TaskAttempt, TaskProgress
 
+from shop.services import WalletService
+
 
 
 class RegisterView(generics.GenericAPIView):
@@ -67,6 +69,14 @@ class UserProgressListView(generics.ListAPIView):
 class TaskSubmitView(APIView):
     permission_classes = [IsAuthenticated]
 
+    DIFFICULTY_MAP = {
+        1: 'easy',
+        2: 'easy',
+        3: 'medium',
+        4: 'hard',
+        5: 'expert',
+    }
+
     def post(self, request, pk):
         task = Task.objects.get(pk=pk)
         user = request.user
@@ -83,6 +93,7 @@ class TaskSubmitView(APIView):
         )
         reward = 0
         first_time = False
+        transaction_data = None
 
         with transaction.atomic():
             TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
@@ -90,15 +101,12 @@ class TaskSubmitView(APIView):
                 progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
                     first_time = True
-                    reward = 10
-
-                    # Начисляем очки через WalletService
-                    from shop.services import WalletService
+                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, 'easy')
                     try:
                         transaction_data = WalletService.add_task_reward(
                             user=user,
-                            task_difficulty=task.difficulty,  # предполагается что есть поле difficulty
-                            task_title=task.title
+                            task_difficulty=difficulty_str,
+                            task_title= f'{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}',
                         )
                         reward = transaction_data['amount']
                     except Exception as e:
@@ -107,10 +115,10 @@ class TaskSubmitView(APIView):
         response_data = {
             "correct": is_correct,
             "first_time": first_time,
-            "reward": reward if first_time else 0
+            "reward": reward,
         }
 
-        if first_time and 'transaction_data' in locals():
+        if transaction_data:
             response_data["new_balance"] = transaction_data["new_balance"]
 
         return Response(response_data)
