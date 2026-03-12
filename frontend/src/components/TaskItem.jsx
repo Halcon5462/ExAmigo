@@ -31,6 +31,30 @@ const TaskItem = ({ task }) => {
     }
   };
 
+  const downloadFile = async (url) => {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const fileName = url.split("/").pop();
+
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(blobUrl);
+
+    } catch (error) {
+        console.error("Ошибка скачивания:", error);
+    }
+  };
+
 
   return (
     <div className="task-card">
@@ -47,9 +71,9 @@ const TaskItem = ({ task }) => {
           {task.description}
       </div>
       {task.file && (
-          <a href={task.file} download target="_blank" rel="noopener noreferrer">
-              <button>Скачать файл</button>
-          </a>
+        <button onClick={() => downloadFile(task.file)}>
+          Скачать файл
+        </button>
       )}
       <div className="btn-container">
         <input
