@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction as db_transaction
 
 from shop.choices import TransactionReason
-from .models import UserProduct
+from .models import UserEquippedItem, UserProduct
 from shop.services import WalletService
 
 from .models import Product
@@ -47,4 +47,18 @@ class ProductService:
             'user_product_id': user_product.id,
             'purchased_at': user_product.purchased_at,
         }
+
+
+def equip_product(user, user_product_id):
+    user_product = UserProduct.objects.get(user=user, id=user_product_id)
+    product = user_product.product
+    slot = product.type
+
+    equipped, created = UserEquippedItem.objects.update_or_create(
+        profile=user,
+        slot=slot,
+        defaults={"product": product},
+    )
+    equipped.save()
+    return product
 
