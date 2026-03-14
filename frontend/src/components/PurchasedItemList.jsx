@@ -15,11 +15,6 @@ const PurchasedItemList = ({
 
     return (
         <div className="purchased-items-section">
-            <h2>Кастомизация</h2>
-
-            <div style={{ marginBottom: '10px', color: '#555' }}>
-                Здесь отображаются купленные предметы. Вместо покупки доступен выбор.
-            </div>
 
             <div style={{ marginBottom: '20px' }}>
                 <h3>Frame (рамка аватара)</h3>
