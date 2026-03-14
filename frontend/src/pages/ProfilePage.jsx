@@ -17,8 +17,16 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
 
     const navigate = useNavigate();
 
-    const avatar = 'exam_service/frontend/public/images/pozitiv_smailik.jpg';
-    const frameImage = equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null;
+    const avatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%25" height="100%25" fill="%23FFD54F"/><circle cx="88" cy="108" r="18" fill="%23000"/><circle cx="168" cy="108" r="18" fill="%23000"/><path d="M70 170 Q128 220 186 170" stroke="%23000" stroke-width="12" fill="none" stroke-linecap="round"/></svg>';
+    const toAbsoluteMediaUrl = (url) => {
+        if (!url) return null;
+        if (typeof url !== 'string') return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        const origin = new URL(api.defaults.baseURL).origin;
+        if (url.startsWith('/')) return `${origin}${url}`;
+        return `${origin}/${url}`;
+    };
+    const frameImage = toAbsoluteMediaUrl(equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -38,7 +46,6 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
                 setAchievements(results[0].data);
                 setProgress(results[1].data);
                 setProducts(results[2].data);
-                refreshEquipped?.();
 
                 if (!initialUser && results[3]) {
                     setUser(results[3].data);
@@ -107,6 +114,13 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
             <h1>Профиль пользователя</h1>
 
             {/*  нужно блок добавить */}
+            <div className="avatar-wrapper">
+                <img src={avatar} alt="avatar" className="avatar-img" />
+                {frameImage && (
+                    <img src={frameImage} alt="frame" className="avatar-frame" />
+                )}
+            </div>
+
             <UserBalance />
 
             <div className="profile-card">
