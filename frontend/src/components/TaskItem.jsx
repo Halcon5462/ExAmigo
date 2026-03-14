@@ -22,7 +22,9 @@ const TaskItem = ({ task, onAnswered}) => {
         setResult(correct ? 'correct' : 'wrong');
         setReward(reward);
         setFirstTime(first_time);
-        onAnswered(task.id, userAnswer, correct)
+        try{
+          onAnswered(task.id, userAnswer, correct)
+        } catch {}
 
     } catch (err) {
         console.error("Ошибка проверки:", err);
