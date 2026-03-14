@@ -2,8 +2,18 @@ from django.db import models
 from django.conf import settings
 
 
+class SubjectChoices(models.TextChoices):
+    MATH = "prof_math", "Профильная математика"
+    RUSSIAN = "russian", "Русский язык"
+    PHYSICS = "physics", "Физика"
+    IFORM = "informatic", "Информатика"
+
+
 class Task(models.Model):
-    subject = models.CharField(max_length=100, verbose_name="Предмет")
+    subject = models.CharField(
+        max_length=20,
+        choices=SubjectChoices.choices,
+    )
     order_KIM = models.PositiveIntegerField(verbose_name="Номер задания из КИМ")
     type = models.CharField(max_length=100, verbose_name="Тип задания из КИМ")
     difficulty = models.PositiveIntegerField(verbose_name="Сложность от 1 до 5")
@@ -48,7 +58,10 @@ class TaskCorrectAnswer(models.Model):
 class TaskSet(models.Model):
     """Набор заданий (комплект)"""
     name = models.CharField(max_length=200, verbose_name="Название комплекта")
-    subject = models.CharField(max_length=100, verbose_name="Предмет", blank=True, null=True)
+    subject = models.CharField(
+        max_length=20,
+        choices=SubjectChoices.choices,
+    )
     average_difficulty = models.FloatField(verbose_name="Средняя сложность", blank=True, null=True)
     is_public = models.BooleanField(default=False, verbose_name="Публичный")
     author = models.ForeignKey(
