@@ -5,23 +5,20 @@ import AchievementsList from '../components/AchievementsList.jsx';
 import PurchasedItemList from '../components/PurchasedItemList.jsx';
 import UserBalance from '../components/UserBalance.jsx'; // Добавить
 
-const ProfilePage = ({ user: initialUser, onLogout }) => {
+const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped }) => {
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
     const [achievements, setAchievements] = useState([]);
     const [progress, setProgress] = useState([]);
     const [products, setProducts] = useState([]);
     const [selectingId, setSelectingId] = useState(null);
-    const [selectedFrameId, setSelectedFrameId] = useState(() => {
-        const v = localStorage.getItem('selected_frame_id');
-        return v ? Number(v) : null;
-    });
-    const [selectedBackgroundId, setSelectedBackgroundId] = useState(() => {
-        const v = localStorage.getItem('selected_background_id');
-        return v ? Number(v) : null;
-    });
+    const [selectedFrameId, setSelectedFrameId] = useState(null);
+    const [selectedBackgroundId, setSelectedBackgroundId] = useState(null);
 
     const navigate = useNavigate();
+
+    const avatar = '';
+    const frameImage = equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -41,6 +38,7 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
                 setAchievements(results[0].data);
                 setProgress(results[1].data);
                 setProducts(results[2].data);
+                refreshEquipped?.();
 
                 if (!initialUser && results[3]) {
                     setUser(results[3].data);
@@ -61,31 +59,34 @@ const ProfilePage = ({ user: initialUser, onLogout }) => {
     }, [initialUser, onLogout, navigate]);
 
     useEffect(() => {
-        if (!selectedBackgroundId) return;
-        const product = (products || []).find(p => p?.id === selectedBackgroundId);
-        const image = product?.background?.image_background || product?.image_background || product?.image;
-        if (!image) return;
+        const nextFrameId = equipped?.frame?.id ?? null;
+        const nextBackgroundId = equipped?.background?.id ?? null;
+        setSelectedFrameId(nextFrameId);
+        setSelectedBackgroundId(nextBackgroundId);
+    }, [equipped]);
 
-        document.body.style.backgroundImage = `url(${image})`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundPosition = 'center center';
-    }, [selectedBackgroundId, products]);
-
-    const handleSelectFrame = (product) => {
-        if (!product?.id) return;
+    const handleSelectFrame = async (product) => {
+        if (!product?.user_product_id) return;
         setSelectingId(product.id);
-        setSelectedFrameId(product.id);
-        localStorage.setItem('selected_frame_id', String(product.id));
-        setSelectingId(null);
+
+        try {
+            await api.post('/products/equip/', { user_product_id: product.user_product_id });
+            await refreshEquipped?.();
+        } finally {
+            setSelectingId(null);
+        }
     };
 
-    const handleSelectBackground = (product) => {
-        if (!product?.id) return;
+    const handleSelectBackground = async (product) => {
+        if (!product?.user_product_id) return;
         setSelectingId(product.id);
-        setSelectedBackgroundId(product.id);
-        localStorage.setItem('selected_background_id', String(product.id));
-        setSelectingId(null);
+
+        try {
+            await api.post('/products/equip/', { user_product_id: product.user_product_id });
+            await refreshEquipped?.();
+        } finally {
+            setSelectingId(null);
+        }
     };
 
     const handleLogout = () => {
