@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ProductkItem = ({ product, onPurchase, purchasing }) => {
+const ProductkItem = ({ product, onPurchase, purchasing, onSelect, selecting, selected }) => {
     const image = product?.frame?.icon_frame
         || product?.background?.image_background
         || product?.icon_frame
@@ -60,7 +60,15 @@ const ProductkItem = ({ product, onPurchase, purchasing }) => {
                     {purchasing ? 'Покупка...' : `Купить за ${product?.cost ?? 0} очков`}
                 </button>
             )}
-            {product?.already_purchased && (
+            {onSelect && (
+                <button
+                    onClick={() => onSelect(product)}
+                    disabled={Boolean(selecting || selected)}
+                >
+                    {selecting ? 'Выбор...' : (selected ? 'Выбрано' : 'Выбрать')}
+                </button>
+            )}
+            {product?.already_purchased && onPurchase && (
                 <p style={{ color: 'orange' }}>⚡ Вы уже приобрели этот товар.</p>
             )}
         </div>
