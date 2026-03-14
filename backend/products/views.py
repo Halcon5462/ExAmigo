@@ -127,6 +127,13 @@ class EquippedItemsView(APIView):
         data = {"frame": None, "background": None}
         for item in items:
             if item.slot in data:
+                user_product_id = (
+                    UserProduct.objects.filter(user=request.user, product=item.product)
+                    .values_list("id", flat=True)
+                    .first()
+                )
+                item.product.already_purchased = True
+                item.product.user_product_id = user_product_id
                 data[item.slot] = ProductSerializer(item.product).data
 
         return Response(data, status=status.HTTP_200_OK)
