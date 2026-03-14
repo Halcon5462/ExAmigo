@@ -17,7 +17,7 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
 
     const navigate = useNavigate();
 
-    const avatar = '';
+    const avatar = 'exam_service/frontend/public/images/pozitiv_smailik.jpg';
     const frameImage = equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null;
 
     useEffect(() => {

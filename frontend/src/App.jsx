@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
@@ -17,6 +17,8 @@ function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [equipped, setEquipped] = useState(null);
+    const equippedReqInFlight = useRef(false);
+    const lastEquippedErrorAt = useRef(0);
 
     useEffect(() => {
         const initAuth = async () => {
@@ -55,7 +57,18 @@ function App() {
         document.body.style.backgroundPosition = 'center center';
     };
 
-    const fetchEquipped = async () => {
+    const toAbsoluteMediaUrl = (url) => {
+        if (!url) return null;
+        if (typeof url !== 'string') return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+
+        // DRF чаще всего отдает /media/...
+        const origin = new URL(api.defaults.baseURL).origin;
+        if (url.startsWith('/')) return `${origin}${url}`;
+        return `${origin}/${url}`;
+    };
+
+    const fetchEquipped = useCallback(async () => {
         if (!user) {
             setEquipped(null);
             applyBackground(null);
@@ -63,6 +76,8 @@ function App() {
         }
 
         try {
+            if (equippedReqInFlight.current) return;
+            equippedReqInFlight.current = true;
             const response = await api.get('/products/equipped/');
             setEquipped(response.data);
 
@@ -72,15 +87,22 @@ function App() {
                 || bg?.image_background
                 || bg?.image;
 
-            applyBackground(bgImage || null);
+            applyBackground(toAbsoluteMediaUrl(bgImage) || null);
         } catch (err) {
-            console.error('Failed to fetch equipped:', err);
+            // В dev StrictMode эффекты могут вызываться дважды: не спамим консоль.
+            const now = Date.now();
+            if (now - lastEquippedErrorAt.current > 3000) {
+                console.error('Failed to fetch equipped:', err);
+                lastEquippedErrorAt.current = now;
+            }
+        } finally {
+            equippedReqInFlight.current = false;
         }
-    };
+    }, [user]);
 
     useEffect(() => {
         fetchEquipped();
-    }, [user]);
+    }, [fetchEquipped]);
 
     const handleLogin = (userData, tokens) => {
         setUser(userData);
