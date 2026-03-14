@@ -24,6 +24,7 @@ class ProductSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
     already_purchased = serializers.BooleanField(read_only=True, default=False)
+    user_product_id = serializers.IntegerField(read_only=True, allow_null=True, required=False)
 
     class Meta:
         model = Product

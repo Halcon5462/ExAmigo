@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
@@ -16,6 +16,9 @@ import Header from './components/Header'
 function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [equipped, setEquipped] = useState(null);
+    const equippedReqInFlight = useRef(false);
+    const lastEquippedErrorAt = useRef(0);
 
     useEffect(() => {
         const initAuth = async () => {
@@ -39,6 +42,68 @@ function App() {
         initAuth();
     }, []);
 
+    const applyBackground = (imageUrl) => {
+        if (!imageUrl) {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundRepeat = '';
+            document.body.style.backgroundPosition = '';
+            return;
+        }
+
+        document.body.style.backgroundImage = `url(${imageUrl})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center center';
+    };
+
+    const toAbsoluteMediaUrl = (url) => {
+        if (!url) return null;
+        if (typeof url !== 'string') return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+
+        // DRF чаще всего отдает /media/...
+        const origin = new URL(api.defaults.baseURL).origin;
+        if (url.startsWith('/')) return `${origin}${url}`;
+        return `${origin}/${url}`;
+    };
+
+    const fetchEquipped = useCallback(async () => {
+        if (!user) {
+            setEquipped(null);
+            applyBackground(null);
+            return;
+        }
+
+        try {
+            if (equippedReqInFlight.current) return;
+            equippedReqInFlight.current = true;
+            const response = await api.get('/products/equipped/');
+            setEquipped(response.data);
+
+            const bg = response.data?.background;
+            const bgImage =
+                bg?.background?.image_background
+                || bg?.image_background
+                || bg?.image;
+
+            applyBackground(toAbsoluteMediaUrl(bgImage) || null);
+        } catch (err) {
+            // В dev StrictMode эффекты могут вызываться дважды: не спамим консоль.
+            const now = Date.now();
+            if (now - lastEquippedErrorAt.current > 3000) {
+                console.error('Failed to fetch equipped:', err);
+                lastEquippedErrorAt.current = now;
+            }
+        } finally {
+            equippedReqInFlight.current = false;
+        }
+    }, [user]);
+
+    useEffect(() => {
+        fetchEquipped();
+    }, [fetchEquipped]);
+
     const handleLogin = (userData, tokens) => {
         setUser(userData);
         localStorage.setItem('access', tokens.access);
@@ -49,6 +114,8 @@ function App() {
     const handleLogout = () => {
         setUser(null);
         localStorage.clear();
+        setEquipped(null);
+        applyBackground(null);
     };
 
     if (loading) {
@@ -76,7 +143,7 @@ function App() {
                         <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
                         <Route
                             path="/profile"
-                            element={<ProfilePage user={user} onLogout={handleLogout} />}
+                            element={<ProfilePage user={user} onLogout={handleLogout} equipped={equipped} refreshEquipped={fetchEquipped} />}
                         />
                     </Route>
 

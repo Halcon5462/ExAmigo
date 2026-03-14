@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Background, Frame, Product, ProductType, UserProduct
+from .models import Background, Frame, Product, ProductType, UserEquippedItem, UserProduct
 
 
 class FrameInline(admin.StackedInline):
@@ -107,4 +107,13 @@ class UserProductAdmin(admin.ModelAdmin):
     search_fields = ("user__email", "user__name", "product__name")
     autocomplete_fields = ("product",)
     readonly_fields = ("purchased_at",)
+
+
+@admin.register(UserEquippedItem)
+class UserEquippedItemAdmin(admin.ModelAdmin):
+    list_display = ("profile", "slot", "product", "equipped_at")
+    list_filter = ("slot", "equipped_at")
+    search_fields = ("profile__email", "profile__name", "product__name")
+    autocomplete_fields = ("profile", "product")
+    readonly_fields = ("equipped_at",)
 

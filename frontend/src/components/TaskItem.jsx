@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import '../static/css/task.css'
 
-const TaskItem = ({ task }) => {
+const TaskItem = ({ task, onAnswered}) => {
   const [userAnswer, setUserAnswer] = useState("");
   const [result, setResult] = useState(null);
   const [reward, setReward] = useState(0);
@@ -22,6 +22,7 @@ const TaskItem = ({ task }) => {
         setResult(correct ? 'correct' : 'wrong');
         setReward(reward);
         setFirstTime(first_time);
+        onAnswered(task.id, userAnswer, correct)
 
     } catch (err) {
         console.error("Ошибка проверки:", err);

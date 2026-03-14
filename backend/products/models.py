@@ -145,3 +145,30 @@ class UserProduct(models.Model):
     def __str__(self) -> str:
         return f"{self.user} — {self.product}"
 
+
+class UserEquippedItem(models.Model):
+    profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='equipped_items',
+        verbose_name='Профиль'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='equipped_by',
+        verbose_name='Товар'
+    )
+    slot = models.CharField(
+        max_length=20,
+        choices=ProductType.choices,
+        verbose_name='Тип товара'
+    )
+    equipped_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('profile', 'slot')
+        ordering = ['-equipped_at']
+
+    def __str__(self) -> str:
+        return f"{self.profile} -> {self.slot}: {self.product}"
