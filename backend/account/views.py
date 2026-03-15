@@ -98,6 +98,13 @@ class TaskSubmitView(APIView):
         with transaction.atomic():
             TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
             if is_correct:
+                from streak.services import update_user_streak
+                try:
+                    update_user_streak(user)
+                    print(f"🔥 Серия обновлена для пользователя {user.email}")
+                except Exception as e:
+                    print(f"❌ Ошибка при обновлении серии: {e}")
+                    
                 progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
                     first_time = True
