@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'shop',
     'products.apps.ProductsConfig',
     'tools',
+    'streak',
 ]
 
 MIDDLEWARE = [
