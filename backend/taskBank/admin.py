@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from .models import Task, TaskCorrectAnswer
+from .models import TaskSet, TaskSetItem
 
 admin.site.site_header = "Панель управления Exam Service"
 admin.site.site_title = "Администрирование Exam Service"
@@ -201,7 +202,7 @@ class TaskCorrectAnswerAdmin(admin.ModelAdmin):
 
     def task_link(self, obj):
         """Ссылка на задание в админке"""
-        url = reverse('admin:tskBank_task_change', args=[obj.task.id])
+        url = reverse('admin:taskBank_task_change', args=[obj.task.id])
         return format_html('<a href="{}">{}</a>', url, obj.task)
 
     task_link.short_description = 'Задание'
@@ -213,3 +214,56 @@ class TaskCorrectAnswerAdmin(admin.ModelAdmin):
 
     task_subject.short_description = 'Предмет'
     task_subject.admin_order_field = 'task__subject'
+
+
+class TaskSetItemInline(admin.TabularInline):
+    model = TaskSetItem
+    extra = 1
+    autocomplete_fields = ["task"]
+    ordering = ("order",)
+
+@admin.register(TaskSet)
+class TaskSetAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "subject",
+        "average_difficulty",
+        "author",
+        "is_public",
+        "created_at",
+    )
+
+    list_filter = (
+        "subject",
+        "is_public",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+        "author__username",
+    )
+
+    inlines = [TaskSetItemInline]
+
+    autocomplete_fields = ["author"]
+
+@admin.register(TaskSetItem)
+class TaskSetItemAdmin(admin.ModelAdmin):
+    list_display = (
+        "task_set",
+        "task",
+        "order",
+    )
+
+    list_filter = (
+        "task_set",
+        "task__subject",
+    )
+
+    search_fields = (
+        "task_set__name",
+        "task__description",
+    )
+
+    ordering = ("task_set", "order")

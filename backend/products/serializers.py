@@ -23,6 +23,8 @@ class ProductSerializer(serializers.ModelSerializer):
     remaining = serializers.IntegerField(read_only=True)
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
+    already_purchased = serializers.BooleanField(read_only=True, default=False)
+    user_product_id = serializers.IntegerField(read_only=True, allow_null=True, required=False)
 
     class Meta:
         model = Product
@@ -100,4 +102,12 @@ class ProductWriteSerializer(serializers.ModelSerializer):
 
 class PurchaseSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(min_value=1, default=1, required=False)
+
+
+class PurchaseResponseSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    product_name = serializers.CharField()
+    new_balance = serializers.IntegerField()
+    user_product_id = serializers.IntegerField()
+    purchased_at = serializers.DateTimeField()
 

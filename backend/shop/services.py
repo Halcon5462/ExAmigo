@@ -2,6 +2,7 @@ from django.db import transaction as db_transaction
 from django.utils import timezone
 from typing import Optional, Dict, Any
 from .models import UserWallet, WalletTransaction
+from .choices import TransactionReason
 
 
 class WalletService:
@@ -100,7 +101,7 @@ class WalletService:
         return cls.change_balance(
             user=user,
             amount=amount,
-            reason=WalletTransaction.TransactionReason.TASK_COMPLETE,
+            reason=TransactionReason.TASK_COMPLETE,
             description=description
         )
 
@@ -128,7 +129,7 @@ class WalletService:
         return cls.change_balance(
             user=user,
             amount=amount,
-            reason=WalletTransaction.TransactionReason.ACHIEVEMENT,
+            reason=TransactionReason.ACHIEVEMENT,
             description=description
         )
 
@@ -153,7 +154,7 @@ class WalletService:
         return cls.change_balance(
             user=user,
             amount=amount,
-            reason=WalletTransaction.TransactionReason.BONUS,
+            reason=TransactionReason.BONUS,
             description=description
         )
 

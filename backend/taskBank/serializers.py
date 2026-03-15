@@ -10,23 +10,27 @@ class TaskCorrectAnswerSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    correct_answers = TaskCorrectAnswerSerializer(many=True)
     already_solved = serializers.SerializerMethodField()
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
+    correct_answers = serializers.CharField(write_only=True)
 
     class Meta:
         model = Task
         fields = '__all__'
 
     def create(self, validated_data):
-        answers_data = validated_data.pop("correct_answers")
+        answer_text = validated_data.pop("correct_answers", "")
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            validated_data['author'] = request.user
+
         task = Task.objects.create(**validated_data)
 
-        for answer in answers_data:
+        if answer_text:
             TaskCorrectAnswer.objects.create(
                 task=task,
-                **answer
+                answer_text=answer_text
             )
 
         return task

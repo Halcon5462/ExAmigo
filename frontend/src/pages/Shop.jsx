@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
-import ProductkItem from '../components/ProductkItem';
+import ProductItem from '../components/ProductItem.jsx';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [purchasingId, setPurchasingId] = useState(null);
+    const [message, setMessage] = useState(null); // { text, error }
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -21,16 +23,55 @@ const Shop = () => {
         fetchProducts();
     }, []);
 
-    if (loading) return <div>Магазин</div>;
+    const handlePurchase = async (product) => {
+        setPurchasingId(product.id);
+        setMessage(null);
+
+        try {
+            const response = await api.post(`/products/products/${product.id}/purchase/`);
+            const { balance, total_cost } = response.data;
+
+            setMessage({ text: `Куплено! Списано ${total_cost} очков. Баланс: ${balance}`, error: false });
+
+            // обновляем sold_count у купленного товара
+            setProducts(prev =>
+                prev.map(p =>
+                    p.id === product.id
+                        ? { ...p, sold_count: response.data.sold_count, already_purchased: true }  // ← add flag
+                        : p
+                )
+            );
+        } catch (err) {
+            const detail = err.response?.data?.error
+                || err.response?.data?.detail
+                || 'Ошибка при покупке';
+            setMessage({ text: detail, error: true });
+        } finally {
+            setPurchasingId(null);
+        }
+    };
+
+    if (loading) return <div>Загрузка...</div>;
 
     return (
         <div className="shop-page">
             <h1>Магазин</h1>
-            {products.length === 0 && (
-                <p>Товары не найдены.</p>
+
+            {message && (
+                <p style={{ color: message.error ? 'red' : 'green' }}>
+                    {message.text}
+                </p>
             )}
+
+            {products.length === 0 && <p>Товары не найдены.</p>}
+
             {products.map(product => (
-                <ProductkItem key={product.id} product={product} />
+                <ProductItem
+                    key={product.id}
+                    product={product}
+                    onPurchase={handlePurchase}
+                    purchasing={purchasingId === product.id}
+                />
             ))}
         </div>
     );
