@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from .models import Task, TaskCorrectAnswer
 from .models import TaskSet, TaskSetItem
+from .ege_scoring import SubjectChoices
 
 admin.site.site_header = "Панель управления Exam Service"
 admin.site.site_title = "Администрирование Exam Service"
@@ -116,24 +117,21 @@ class TaskAdmin(admin.ModelAdmin):
 
     def colored_subject(self, obj):
         colors = {
-            'Математика': 'blue',
-            'Профильная математика': 'blue',
-            'Русский язык': 'green',
-            'Физика': 'purple',
-            'Информатика': 'orange',
-            'Химия': 'red',
-            'Биология': 'brown',
-            'История': 'darkblue',
-            'Обществознание': 'teal',
+            SubjectChoices.MATH: "blue",
+            SubjectChoices.RUSSIAN: "green",
+            SubjectChoices.PHYSICS: "purple",
+            SubjectChoices.INFORM: "orange",
         }
-        color = colors.get(obj.subject, 'black')
+
+        color = colors.get(obj.subject, "black")
+
         return format_html(
-            '<span style="color: {}; font-weight: bold;">{}</span>',
+            '<span style="color:{}; font-weight:bold;">{}</span>',
             color,
-            obj.subject
+            obj.get_subject_display()
         )
 
-    colored_subject.short_description = 'Предмет'
+    colored_subject.short_description = "Предмет"
     colored_subject.admin_order_field = 'subject'
 
     def has_image(self, obj):

@@ -14,6 +14,11 @@ class TaskSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
     correct_answers = serializers.CharField(write_only=True)
+    primary_score = serializers.IntegerField(read_only=True)
+    subject_display = serializers.CharField(
+        source="get_subject_display",
+        read_only=True
+    )
 
     class Meta:
         model = Task

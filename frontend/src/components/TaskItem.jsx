@@ -95,6 +95,7 @@ const TaskItem = ({ task, onAnswered}) => {
           <p style={{color: 'green'}}>
               ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
               {firstTime == false && "Вы уже проходили эту задачу ранее."}
+              Это {task.primary_score} первичных баллов
           </p>
       )}
       {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
