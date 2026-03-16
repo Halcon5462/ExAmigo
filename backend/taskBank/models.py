@@ -1,17 +1,11 @@
 from django.db import models
 from django.conf import settings
-
-
-class SubjectChoices(models.TextChoices):
-    MATH = "prof_math", "Профильная математика"
-    RUSSIAN = "russian", "Русский язык"
-    PHYSICS = "physics", "Физика"
-    IFORM = "informatic", "Информатика"
+from .ege_scoring import get_task_score, SubjectChoices
 
 
 class Task(models.Model):
     subject = models.CharField(
-        max_length=20,
+        max_length=50,
         choices=SubjectChoices.choices,
     )
     order_KIM = models.PositiveIntegerField(verbose_name="Номер задания из КИМ")
@@ -38,6 +32,11 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
 
+    @property
+    def primary_score(self):
+        return get_task_score(self.subject, self.order_KIM)
+
+
     class Meta:
         ordering = ['subject', 'order_KIM']
         verbose_name = "Задание"
@@ -59,7 +58,7 @@ class TaskSet(models.Model):
     """Набор заданий (комплект)"""
     name = models.CharField(max_length=200, verbose_name="Название комплекта")
     subject = models.CharField(
-        max_length=20,
+        max_length=50,
         choices=SubjectChoices.choices,
     )
     average_difficulty = models.FloatField(verbose_name="Средняя сложность", blank=True, null=True)
@@ -72,6 +71,10 @@ class TaskSet(models.Model):
         verbose_name="Автор",
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+
+    @property
+    def total_primary_score(self):
+        return sum(item.task.primary_score for item in self.items.all())
 
     class Meta:
         verbose_name = "Комплект заданий"
