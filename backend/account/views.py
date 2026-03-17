@@ -13,6 +13,8 @@ from django.db import transaction
 
 from .models import Task
 from account.models import TaskAttempt, TaskProgress
+from taskBank.models import ExamSession
+from taskBank.services import exam_time_left, finish_exam_session
 
 from shop.services import WalletService
 
