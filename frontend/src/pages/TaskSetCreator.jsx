@@ -5,6 +5,7 @@ const TaskSetCreator = () => {
   const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState({}); // {taskId: order}
   const [name, setName] = useState('');
+  const [setType, setSetType] = useState('training');
   const [subject, setSubject] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -43,18 +44,30 @@ const TaskSetCreator = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const items = Object.entries(selected).map(([taskId, order]) => ({ task: Number(taskId), order }));
-    const payload = {
-      name,
-      subject: subject || null,
-      is_public: isPublic,
-      items,
-    };
     try {
-      await api.post('/taskBank/tasksets/', payload);
-      alert('Комплект создан');
+      if (setType === 'exam') {
+        const payload = {
+          name,
+          subject: subject || null,
+          is_public: isPublic,
+        };
+        await api.post('/taskBank/tasksets/generate-exam/', payload);
+        alert('Экзамен создан');
+      } else {
+        const items = Object.entries(selected).map(([taskId, order]) => ({ task: Number(taskId), order }));
+        const payload = {
+          name,
+          type: setType,
+          subject: subject || null,
+          is_public: isPublic,
+          items,
+        };
+        await api.post('/taskBank/tasksets/', payload);
+        alert('Комплект создан');
+      }
       // reset form
       setName('');
+      setSetType('training');
       setSubject('');
       setIsPublic(false);
       setSelected({});
@@ -76,55 +89,68 @@ const TaskSetCreator = () => {
           <input value={name} onChange={e => setName(e.target.value)} required />
         </div>
         <div>
-          <label>Предмет (необязательно): </label>
-          <input value={subject} onChange={e => setSubject(e.target.value)} />
+          <label>Тип: </label>
+          <select value={setType} onChange={e => setSetType(e.target.value)}>
+            <option value="training">Тренировка</option>
+            <option value="exam">Экзамен</option>
+          </select>
+        </div>
+        <div>
+          <label>Предмет: </label>
+          <input value={subject} onChange={e => setSubject(e.target.value)} required={setType === 'exam'} />
         </div>
         <div>
           <label>Публичный: </label>
           <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
         </div>
-        <h3>Выберите задания</h3>
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th>Выбрать</th>
-              <th>№</th>
-              <th>Предмет</th>
-              <th>Тип</th>
-              <th>Сложность</th>
-              <th>Порядок в комплекте</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map(task => (
-              <tr key={task.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected[task.id] !== undefined}
-                    onChange={() => toggleTask(task.id)}
-                  />
-                </td>
-                <td>{task.order_KIM}</td>
-                <td>{task.subject}</td>
-                <td>{task.type}</td>
-                <td>{task.difficulty}</td>
-                <td>
-                  {selected[task.id] !== undefined && (
-                    <input
-                      type="number"
-                      min="1"
-                      value={selected[task.id]}
-                      onChange={e => handleOrderChange(task.id, e.target.value)}
-                      style={{ width: '60px' }}
-                    />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button type="submit" style={{ marginTop: '15px' }}>Создать комплект</button>
+        {setType === 'training' && (
+          <>
+            <h3>Выберите задания</h3>
+            <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th>Выбрать</th>
+                  <th>№</th>
+                  <th>Предмет</th>
+                  <th>Тип</th>
+                  <th>Сложность</th>
+                  <th>Порядок в комплекте</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map(task => (
+                  <tr key={task.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selected[task.id] !== undefined}
+                        onChange={() => toggleTask(task.id)}
+                      />
+                    </td>
+                    <td>{task.order_KIM}</td>
+                    <td>{task.subject}</td>
+                    <td>{task.type}</td>
+                    <td>{task.difficulty}</td>
+                    <td>
+                      {selected[task.id] !== undefined && (
+                        <input
+                          type="number"
+                          min="1"
+                          value={selected[task.id]}
+                          onChange={e => handleOrderChange(task.id, e.target.value)}
+                          style={{ width: '60px' }}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+        <button type="submit" style={{ marginTop: '15px' }}>
+          {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
+        </button>
       </form>
     </div>
   );
