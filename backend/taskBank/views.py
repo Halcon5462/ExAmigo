@@ -2,8 +2,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
-from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from django.db import transaction
+
+from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem, ExamSession, TaskSetType
 from .serializers import TaskSerializer, TaskSetSerializer
+from .services import exam_time_left, finish_exam_session
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.prefetch_related("correct_answers").all()
