@@ -19,6 +19,12 @@ const TaskSetCreator = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // В тренировке при смене предмета не смешиваем задания разных предметов в одном комплекте.
+    if (setType !== 'training') return;
+    setSelected({});
+  }, [subject, setType]);
+
+  useEffect(() => {
     const fetchTasks = async () => {
       try {
         const resp = await api.get('/taskBank/tasks/');
@@ -91,6 +97,15 @@ const TaskSetCreator = () => {
   if (loading) return <div>Загрузка заданий...</div>;
   if (error) return <div>{error}</div>;
 
+  const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
+  const visibleTasks = (setType === 'training' && subject)
+    ? tasks.filter(t =>
+        t.subject === subject
+        || t.subject === selectedSubjectLabel
+        || t.subject_display === selectedSubjectLabel
+      )
+    : tasks;
+
   return (
     <div style={{ padding: '20px' }}>
       <h2>Создать комплект заданий</h2>
@@ -122,6 +137,9 @@ const TaskSetCreator = () => {
         {setType === 'training' && (
           <>
             <h3>Выберите задания</h3>
+            {subject && (
+              <p>Показано заданий по предмету: {visibleTasks.length}</p>
+            )}
             <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr>
@@ -134,7 +152,7 @@ const TaskSetCreator = () => {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map(task => (
+                {visibleTasks.map(task => (
                   <tr key={task.id}>
                     <td>
                       <input
