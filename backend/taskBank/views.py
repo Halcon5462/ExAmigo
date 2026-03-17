@@ -82,3 +82,72 @@ class TaskSetViewSet(ModelViewSet):
 
         serializer = self.get_serializer(taskset, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class StartExamView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        taskset = TaskSet.objects.get(pk=pk)
+
+        if taskset.type != TaskSetType.EXAM:
+            return Response(
+                {"error": "Этот комплект не является экзаменом"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        exam = ExamSession.objects.create(
+            user=request.user,
+            task_set=taskset,
+            time_limit=3 * 60 * 60
+        )
+
+        return Response({
+            "exam_id": exam.id,
+            "time_limit": exam.time_limit,
+            "started_at": exam.started_at,
+        })
+
+
+class ExamSessionDetailView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, exam_id):
+        exam = ExamSession.objects.get(
+            id=exam_id,
+            user=request.user
+        )
+
+        time_left = exam_time_left(exam)
+        if time_left <= 0 and not exam.is_finished:
+            exam = finish_exam_session(exam)
+
+        return Response({
+            "id": exam.id,
+            "task_set": exam.task_set_id,
+            "started_at": exam.started_at,
+            "finished_at": exam.finished_at,
+            "time_limit": exam.time_limit,
+            "time_left": exam_time_left(exam),
+            "is_finished": exam.is_finished,
+            "score": exam.score,
+        })
+
+
+class FinishExamView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, exam_id):
+        exam = ExamSession.objects.get(
+            id=exam_id,
+            user=request.user
+        )
+
+        exam = finish_exam_session(exam)
+
+        return Response({
+            "score": exam.score
+        })
