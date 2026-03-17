@@ -101,6 +101,13 @@ class TaskAttempt(models.Model):
         related_name="attempts",
     )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    exam_session = models.ForeignKey(
+        "taskBank.ExamSession",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="attempts"
+    )
     answer = models.TextField()
     is_correct = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
