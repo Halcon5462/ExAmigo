@@ -8,6 +8,17 @@ const TaskSetList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const startExam = async (setId) => {
+    try {
+      const resp = await api.post(`/taskBank/tasksets/${setId}/start-exam/`);
+      const examId = resp.data?.exam_id;
+      navigate(`/tasksets/play/${setId}?exam=${examId}`);
+    } catch (e) {
+      console.error(e);
+      alert('Не удалось начать экзамен');
+    }
+  };
+
   useEffect(() => {
     const fetchTaskSets = async () => {
       try {
@@ -33,11 +44,16 @@ const TaskSetList = () => {
       {tasksets.map(set => (
         <div key={set.id} style={{ border: '1px solid #ddd', marginBottom: '15px', padding: '10px' }}>
           <h3>{set.name}</h3>
+          <p><strong>Тип:</strong> {set.type}</p>
           {set.subject && <p><strong>Предмет:</strong> {set.subject}</p>}
           <p><strong>Автор:</strong> {set.author_name || set.author_email || 'Аноним'}</p>
           <p><strong>Публичный:</strong> {set.is_public ? 'Да' : 'Нет'}</p>
           <p><strong>Заданий:</strong> {set.items?.length || 0}</p>
-          <button onClick={() => navigate(`/tasksets/play/${set.id}`)}>Начать</button>
+          {set.type === 'exam' ? (
+            <button onClick={() => startExam(set.id)}>Начать экзамен</button>
+          ) : (
+            <button onClick={() => navigate(`/tasksets/play/${set.id}`)}>Начать</button>
+          )}
         </div>
       ))}
     </div>
