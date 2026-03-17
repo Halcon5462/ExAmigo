@@ -2,6 +2,13 @@ import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 
 const TaskSetCreator = () => {
+  const SUBJECT_OPTIONS = [
+    { value: 'prof_math', label: 'Профильная математика' },
+    { value: 'russian', label: 'Русский язык' },
+    { value: 'physics', label: 'Физика' },
+    { value: 'informatic', label: 'Информатика' },
+  ];
+
   const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState({}); // {taskId: order}
   const [name, setName] = useState('');
@@ -46,9 +53,13 @@ const TaskSetCreator = () => {
     e.preventDefault();
     try {
       if (setType === 'exam') {
+        if (!subject) {
+          alert('Выберите предмет');
+          return;
+        }
         const payload = {
           name,
-          subject: subject || null,
+          subject,
           is_public: isPublic,
         };
         await api.post('/taskBank/tasksets/generate-exam/', payload);
@@ -97,7 +108,12 @@ const TaskSetCreator = () => {
         </div>
         <div>
           <label>Предмет: </label>
-          <input value={subject} onChange={e => setSubject(e.target.value)} required={setType === 'exam'} />
+          <select value={subject} onChange={e => setSubject(e.target.value)} required={setType === 'exam'}>
+            <option value="">--</option>
+            {SUBJECT_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Публичный: </label>

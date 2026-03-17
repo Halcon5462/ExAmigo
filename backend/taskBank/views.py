@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 
 from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem, ExamSession, TaskSetType
+from .ege_scoring import SubjectChoices
 from .serializers import TaskSerializer, TaskSetSerializer
 from .services import exam_time_left, finish_exam_session
 
@@ -40,12 +41,33 @@ class TaskSetViewSet(ModelViewSet):
         if not subject:
             return Response({"error": "subject required"}, status=status.HTTP_400_BAD_REQUEST)
 
+        value_to_label = {v: l for v, l in SubjectChoices.choices}
+        label_to_value = {l: v for v, l in SubjectChoices.choices}
+
+        allowed_values = list(value_to_label.keys())
+        allowed_labels = list(label_to_value.keys())
+
+        if subject not in allowed_values and subject not in allowed_labels:
+            return Response(
+                {
+                    "error": "invalid subject",
+                    "allowed_subjects": [{"value": v, "label": l} for v, l in SubjectChoices.choices]
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        normalized_subject = label_to_value.get(subject, subject)
+        subject_filters = {normalized_subject}
+        # Поддержка старых данных, где в Task.subject мог сохраниться label, а не value.
+        if normalized_subject in value_to_label:
+            subject_filters.add(value_to_label[normalized_subject])
+
         tasks = []
         missing = []
 
         for number in range(1, 13):
             task = Task.objects.filter(
-                subject=subject,
+                subject__in=subject_filters,
                 order_KIM=number
             ).order_by("?").first()
 
@@ -66,7 +88,7 @@ class TaskSetViewSet(ModelViewSet):
         with transaction.atomic():
             taskset = TaskSet.objects.create(
                 name=name,
-                subject=subject,
+                subject=normalized_subject,
                 is_public=is_public,
                 author=request.user,
                 type=TaskSetType.EXAM,
