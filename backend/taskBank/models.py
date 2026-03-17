@@ -62,6 +62,11 @@ class TaskCorrectAnswer(models.Model):
 class TaskSet(models.Model):
     """Набор заданий (комплект)"""
     name = models.CharField(max_length=200, verbose_name="Название комплекта")
+    type = models.CharField(
+        max_length=20,
+        choices=TaskSetType.choices,
+        default=TaskSetType.TRAINING
+    )
     subject = models.CharField(
         max_length=50,
         choices=SubjectChoices.choices,
@@ -116,7 +121,10 @@ class ExamSession(models.Model):
 
     is_finished = models.BooleanField(default=False)
 
-    score = models.IntegerField(default=0)\n\nclass TaskSetItem(models.Model):
+    score = models.IntegerField(default=0)
+
+
+class TaskSetItem(models.Model):
     """Связующая модель между TaskSet и Task, хранит порядок задания в комплекте"""
     task_set = models.ForeignKey(TaskSet, on_delete=models.CASCADE, related_name='items')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='taskset_items')
