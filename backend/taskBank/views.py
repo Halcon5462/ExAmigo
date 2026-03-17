@@ -30,3 +30,55 @@ class TaskSetViewSet(ModelViewSet):
     """CRUD for TaskSet (комплекты заданий)"""
     queryset = TaskSet.objects.prefetch_related('items__task').all()
     serializer_class = TaskSetSerializer
+
+    @action(detail=False, methods=["post"], url_path="generate-exam", permission_classes=[IsAuthenticated])
+    def generate_exam(self, request):
+        subject = request.data.get("subject")
+        name = request.data.get("name") or "Экзамен"
+        is_public = bool(request.data.get("is_public", False))
+
+        if not subject:
+            return Response({"error": "subject required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        tasks = []
+        missing = []
+
+        for number in range(1, 13):
+            task = Task.objects.filter(
+                subject=subject,
+                order_KIM=number
+            ).order_by("?").first()
+
+            if not task:
+                missing.append(number)
+                continue
+
+            tasks.append(task)
+
+        if missing:
+            return Response(
+                {"error": "Не хватает задач для генерации экзамена", "missing": missing},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        avg_diff = sum(t.difficulty for t in tasks) / len(tasks) if tasks else None
+
+        with transaction.atomic():
+            taskset = TaskSet.objects.create(
+                name=name,
+                subject=subject,
+                is_public=is_public,
+                author=request.user,
+                type=TaskSetType.EXAM,
+                average_difficulty=avg_diff,
+            )
+
+            for number, task in enumerate(tasks, start=1):
+                TaskSetItem.objects.create(
+                    task_set=taskset,
+                    task=task,
+                    order=number,
+                )
+
+        serializer = self.get_serializer(taskset, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
