@@ -91,39 +91,3 @@ class UserAchievementProgress(models.Model):
         return self.current_value >= self.achievement.target
 
 
-class TaskAttempt(models.Model):
-    '''
-    Просто решение, бесконечное кол-во на одно задание
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="attempts",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    exam_session = models.ForeignKey(
-        "taskBank.ExamSession",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="attempts"
-    )
-    answer = models.TextField()
-    is_correct = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class TaskProgress(models.Model):
-    '''
-    Первое верное решение
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="task_progress",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    first_solved_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("user", "task")
