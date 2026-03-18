@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import "../../static/css/auth.css";
 
 const LoginPage = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -18,12 +19,10 @@ const LoginPage = ({ onLogin }) => {
 
         try {
             if (isLogin) {
-                // ВХОД
                 const response = await api.post('/account/login/', { email, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
             } else {
-                // РЕГИСТРАЦИЯ
                 const response = await api.post('/account/register/', { email, name, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
@@ -42,57 +41,85 @@ const LoginPage = ({ onLogin }) => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2>{isLogin ? 'Вход в аккаунт' : 'Регистрация'}</h2>
+        <div className="authPage">
+            <div className="authPage_container">
+                <header className="authPage_header">
+                    <h1 className="header_logo">Informatics LMS</h1>
+                    <nav className="header_nav">
+                        <a href="/" className="nav_link">Главная</a>
+                        <a href="/tasks" className="nav_link">Банк заданий</a>
+                        <a href="/help" className="nav_link">Помощь</a>
+                    </nav>
+                </header>
 
-                {error && <div className="error-message">{error}</div>}
+                <main className="authPage_main">
+                    <div className="authPage_formContainer">
+                        <h2 className="authPage_title">
+                            {isLogin ? 'Вход в аккаунт' : 'Регистрация'}
+                        </h2>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
+                        {error && <div className="error-message authPage_error">{error}</div>}
 
-                    {!isLogin && (
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                placeholder="Имя"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                required
-                            />
+                        <form className="authPage_form" onSubmit={handleSubmit}>
+                            <div className="authPage_inputGroup">
+                                <input
+                                    type="email"
+                                    className="input authPage_input"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            {!isLogin && (
+                                <div className="authPage_inputGroup">
+                                    <input
+                                        type="text"
+                                        className="input authPage_input"
+                                        placeholder="Имя"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            )}
+
+                            <div className="authPage_inputGroup">
+                                <input
+                                    type="password"
+                                    className="input authPage_input"
+                                    placeholder="Пароль"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    minLength={6}
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="button button-primary authPage_button"
+                                disabled={loading}
+                            >
+                                {loading ? 'Загрузка...' : (isLogin ? 'Войти' : 'Зарегистрироваться')}
+                            </button>
+                        </form>
+
+                        <div className="authPage_footer">
+                            <p className="authPage_text">
+                                {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}
+                            </p>
+                            <button
+                                onClick={() => setIsLogin(!isLogin)}
+                                className="link authPage_link"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                            >
+                                {isLogin ? 'Зарегистрироваться' : 'Войти'}
+                            </button>
                         </div>
-                    )}
-
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            placeholder="Пароль"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            minLength={6}
-                        />
                     </div>
-
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
-                    </button>
-                </form>
-
-                <p className="auth-toggle">
-                    {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}
-                    <button onClick={() => setIsLogin(!isLogin)}>
-                        {isLogin ? 'Зарегистрироваться' : 'Войти'}
-                    </button>
-                </p>
+                </main>
             </div>
         </div>
     );
