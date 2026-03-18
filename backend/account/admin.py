@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import UserAccount, UserAchievement, Achievement
-from .models import TaskAttempt, TaskProgress
+from statistic.models import TaskAttempt, TaskProgress
 
 class UserAccountAdmin(UserAdmin):
     list_display = ('email', 'name', 'is_staff', 'is_active')

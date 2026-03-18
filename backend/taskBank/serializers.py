@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
-from account.models import TaskProgress
+from statistic.models import TaskProgress
 
 
 class TaskCorrectAnswerSerializer(serializers.ModelSerializer):
