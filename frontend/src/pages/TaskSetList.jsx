@@ -40,6 +40,9 @@ const TaskSetList = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Список комплектов заданий</h2>
+      <button onClick={() => navigate('/tasksets/auto')} style={{ marginBottom: '15px' }}>
+        Создать адаптивный вариант
+      </button>
       {tasksets.length === 0 && <p>Нет доступных комплектов.</p>}
       {tasksets.map(set => (
         <div key={set.id} style={{ border: '1px solid #ddd', marginBottom: '15px', padding: '10px' }}>
