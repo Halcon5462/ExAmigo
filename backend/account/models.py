@@ -91,3 +91,5 @@ class UserAchievementProgress(models.Model):
         return self.current_value >= self.achievement.target
 
 
+    # Модели, связанные с заданиями (TaskAttempt, TaskProgress),
+    # перенесены в приложение `statistic`.

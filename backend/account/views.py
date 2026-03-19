@@ -12,9 +12,10 @@ from rest_framework.views import APIView
 from django.db import transaction
 
 from .models import Task
-from account.models import TaskAttempt, TaskProgress
+from statistic.models import TaskAttempt, TaskProgress
 
 from shop.services import WalletService
+from statistic.services import update_task_statistics
 from statistic.services import update_task_statistics
 
 from taskBank.models import ExamSession
@@ -144,18 +145,32 @@ class TaskSubmitView(APIView):
                 progress, created = TaskProgress.objects.get_or_create(
                     user=user, task=task
                 )
+                progress, created = TaskProgress.objects.get_or_create(
+                    user=user, task=task
+                )
                 if created:
                     first_time = True
+                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, "easy")
                     difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, "easy")
                     try:
                         transaction_data = WalletService.add_task_reward(
                             user=user,
                             task_difficulty=difficulty_str,
                             task_title=f"{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}",
+                            task_title=f"{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}",
                         )
+                        reward = transaction_data["amount"]
                         reward = transaction_data["amount"]
                     except Exception as e:
                         print(f"Error awarding points: {e}")
+
+            # Обновляем агрегированную статистику попыток
+            update_task_statistics(
+                user=user,
+                task=task,
+                is_correct=is_correct,
+                first_time=first_time,
+            )
 
             # Обновляем агрегированную статистику попыток
             update_task_statistics(
