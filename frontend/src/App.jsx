@@ -13,6 +13,7 @@ import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
 import Header from './components/Header'
+import TestMatchPage from './pages/MatchPage'
 
 function App() {
     const [user, setUser] = useState(null);
@@ -142,6 +143,7 @@ function App() {
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
                         <Route path="/tasksets" element={<TaskSetList />} />
                         <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
+                        <Route path="/match" element={<TestMatchPage />} />
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
                         <Route
                             path="/profile"
