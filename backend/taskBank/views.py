@@ -12,6 +12,8 @@ from .serializers import TaskSerializer, TaskSetSerializer
 
 from .services import exam_time_left, finish_exam_session
 from .services import TaskSetGenerator
+from django.utils import timezone
+from django.db.models import F
 
 class TaskViewSet(ModelViewSet):
     queryset = Task.objects.prefetch_related("correct_answers").all()
@@ -130,7 +132,6 @@ class TaskSetViewSet(ModelViewSet):
             )
         
         if mode == "full":
-            from django.db.models import F
 
             numbers_qs = (
                 Task.objects.filter(subject=subject)
@@ -160,8 +161,6 @@ class TaskSetViewSet(ModelViewSet):
                 {"detail": "Не удалось подобрать задания по указанным параметрам."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
-        from django.utils import timezone
 
         name = request.data.get("name") or f"Адаптивный вариант {subject} от {timezone.now().strftime('%d.%m.%Y %H:%M')}"
 
