@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import TaskItem from '../components/TaskItem';
 
@@ -13,6 +14,7 @@ const TaskBank = () => {
         difficulty: '',
         author: '',
     });
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -57,6 +59,9 @@ const TaskBank = () => {
     return (
         <div className="task-bank">
             <h1>Банк заданий</h1>
+            <button onClick={() => navigate('/tasksets/auto')} style={{ marginBottom: '15px' }}>
+                Сгенерировать адаптивный вариант
+            </button>
             <div style={{ display: 'grid', gap: '10px', marginBottom: '20px' }}>
                 <select name="subject" value={filters.subject} onChange={handleFilterChange}>
                     <option value="">Все предметы</option>

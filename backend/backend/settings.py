@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'account',
     'taskBank',
     'shop',
+    'statistic',
     'products.apps.ProductsConfig',
     'tools',
     'competitions',
