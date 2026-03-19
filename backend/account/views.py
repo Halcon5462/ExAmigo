@@ -157,7 +157,6 @@ class TaskSubmitView(APIView):
                             user=user,
                             task_difficulty=difficulty_str,
                             task_title=f"{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}",
-                            task_title=f"{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}",
                         )
                         reward = transaction_data["amount"]
                         reward = transaction_data["amount"]
