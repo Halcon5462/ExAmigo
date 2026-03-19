@@ -43,14 +43,6 @@ const LoginPage = ({ onLogin }) => {
     return (
         <div className="authPage">
             <div className="authPage_container">
-                <header className="authPage_header">
-                    <h1 className="header_logo">Informatics LMS</h1>
-                    <nav className="header_nav">
-                        <a href="/" className="nav_link">Главная</a>
-                        <a href="/tasks" className="nav_link">Банк заданий</a>
-                        <a href="/help" className="nav_link">Помощь</a>
-                    </nav>
-                </header>
 
                 <main className="authPage_main">
                     <div className="authPage_formContainer">
