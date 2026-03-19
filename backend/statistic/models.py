@@ -4,7 +4,6 @@ from django.conf import settings
 from taskBank.models import Task
 from taskBank.ege_scoring import SubjectChoices
 
-
 class TaskAttempt(models.Model):
     '''
     Просто решение, бесконечное кол-во на одно задание
@@ -14,7 +13,14 @@ class TaskAttempt(models.Model):
         on_delete=models.CASCADE, 
         related_name="attempts",
     )
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    exam_session = models.ForeignKey(
+        "taskBank.ExamSession",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="attempts"
+    )
     answer = models.TextField()
     is_correct = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -29,7 +35,7 @@ class TaskProgress(models.Model):
         on_delete=models.CASCADE, 
         related_name="task_progress",
     )
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
     first_solved_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
