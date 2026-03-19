@@ -39,6 +39,7 @@ class TaskAttemptAdmin(admin.ModelAdmin):
     list_display = (
         "user",
         "task",
+        "exam_session",
         "is_correct",
         "created_at",
     )

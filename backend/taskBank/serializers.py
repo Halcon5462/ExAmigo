@@ -58,7 +58,7 @@ class TaskSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskSet
-        fields = ['id', 'name', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
+        fields = ['id', 'name', 'type', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
         read_only_fields = ['author', 'created_at']
 
     def create(self, validated_data):
