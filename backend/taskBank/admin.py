@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from .models import Task, TaskCorrectAnswer
 from .models import TaskSet, TaskSetItem
+from .models import ExamSession
 from .ege_scoring import SubjectChoices
 
 admin.site.site_header = "Панель управления Exam Service"
@@ -224,6 +225,7 @@ class TaskSetItemInline(admin.TabularInline):
 class TaskSetAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "type",
         "subject",
         "average_difficulty",
         "author",
@@ -232,6 +234,7 @@ class TaskSetAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        "type",
         "subject",
         "is_public",
         "created_at",
@@ -245,6 +248,33 @@ class TaskSetAdmin(admin.ModelAdmin):
     inlines = [TaskSetItemInline]
 
     autocomplete_fields = ["author"]
+
+
+@admin.register(ExamSession)
+class ExamSessionAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "task_set",
+        "started_at",
+        "finished_at",
+        "time_limit",
+        "is_finished",
+        "score",
+    )
+
+    list_filter = (
+        "is_finished",
+        "started_at",
+        "task_set__subject",
+    )
+
+    autocomplete_fields = (
+        "user",
+        "task_set",
+    )
+
+    ordering = ("-started_at",)
 
 @admin.register(TaskSetItem)
 class TaskSetItemAdmin(admin.ModelAdmin):

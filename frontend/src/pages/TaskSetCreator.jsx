@@ -3,14 +3,28 @@ import api from '../utils/api';
 import CreateTaskSetFilters from '../components/Filter/CreateTaskSetFilters';
 
 const TaskSetCreator = () => {
+  const SUBJECT_OPTIONS = [
+    { value: 'prof_math', label: 'Профильная математика' },
+    { value: 'russian', label: 'Русский язык' },
+    { value: 'physics', label: 'Физика' },
+    { value: 'informatic', label: 'Информатика' },
+  ];
+
   const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState({});
   const [name, setName] = useState('');
+  const [setType, setSetType] = useState('training');
   const [subject, setSubject] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
+
+  useEffect(() => {
+    // В тренировке при смене предмета не смешиваем задания разных предметов в одном комплекте.
+    if (setType !== 'training') return;
+    setSelected({});
+  }, [subject, setType]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -30,18 +44,32 @@ const TaskSetCreator = () => {
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
-
-  const filteredTasks = tasks.filter(task => {
-    if (filters.subject && task.subject !== filters.subject) return false;
-    if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
-    if (filters.type && task.type !== filters.type) return false;
-    if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
-    if (filters.author) {
-      const authorValue = task.author_name || task.author_email || String(task.author || '');
-      if (authorValue !== filters.author) return false;
-    }
-    return true;
-  });
+  if (visibleTasks.length!=0){
+    const filteredTasks = visibleTasks.filter(task => {
+      if (filters.subject && task.subject !== filters.subject) return false;
+      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+      if (filters.type && task.type !== filters.type) return false;
+      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+      if (filters.author) {
+        const authorValue = task.author_name || task.author_email || String(task.author || '');
+        if (authorValue !== filters.author) return false;
+      }
+      return true;
+    });
+  }
+  else{
+    const filteredTasks = tasks.filter(task => {
+      if (filters.subject && task.subject !== filters.subject) return false;
+      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+      if (filters.type && task.type !== filters.type) return false;
+      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+      if (filters.author) {
+        const authorValue = task.author_name || task.author_email || String(task.author || '');
+        if (authorValue !== filters.author) return false;
+      }
+      return true;
+    });
+  }
 
   const toggleTask = (taskId) => {
     setSelected(prev => {
@@ -77,17 +105,33 @@ const TaskSetCreator = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const items = Object.entries(selected).map(([taskId, order]) => ({ task: Number(taskId), order }));
-    const payload = {
-      name,
-      subject: subject || null,
-      is_public: isPublic,
-      items,
-    };
     try {
-      await api.post('/taskBank/tasksets/', payload);
-      alert('Комплект создан');
+      if (setType === 'exam') {
+        if (!subject) {
+          alert('Выберите предмет');
+          return;
+        }
+        const payload = {
+          name,
+          subject,
+          is_public: isPublic,
+        };
+        await api.post('/taskBank/tasksets/generate-exam/', payload);
+        alert('Экзамен создан');
+      } else {
+        const items = Object.entries(selected).map(([taskId, order]) => ({ task: Number(taskId), order }));
+        const payload = {
+          name,
+          type: setType,
+          subject: subject || null,
+          is_public: isPublic,
+          items,
+        };
+        await api.post('/taskBank/tasksets/', payload);
+        alert('Комплект создан');
+      }
       setName('');
+      setSetType('training');
       setSubject('');
       setIsPublic(false);
       setSelected({});
@@ -101,6 +145,15 @@ const TaskSetCreator = () => {
   if (loading) return <div>Загрузка заданий...</div>;
   if (error) return <div>{error}</div>;
 
+  const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
+  const visibleTasks = (setType === 'training' && subject)
+    ? tasks.filter(t =>
+        t.subject === subject
+        || t.subject === selectedSubjectLabel
+        || t.subject_display === selectedSubjectLabel
+      )
+    : tasks;
+
   return (
     <div style={{ padding: '20px' }}>
       <h2>Создать комплект заданий</h2>
@@ -110,69 +163,84 @@ const TaskSetCreator = () => {
           <input value={name} onChange={e => setName(e.target.value)} required />
         </div>
         <div>
-          <label>Предмет (необязательно): </label>
-          <input value={subject} onChange={e => setSubject(e.target.value)} />
+          <label>Тип: </label>
+          <select value={setType} onChange={e => setSetType(e.target.value)}>
+            <option value="training">Тренировка</option>
+            <option value="exam">Экзамен</option>
+          </select>
+        </div>
+        <div>
+          <label>Предмет: </label>
+          <select value={subject} onChange={e => setSubject(e.target.value)} required={setType === 'exam'}>
+            <option value="">--</option>
+            {SUBJECT_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label>Публичный: </label>
           <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
         </div>
-
-        <h3>Выберите задания</h3>
-
-        <CreateTaskSetFilters
-          tasks={tasks}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse', width: '100%', marginTop: '15px' }}>
-          <thead>
-            <tr>
-              <th>Выбрать</th>
-              <th>№</th>
-              <th>Предмет</th>
-              <th>Тип</th>
-              <th>Сложность</th>
-              <th>Порядок в комплекте</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTasks.map(task => (
-              <tr key={task.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selected[task.id] !== undefined}
-                    onChange={() => toggleTask(task.id)}
-                  />
-                </td>
-                <td>{task.order_KIM}</td>
-                <td>{task.subject}</td>
-                <td>{task.type}</td>
-                <td>{task.difficulty}</td>
-                <td>
-                  {selected[task.id] !== undefined && (
-                    <input
-                      type="number"
-                      min="1"
-                      max={Object.keys(selected).length}
-                      value={selected[task.id]}
-                      onChange={e => handleOrderChange(task.id, e.target.value)}
-                      style={{ width: '60px' }}
-                    />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
+        {setType === 'training' && (
+          <>
+            <h3>Выберите задания</h3>
+            <CreateTaskSetFilters
+              tasks={tasks}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
+            {subject && (
+              <p>Показано заданий по предмету: {filteredTasks.length}</p>
+            )}
+            <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th>Выбрать</th>
+                  <th>№</th>
+                  <th>Предмет</th>
+                  <th>Тип</th>
+                  <th>Сложность</th>
+                  <th>Порядок в комплекте</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTasks.map(task => (
+                  <tr key={task.id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selected[task.id] !== undefined}
+                        onChange={() => toggleTask(task.id)}
+                      />
+                    </td>
+                    <td>{task.order_KIM}</td>
+                    <td>{task.subject}</td>
+                    <td>{task.type}</td>
+                    <td>{task.difficulty}</td>
+                    <td>
+                      {selected[task.id] !== undefined && (
+                        <input
+                          type="number"
+                          min="1"
+                          value={selected[task.id]}
+                          onChange={e => handleOrderChange(task.id, e.target.value)}
+                          style={{ width: '60px' }}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
         {filteredTasks.length === 0 && (
           <p style={{ textAlign: 'center', marginTop: '20px' }}>Нет заданий, соответствующих фильтрам</p>
         )}
-
-        <button type="submit" style={{ marginTop: '15px', padding: '10px', cursor: 'pointer' }}>Создать комплект</button>
+        <button type="submit" style={{ marginTop: '15px' }}>
+          {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
+        </button>
       </form>
     </div>
   );

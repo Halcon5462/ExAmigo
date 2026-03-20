@@ -1,10 +1,11 @@
-import '../static/css/header.css'
-import '../static/css/style.css'
+import '../static/css/header.css';
+import '../static/css/style.css';
+
 const Header = () => {
-    return(
+    return (
         <header>
-            <div class="logo">
-                <img src="/images/logo.svg" />
+            <div className="logo">
+                <img src="/images/logo.svg" alt="Exam Service logo" />
                 <h2>Exam Service</h2>
             </div>
             <nav>
@@ -15,9 +16,10 @@ const Header = () => {
                 <a href="/profile">Профиль</a>
                 <a href="/tasksets">Список комплектов</a>
                 <a href="/tasksets/create">Создать комплект</a>
+                <a href="/tasksets/auto">Адаптивный вариант</a>
             </nav>
         </header>
-    )
-}
+    );
+};
 
-export default Header
+export default Header;

@@ -9,6 +9,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -21,8 +23,10 @@ INSTALLED_APPS = [
     'account',
     'taskBank',
     'shop',
+    'statistic',
     'products.apps.ProductsConfig',
     'tools',
+    'competitions',
 ]
 
 MIDDLEWARE = [
@@ -105,3 +109,11 @@ SIMPLE_JWT = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+ASGI_APPLICATION = "backend.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
