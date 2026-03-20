@@ -1,34 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const FilterSection = ({ title, options, selectedValue, onSelect }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleSelect = (value) => {
-    onSelect(value);
-    setIsOpen(false);
-  };
-
-  return (
-    <div className="filter-section">
-      <div className="filter-header" onClick={() => setIsOpen(!isOpen)}>
-        <span className="filter-title">{title}</span>
-        <span className={`filter-arrow ${isOpen ? 'open' : ''}`}>▼</span>
-      </div>
-      {isOpen && (
-        <ul className="filter-dropdown">
-          {options.map((option) => (
-            <li
-              key={option.value}
-              className={`filter-option ${selectedValue === option.value ? 'selected' : ''}`}
-              onClick={() => handleSelect(option.value)}
+const FilterSection = ({ label, name, value, options, onChange, placeholder = "Все" }) => {
+    return (
+        <div className="filter-section">
+            <select
+                name={name}
+                value={value || ''}
+                onChange={onChange}
+                className="form-select"
             >
-              {option.label}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+                <option value="">{placeholder}</option>
+                {options.map(option => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
 };
 
 export default FilterSection;
