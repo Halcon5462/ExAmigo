@@ -1,102 +1,66 @@
-import React, { useState } from 'react';
-import FilterSection from './FilterSection';
-import SearchBar from './SearchBar';
+import React from 'react';
 
-const TaskSetListFilters = ({ onFilterChange }) => {
-  const [filters, setFilters] = useState({
-    testType: 'Тип теста',
-    difficulty: 'Сложность',
-    taskCount: 'Кол-во заданий',
-    author: 'Автор',
-    kimTasks: 'Задания из КИМ',
-    searchQuery: '',
-  });
+const TaskSetListFilters = ({ taskSets, filters, onFilterChange }) => {
+    const testTypes = [...new Set(taskSets.map(ts => ts.subject).filter(Boolean))];
+    const difficulties = [...new Set(taskSets.map(ts => ts.average_difficulty).filter(Boolean))].sort((a, b) => a - b);
+    const authors = [...new Set(taskSets.map(ts => ts.author_name || ts.author_email || ts.author).filter(Boolean))];
 
-  const testTypeOptions = [
-    { value: 'Тип теста', label: 'Тип теста' },
-    { value: 'Математика', label: 'Математика' },
-    { value: 'Русский язык', label: 'Русский язык' },
-    { value: 'Физика', label: 'Физика' },
-    { value: 'Информатика', label: 'Информатика' },
-    { value: 'Обществознание', label: 'Обществознание' },
-  ];
+    const taskCounts = [...new Set(taskSets.map(ts => ts.items?.length || 0).filter(t => t > 0))].sort((a, b) => a - b);
 
-  const difficultyOptions = [
-    { value: 'Сложность', label: 'Сложность' },
-    { value: 'Легкая', label: 'Легкая' },
-    { value: 'Средняя', label: 'Средняя' },
-    { value: 'Высокая', label: 'Высокая' },
-  ];
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        onFilterChange(name, value);
+    };
 
-  const taskCountOptions = [
-    { value: 'Кол-во заданий', label: 'Кол-во заданий' },
-    { value: '1-5', label: '1-5 заданий' },
-    { value: '6-10', label: '6-10 заданий' },
-    { value: '11-15', label: '11-15 заданий' },
-    { value: '16+', label: '16 и более' },
-  ];
+    return (
+        <div className="taskset-filters" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '8px' }}>
+            <select name="testType" value={filters.testType || ''} onChange={handleChange} className="form-select">
+                <option value="">Тип теста</option>
+                {testTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                ))}
+            </select>
 
-  const authorOptions = [
-    { value: 'Автор', label: 'Автор' },
-    { value: 'test1', label: 'test1' },
-    { value: 'admin', label: 'admin' },
-    { value: 'teacher', label: 'teacher' },
-    { value: 'methodist', label: 'methodist' },
-  ];
+            <select name="difficulty" value={filters.difficulty || ''} onChange={handleChange} className="form-select">
+                <option value="">Сложность</option>
+                {difficulties.map(level => (
+                    <option key={level} value={String(level)}>
+                        {level === 1 ? 'Легкая' : level === 2 ? 'Средняя' : level === 3 ? 'Высокая' : `Уровень ${level}`}
+                    </option>
+                ))}
+            </select>
 
-  const kimOptions = [
-    { value: 'Задания из КИМ', label: 'Задания из КИМ' },
-    { value: '1,2,3', label: '1, 2, 3' },
-    { value: '4,5,6', label: '4, 5, 6' },
-    { value: '7,8,9', label: '7, 8, 9' },
-    { value: '10,11,12', label: '10, 11, 12' },
-  ];
+            <select name="taskCount" value={filters.taskCount || ''} onChange={handleChange} className="form-select">
+                <option value="">Кол-во заданий</option>
+                {taskCounts.map(count => (
+                    <option key={count} value={String(count)}>{count}</option>
+                ))}
+            </select>
 
-  const updateFilter = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-    onFilterChange?.(newFilters);
-  };
+            <select name="author" value={filters.author || ''} onChange={handleChange} className="form-select">
+                <option value="">Автор</option>
+                {authors.map(author => (
+                    <option key={author} value={author}>{author}</option>
+                ))}
+            </select>
 
-  return (
-    <div className="filters-container task-set-list-filters">
-      <FilterSection
-        title={filters.testType}
-        options={testTypeOptions}
-        selectedValue={filters.testType}
-        onSelect={(val) => updateFilter('testType', val)}
-      />
-      <FilterSection
-        title={filters.difficulty}
-        options={difficultyOptions}
-        selectedValue={filters.difficulty}
-        onSelect={(val) => updateFilter('difficulty', val)}
-      />
-      <FilterSection
-        title={filters.taskCount}
-        options={taskCountOptions}
-        selectedValue={filters.taskCount}
-        onSelect={(val) => updateFilter('taskCount', val)}
-      />
-      <FilterSection
-        title={filters.author}
-        options={authorOptions}
-        selectedValue={filters.author}
-        onSelect={(val) => updateFilter('author', val)}
-      />
-      <FilterSection
-        title={filters.kimTasks}
-        options={kimOptions}
-        selectedValue={filters.kimTasks}
-        onSelect={(val) => updateFilter('kimTasks', val)}
-      />
-      <SearchBar
-        placeholder="Поиск комплектов..."
-        value={filters.searchQuery}
-        onChange={(val) => updateFilter('searchQuery', val)}
-      />
-    </div>
-  );
+            <select name="kimTasks" value={filters.kimTasks || ''} onChange={handleChange} className="form-select">
+                <option value="">Задания из КИМ</option>
+                <option value="true">Да</option>
+                <option value="false">Нет</option>
+            </select>
+
+            <input
+                type="text"
+                name="searchQuery"
+                placeholder="Поиск..."
+                value={filters.searchQuery || ''}
+                onChange={handleChange}
+                className="form-control"
+                style={{ width: '200px' }}
+            />
+        </div>
+    );
 };
 
 export default TaskSetListFilters;
