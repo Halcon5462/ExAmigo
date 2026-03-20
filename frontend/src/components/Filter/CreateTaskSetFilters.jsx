@@ -1,7 +1,4 @@
-import React from 'react';
-
 const CreateTaskSetFilters = ({ tasks, filters, onFilterChange }) => {
-    const subjects = [...new Set(tasks.map(t => t.subject).filter(Boolean))];
     const orders = [...new Set(tasks.map(t => t.order_KIM).filter(t => t !== null && t !== undefined))].sort((a, b) => a - b);
     const types = [...new Set(tasks.map(t => t.type).filter(Boolean))];
     const difficulties = [...new Set(tasks.map(t => t.difficulty).filter(t => t !== null && t !== undefined))].sort((a, b) => a - b);
@@ -14,13 +11,6 @@ const CreateTaskSetFilters = ({ tasks, filters, onFilterChange }) => {
 
     return (
         <div className="create-task-filters" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '8px' }}>
-            <select name="subject" value={filters.subject || ''} onChange={handleChange} className="form-select">
-                <option value="">Все предметы</option>
-                {subjects.map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
-                ))}
-            </select>
-
             <select name="orderKIM" value={filters.orderKIM || ''} onChange={handleChange} className="form-select">
                 <option value="">Все номера</option>
                 {orders.map(order => (

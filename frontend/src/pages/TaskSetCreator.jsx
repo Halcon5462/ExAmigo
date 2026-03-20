@@ -44,32 +44,6 @@ const TaskSetCreator = () => {
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
-  if (visibleTasks.length!=0){
-    const filteredTasks = visibleTasks.filter(task => {
-      if (filters.subject && task.subject !== filters.subject) return false;
-      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
-      if (filters.type && task.type !== filters.type) return false;
-      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
-      if (filters.author) {
-        const authorValue = task.author_name || task.author_email || String(task.author || '');
-        if (authorValue !== filters.author) return false;
-      }
-      return true;
-    });
-  }
-  else{
-    const filteredTasks = tasks.filter(task => {
-      if (filters.subject && task.subject !== filters.subject) return false;
-      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
-      if (filters.type && task.type !== filters.type) return false;
-      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
-      if (filters.author) {
-        const authorValue = task.author_name || task.author_email || String(task.author || '');
-        if (authorValue !== filters.author) return false;
-      }
-      return true;
-    });
-  }
 
   const toggleTask = (taskId) => {
     setSelected(prev => {
@@ -146,13 +120,26 @@ const TaskSetCreator = () => {
   if (error) return <div>{error}</div>;
 
   const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
-  const visibleTasks = (setType === 'training' && subject)
-    ? tasks.filter(t =>
-        t.subject === subject
-        || t.subject === selectedSubjectLabel
-        || t.subject_display === selectedSubjectLabel
-      )
-    : tasks;
+  // const visibleTasks = 
+  //   ? tasks.filter(t =>
+  //       t.subject === subject
+  //       || t.subject === selectedSubjectLabel
+  //       || t.subject_display === selectedSubjectLabel
+  //     )
+  //   : tasks;
+  const filteredTasks = (setType === 'training')
+  ? tasks.filter(task => {
+    if (filters.subject && task.subject !== filters.subject) return false;
+    if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+    if (filters.type && task.type !== filters.type) return false;
+    if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+    if (filters.author) {
+      const authorValue = task.author_name || task.author_email || String(task.author || '');
+      if (authorValue !== filters.author) return false;
+    }
+    return true;
+  })
+  : tasks;
 
   return (
     <div style={{ padding: '20px' }}>
