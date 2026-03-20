@@ -76,7 +76,7 @@ const TaskSetList = () => {
       {filteredTaskSets.length === 0 && <p>Нет доступных комплектов.</p>}
       <button onClick={() => navigate('/tasksets/auto')} style={{ marginBottom: '15px' }}>
         Создать адаптивный вариант
-      </button> frontend/src/pages/TaskSetList.jsx
+      </button> 
       {filteredTaskSets.map(set => (
         <div key={set.id} style={{ border: '1px solid #ddd', marginBottom: '15px', padding: '10px' }}>
           <h3>{set.name}</h3>
