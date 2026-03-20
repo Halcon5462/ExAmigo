@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
+import CreateTaskSetFilters from '../components/Filter/CreateTaskSetFilters';
 
 const TaskSetCreator = () => {
   const SUBJECT_OPTIONS = [
@@ -10,13 +11,14 @@ const TaskSetCreator = () => {
   ];
 
   const [tasks, setTasks] = useState([]);
-  const [selected, setSelected] = useState({}); // {taskId: order}
+  const [selected, setSelected] = useState({});
   const [name, setName] = useState('');
   const [setType, setSetType] = useState('training');
   const [subject, setSubject] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({});
 
   useEffect(() => {
     // В тренировке при смене предмета не смешиваем задания разных предметов в одном комплекте.
@@ -39,20 +41,66 @@ const TaskSetCreator = () => {
     fetchTasks();
   }, []);
 
+  const handleFilterChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+  if (visibleTasks.length!=0){
+    const filteredTasks = visibleTasks.filter(task => {
+      if (filters.subject && task.subject !== filters.subject) return false;
+      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+      if (filters.type && task.type !== filters.type) return false;
+      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+      if (filters.author) {
+        const authorValue = task.author_name || task.author_email || String(task.author || '');
+        if (authorValue !== filters.author) return false;
+      }
+      return true;
+    });
+  }
+  else{
+    const filteredTasks = tasks.filter(task => {
+      if (filters.subject && task.subject !== filters.subject) return false;
+      if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+      if (filters.type && task.type !== filters.type) return false;
+      if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+      if (filters.author) {
+        const authorValue = task.author_name || task.author_email || String(task.author || '');
+        if (authorValue !== filters.author) return false;
+      }
+      return true;
+    });
+  }
+
   const toggleTask = (taskId) => {
     setSelected(prev => {
       const newSel = { ...prev };
       if (newSel[taskId]) {
         delete newSel[taskId];
+        const sorted = Object.entries(newSel).sort((a, b) => a[1] - b[1]);
+        const renumbered = {};
+        sorted.forEach(([id, order], idx) => {
+          renumbered[id] = idx + 1;
+        });
+        return renumbered;
       } else {
-        newSel[taskId] = Object.keys(prev).length + 1; // default order
+        const maxOrder = Object.keys(prev).length;
+        newSel[taskId] = maxOrder + 1;
+        return newSel;
       }
-      return newSel;
     });
   };
 
   const handleOrderChange = (taskId, value) => {
-    setSelected(prev => ({ ...prev, [taskId]: Number(value) }));
+    const newOrder = Number(value);
+    setSelected(prev => {
+      const updated = { ...prev, [taskId]: newOrder };
+      const sorted = Object.entries(updated).sort((a, b) => a[1] - b[1]);
+      const renumbered = {};
+      sorted.forEach(([id, order], idx) => {
+        renumbered[id] = idx + 1;
+      });
+      return renumbered;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -82,12 +130,12 @@ const TaskSetCreator = () => {
         await api.post('/taskBank/tasksets/', payload);
         alert('Комплект создан');
       }
-      // reset form
       setName('');
       setSetType('training');
       setSubject('');
       setIsPublic(false);
       setSelected({});
+      setFilters({});
     } catch (e) {
       console.error(e);
       alert('Ошибка при создании комплекта');
@@ -137,8 +185,13 @@ const TaskSetCreator = () => {
         {setType === 'training' && (
           <>
             <h3>Выберите задания</h3>
+            <CreateTaskSetFilters
+              tasks={tasks}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+            />
             {subject && (
-              <p>Показано заданий по предмету: {visibleTasks.length}</p>
+              <p>Показано заданий по предмету: {filteredTasks.length}</p>
             )}
             <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
               <thead>
@@ -152,7 +205,7 @@ const TaskSetCreator = () => {
                 </tr>
               </thead>
               <tbody>
-                {visibleTasks.map(task => (
+                {filteredTasks.map(task => (
                   <tr key={task.id}>
                     <td>
                       <input
@@ -181,6 +234,9 @@ const TaskSetCreator = () => {
               </tbody>
             </table>
           </>
+        )}
+        {filteredTasks.length === 0 && (
+          <p style={{ textAlign: 'center', marginTop: '20px' }}>Нет заданий, соответствующих фильтрам</p>
         )}
         <button type="submit" style={{ marginTop: '15px' }}>
           {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}

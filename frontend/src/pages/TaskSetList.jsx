@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import TaskSetListFilters from '../components/Filter/TaskSetListFilters';
 
 const TaskSetList = () => {
   const [tasksets, setTasksets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({});
   const navigate = useNavigate();
 
   const startExam = async (setId) => {
@@ -34,17 +36,48 @@ const TaskSetList = () => {
     fetchTaskSets();
   }, []);
 
+  const handleFilterChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const filteredTaskSets = tasksets.filter(ts => {
+    if (filters.testType && ts.subject !== filters.testType) return false;
+    if (filters.difficulty) {
+      const avgDiff = Math.round(ts.average_difficulty);
+      if (String(avgDiff) !== filters.difficulty) return false;
+    }
+    if (filters.taskCount && String(ts.items?.length || 0) !== filters.taskCount) return false;
+    if (filters.author) {
+      const authorValue = ts.author_name || ts.author_email || String(ts.author || '');
+      if (authorValue !== filters.author) return false;
+    }
+    if (filters.kimTasks === 'true' && !ts.kim_tasks) return false;
+    if (filters.kimTasks === 'false' && ts.kim_tasks) return false;
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase();
+      if (!ts.name.toLowerCase().includes(query)) return false;
+    }
+    return true;
+  });
+
   if (loading) return <div>Загрузка комплектов...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div style={{ padding: '20px' }}>
       <h2>Список комплектов заданий</h2>
+
+      <TaskSetListFilters
+        taskSets={tasksets}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+      />
+
+      {filteredTaskSets.length === 0 && <p>Нет доступных комплектов.</p>}
       <button onClick={() => navigate('/tasksets/auto')} style={{ marginBottom: '15px' }}>
         Создать адаптивный вариант
-      </button>
-      {tasksets.length === 0 && <p>Нет доступных комплектов.</p>}
-      {tasksets.map(set => (
+      </button> frontend/src/pages/TaskSetList.jsx
+      {filteredTaskSets.map(set => (
         <div key={set.id} style={{ border: '1px solid #ddd', marginBottom: '15px', padding: '10px' }}>
           <h3>{set.name}</h3>
           <p><strong>Тип:</strong> {set.type}</p>
