@@ -49,7 +49,7 @@ const CreateTaskSetFilters = ({ tasks, filters, onFilterChange }) => {
                 ))}
             </select>
 
-            <button className="btn btn-primary" onClick={() => onFilterChange('apply', true)}>
+            <button className="btn btn-primary" type="button" onClick={() => onFilterChange('apply', true)}>
                 Фильтровать
             </button>
         </div>
