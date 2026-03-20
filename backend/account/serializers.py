@@ -1,10 +1,13 @@
 from rest_framework import serializers
-from .models import UserAccount, Achievement, UserAchievement, UserAchievementProgress
+
+from .models import UserAccount
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAccount
         fields = ['id', 'email', 'name']
+
 
 class RegisterSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -23,22 +26,3 @@ class RegisterSerializer(serializers.Serializer):
             password=validated_data['password']
         )
         return user
-
-class AchievementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Achievement
-        fields = '__all__'
-
-class UserAchievementSerializer(serializers.ModelSerializer):
-    achievement = AchievementSerializer(read_only=True) # Вложенный объект
-
-    class Meta:
-        model = UserAchievement
-        fields = ['id', 'achievement', 'get_date']
-
-class UserAchievementProgressSerializer(serializers.ModelSerializer):
-    achievement = AchievementSerializer(read_only=True)
-
-    class Meta:
-        model = UserAchievementProgress
-        fields = ['id', 'achievement', 'current_value']
