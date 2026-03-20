@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
-from account.models import TaskProgress
+from statistic.models import TaskProgress
 
 
 class TaskCorrectAnswerSerializer(serializers.ModelSerializer):
@@ -14,6 +14,11 @@ class TaskSerializer(serializers.ModelSerializer):
     author_name = serializers.CharField(source="author.name", read_only=True)
     author_email = serializers.EmailField(source="author.email", read_only=True)
     correct_answers = serializers.CharField(write_only=True)
+    primary_score = serializers.IntegerField(read_only=True)
+    subject_display = serializers.CharField(
+        source="get_subject_display",
+        read_only=True
+    )
 
     class Meta:
         model = Task
@@ -53,7 +58,7 @@ class TaskSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskSet
-        fields = ['id', 'name', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
+        fields = ['id', 'name', 'type', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
         read_only_fields = ['author', 'created_at']
 
     def create(self, validated_data):

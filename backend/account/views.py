@@ -12,10 +12,15 @@ from rest_framework.views import APIView
 from django.db import transaction
 
 from .models import Task
-from account.models import TaskAttempt, TaskProgress
+from statistic.models import TaskAttempt, TaskProgress
 
 from shop.services import WalletService
+from statistic.services import update_task_statistics
+from statistic.services import update_task_statistics
 
+from taskBank.models import ExamSession
+from taskBank.services import exam_time_left, finish_exam_session
+from statistic.models import TaskAttempt, TaskProgress
 
 
 class RegisterView(generics.GenericAPIView):
@@ -81,9 +86,42 @@ class TaskSubmitView(APIView):
         task = Task.objects.get(pk=pk)
         user = request.user
         user_answer = request.data.get("answer", "").strip()
+        exam_id = request.data.get("exam_session")
+        exam = None
 
         if not user_answer:
             return Response({"error": "Answer required"}, status=400)
+
+        if exam_id:
+            try:
+                exam = ExamSession.objects.select_related("task_set").get(
+                    id=exam_id,
+                    user=user
+                )
+            except ExamSession.DoesNotExist:
+                return Response({"error": "Exam session not found"}, status=404)
+
+            if exam.is_finished:
+                return Response({"error": "Exam session finished"}, status=400)
+
+            if exam_time_left(exam) <= 0:
+                finish_exam_session(exam)
+                return Response({"error": "Exam time is over"}, status=400)
+
+            in_exam = exam.task_set.items.filter(task_id=task.id).exists()
+            if not in_exam:
+                return Response({"error": "Task is not in this exam"}, status=400)
+
+            exists = TaskAttempt.objects.filter(
+                exam_session_id=exam_id,
+                task=task
+            ).exists()
+
+            if exists:
+                return Response(
+                    {"error": "Only one attempt allowed in exam"},
+                    status=400
+                )
 
         cleaned_user_answer = "".join(user_answer.split()).lower()
 
@@ -96,21 +134,50 @@ class TaskSubmitView(APIView):
         transaction_data = None
 
         with transaction.atomic():
-            TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
+            TaskAttempt.objects.create(
+                user=user,
+                task=task,
+                exam_session=exam,
+                answer=user_answer,
+                is_correct=is_correct
+            )
             if is_correct:
-                progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
+                progress, created = TaskProgress.objects.get_or_create(
+                    user=user, task=task
+                )
+                progress, created = TaskProgress.objects.get_or_create(
+                    user=user, task=task
+                )
                 if created:
                     first_time = True
-                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, 'easy')
+                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, "easy")
+                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, "easy")
                     try:
                         transaction_data = WalletService.add_task_reward(
                             user=user,
                             task_difficulty=difficulty_str,
-                            task_title= f'{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}',
+                            task_title=f"{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}",
                         )
-                        reward = transaction_data['amount']
+                        reward = transaction_data["amount"]
+                        reward = transaction_data["amount"]
                     except Exception as e:
                         print(f"Error awarding points: {e}")
+
+            # Обновляем агрегированную статистику попыток
+            update_task_statistics(
+                user=user,
+                task=task,
+                is_correct=is_correct,
+                first_time=first_time,
+            )
+
+            # Обновляем агрегированную статистику попыток
+            update_task_statistics(
+                user=user,
+                task=task,
+                is_correct=is_correct,
+                first_time=first_time,
+            )
 
         response_data = {
             "correct": is_correct,

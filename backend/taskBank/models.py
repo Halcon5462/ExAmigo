@@ -1,17 +1,16 @@
 from django.db import models
 from django.conf import settings
+from .ege_scoring import get_task_score, SubjectChoices
 
 
-class SubjectChoices(models.TextChoices):
-    MATH = "prof_math", "Профильная математика"
-    RUSSIAN = "russian", "Русский язык"
-    PHYSICS = "physics", "Физика"
-    IFORM = "informatic", "Информатика"
+class TaskSetType(models.TextChoices):
+    TRAINING = "training", "Тренировка"
+    EXAM = "exam", "Экзамен"
 
 
 class Task(models.Model):
     subject = models.CharField(
-        max_length=20,
+        max_length=50,
         choices=SubjectChoices.choices,
     )
     order_KIM = models.PositiveIntegerField(verbose_name="Номер задания из КИМ")
@@ -38,6 +37,11 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
 
+    @property
+    def primary_score(self):
+        return get_task_score(self.subject, self.order_KIM)
+
+
     class Meta:
         ordering = ['subject', 'order_KIM']
         verbose_name = "Задание"
@@ -58,8 +62,13 @@ class TaskCorrectAnswer(models.Model):
 class TaskSet(models.Model):
     """Набор заданий (комплект)"""
     name = models.CharField(max_length=200, verbose_name="Название комплекта")
-    subject = models.CharField(
+    type = models.CharField(
         max_length=20,
+        choices=TaskSetType.choices,
+        default=TaskSetType.TRAINING
+    )
+    subject = models.CharField(
+        max_length=50,
         choices=SubjectChoices.choices,
     )
     average_difficulty = models.FloatField(verbose_name="Средняя сложность", blank=True, null=True)
@@ -73,12 +82,47 @@ class TaskSet(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
 
+    @property
+    def total_primary_score(self):
+        return sum(item.task.primary_score for item in self.items.all())
+
     class Meta:
         verbose_name = "Комплект заданий"
         verbose_name_plural = "Комплекты заданий"
 
     def __str__(self):
         return self.name
+
+
+class ExamSession(models.Model):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="exam_sessions"
+    )
+
+    task_set = models.ForeignKey(
+        "taskBank.TaskSet",
+        on_delete=models.CASCADE,
+        related_name="exam_sessions"
+    )
+
+    started_at = models.DateTimeField(auto_now_add=True)
+
+    finished_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    time_limit = models.PositiveIntegerField(
+        help_text="в секундах"
+    )
+
+    is_finished = models.BooleanField(default=False)
+
+    score = models.IntegerField(default=0)
+
 
 class TaskSetItem(models.Model):
     """Связующая модель между TaskSet и Task, хранит порядок задания в комплекте"""

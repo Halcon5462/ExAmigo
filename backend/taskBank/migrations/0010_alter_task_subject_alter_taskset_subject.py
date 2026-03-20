@@ -1,0 +1,23 @@
+
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('taskBank', '0009_alter_task_subject_alter_taskset_subject'),
+    ]
+
+    operations = [
+        migrations.AlterField(
+            model_name='task',
+            name='subject',
+            field=models.CharField(choices=[('prof_math', 'Профильная математика'), ('russian', 'Русский язык'), ('physics', 'Физика'), ('informatic', 'Информатика')], max_length=50),
+        ),
+        migrations.AlterField(
+            model_name='taskset',
+            name='subject',
+            field=models.CharField(choices=[('prof_math', 'Профильная математика'), ('russian', 'Русский язык'), ('physics', 'Физика'), ('informatic', 'Информатика')], max_length=50),
+        ),
+    ]

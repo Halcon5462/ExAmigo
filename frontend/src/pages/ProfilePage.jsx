@@ -4,6 +4,7 @@ import api from '../utils/api';
 import AchievementsList from '../components/AchievementsList.jsx';
 import PurchasedItemList from '../components/PurchasedItemList.jsx';
 import UserBalance from '../components/UserBalance.jsx'; // Добавить
+import TaskStatisticsSection from '../components/TaskStatisticsSection.jsx';
 
 const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped }) => {
     const [user, setUser] = useState(initialUser);
@@ -157,6 +158,8 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
                 achievements={achievements}
                 progress={progress}
             />
+
+            <TaskStatisticsSection />
         </div>
     );
 };
