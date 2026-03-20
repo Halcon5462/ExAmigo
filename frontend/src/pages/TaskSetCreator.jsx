@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
+import CreateTaskSetFilters from '../components/Filter/CreateTaskSetFilters';
 
 const TaskSetCreator = () => {
   const [tasks, setTasks] = useState([]);
-  const [selected, setSelected] = useState({}); // {taskId: order}
+  const [selected, setSelected] = useState({});
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({});
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -25,20 +27,52 @@ const TaskSetCreator = () => {
     fetchTasks();
   }, []);
 
+  const handleFilterChange = (name, value) => {
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const filteredTasks = tasks.filter(task => {
+    if (filters.subject && task.subject !== filters.subject) return false;
+    if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
+    if (filters.type && task.type !== filters.type) return false;
+    if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
+    if (filters.author) {
+      const authorValue = task.author_name || task.author_email || String(task.author || '');
+      if (authorValue !== filters.author) return false;
+    }
+    return true;
+  });
+
   const toggleTask = (taskId) => {
     setSelected(prev => {
       const newSel = { ...prev };
       if (newSel[taskId]) {
         delete newSel[taskId];
+        const sorted = Object.entries(newSel).sort((a, b) => a[1] - b[1]);
+        const renumbered = {};
+        sorted.forEach(([id, order], idx) => {
+          renumbered[id] = idx + 1;
+        });
+        return renumbered;
       } else {
-        newSel[taskId] = Object.keys(prev).length + 1; // default order
+        const maxOrder = Object.keys(prev).length;
+        newSel[taskId] = maxOrder + 1;
+        return newSel;
       }
-      return newSel;
     });
   };
 
   const handleOrderChange = (taskId, value) => {
-    setSelected(prev => ({ ...prev, [taskId]: Number(value) }));
+    const newOrder = Number(value);
+    setSelected(prev => {
+      const updated = { ...prev, [taskId]: newOrder };
+      const sorted = Object.entries(updated).sort((a, b) => a[1] - b[1]);
+      const renumbered = {};
+      sorted.forEach(([id, order], idx) => {
+        renumbered[id] = idx + 1;
+      });
+      return renumbered;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -53,11 +87,11 @@ const TaskSetCreator = () => {
     try {
       await api.post('/taskBank/tasksets/', payload);
       alert('Комплект создан');
-      // reset form
       setName('');
       setSubject('');
       setIsPublic(false);
       setSelected({});
+      setFilters({});
     } catch (e) {
       console.error(e);
       alert('Ошибка при создании комплекта');
@@ -83,8 +117,16 @@ const TaskSetCreator = () => {
           <label>Публичный: </label>
           <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
         </div>
+
         <h3>Выберите задания</h3>
-        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse' }}>
+
+        <CreateTaskSetFilters
+          tasks={tasks}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+        />
+
+        <table border="1" cellPadding="5" style={{ borderCollapse: 'collapse', width: '100%', marginTop: '15px' }}>
           <thead>
             <tr>
               <th>Выбрать</th>
@@ -96,7 +138,7 @@ const TaskSetCreator = () => {
             </tr>
           </thead>
           <tbody>
-            {tasks.map(task => (
+            {filteredTasks.map(task => (
               <tr key={task.id}>
                 <td>
                   <input
@@ -114,6 +156,7 @@ const TaskSetCreator = () => {
                     <input
                       type="number"
                       min="1"
+                      max={Object.keys(selected).length}
                       value={selected[task.id]}
                       onChange={e => handleOrderChange(task.id, e.target.value)}
                       style={{ width: '60px' }}
@@ -124,7 +167,12 @@ const TaskSetCreator = () => {
             ))}
           </tbody>
         </table>
-        <button type="submit" style={{ marginTop: '15px' }}>Создать комплект</button>
+
+        {filteredTasks.length === 0 && (
+          <p style={{ textAlign: 'center', marginTop: '20px' }}>Нет заданий, соответствующих фильтрам</p>
+        )}
+
+        <button type="submit" style={{ marginTop: '15px', padding: '10px', cursor: 'pointer' }}>Создать комплект</button>
       </form>
     </div>
   );
