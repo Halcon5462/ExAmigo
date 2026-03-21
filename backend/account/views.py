@@ -134,7 +134,7 @@ class TaskSubmitView(APIView):
                         transaction_data = WalletService.add_task_reward(
                             user=user,
                             task_difficulty=difficulty_str,
-                            task_title=f"{task.subject}, в„–{task.order_KIM}, СЃР»РѕР¶РЅРѕСЃС‚СЊ: {task.difficulty}",
+                            task_title=f"{task.subject}, номер–{task.order_KIM}, сложность: {task.difficulty}",
                         )
                         reward = transaction_data["amount"]
                     except Exception as e:

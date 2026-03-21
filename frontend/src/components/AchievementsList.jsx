@@ -1,22 +1,22 @@
 import React from 'react';
 import api from '../utils/api';
 
-const toAbsoluteMediaUrl = (url) => {
-    if (!url || typeof url !== 'string') {
-        return null;
-    }
+// const toAbsoluteMediaUrl = (url) => {
+//     if (!url || typeof url !== 'string') {
+//         return null;
+//     }
 
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url;
-    }
+//     if (url.startsWith('http://') || url.startsWith('https://')) {
+//         return url;
+//     }
 
-    const origin = new URL(api.defaults.baseURL).origin;
-    if (url.startsWith('/')) {
-        return `${origin}${url}`;
-    }
+//     const origin = new URL(api.defaults.baseURL).origin;
+//     if (url.startsWith('/')) {
+//         return `${origin}${url}`;
+//     }
 
-    return `${origin}/${url}`;
-};
+//     return `${origin}/${url}`;
+// };
 
 const AchievementsList = ({ achievements = [] }) => {
     return (
@@ -30,7 +30,7 @@ const AchievementsList = ({ achievements = [] }) => {
                         className={`achievement-card ${item.is_obtained ? 'earned' : 'locked'}`}
                     >
                         <img
-                            src={toAbsoluteMediaUrl(item.icon)}
+                            src={item.icon}
                             alt={item.name}
                             className={`achievement-icon ${item.is_obtained ? '' : 'grayscale'}`}
                             style={{ height: '100px', borderRadius: '5px' }}
