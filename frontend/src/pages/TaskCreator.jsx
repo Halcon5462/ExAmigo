@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
-import { SUBJECT_OPTIONS } from '../utils/subjectOptions';
 
 const TaskCreator = () => {
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         subject: '',
         order_KIM: 1,
@@ -13,6 +15,24 @@ const TaskCreator = () => {
         image: null,
         file: null
     });
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const resp = await api.get('/taskBank/tasks/');
+                setTasks(resp.data);
+            } catch (e) {
+                console.error(e);
+                setError('Не удалось загрузить банк заданий');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTasks();
+    }, []);
+
+    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -66,27 +86,35 @@ const TaskCreator = () => {
         }));
     };
 
+    if (loading) {
+        return <div>Загрузка данных для создания задания...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     return (
         <div style={{ maxWidth: '500px' }}>
             <h1>Новое задание</h1>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <div>
-                    <div>Предмет:</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '6px' }}>
-                        {SUBJECT_OPTIONS.map((option) => (
-                            <label key={option.value} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <input
-                                    type="radio"
-                                    name="subject"
-                                    value={option.value}
-                                    checked={formData.subject === option.value}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <span>{option.label}</span>
-                            </label>
-                        ))}
-                    </div>
+                    <label>
+                        Предмет:{' '}
+                        <select
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Выберите предмет</option>
+                            {subjects.map((subject) => (
+                                <option key={subject} value={subject}>
+                                    {subject}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
                 </div>
                 <input name="order_KIM" type="number" placeholder="№ КИМ" onChange={handleChange} value={formData.order_KIM} required />
                 <input name="type" placeholder="Тип задания" onChange={handleChange} value={formData.type} required />
