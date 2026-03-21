@@ -13,6 +13,7 @@ const TaskSetPlayer = () => {
   const examId = new URLSearchParams(location.search).get("exam");
   const isExam = Boolean(examId);
   const finishInFlight = useRef(false);
+  const retryInFlight = useRef(false);
 
   const [currentSet, setCurrentSet] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -29,6 +30,17 @@ const TaskSetPlayer = () => {
   const [examTimeLimit, setExamTimeLimit] = useState(null);
   const [timeLeft, setTimeLeft] = useState(null);
   const [serverScore, setServerScore] = useState(null);
+
+  const resetAttemptState = () => {
+    setAnswers({});
+    setChecked({});
+    setTaskIndex(0);
+    setScreen("playing");
+    setExamStartedAt(null);
+    setExamTimeLimit(null);
+    setTimeLeft(null);
+    setServerScore(null);
+  };
 
   useEffect(() => {
     const fetchSet = async () => {
@@ -105,8 +117,8 @@ const TaskSetPlayer = () => {
     };
 
     tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
   }, [examStartedAt, examTimeLimit, isExam]);
 
   const finishExam = async () => {
@@ -162,20 +174,37 @@ const TaskSetPlayer = () => {
 
   const goTo = (index) => {
     setTaskIndex(index);
-
   };
 
-  const retry = () => {
-    setAnswers({});
-    setChecked({});
-    setTaskIndex(0);
-    setScreen("playing");
+  const retry = async () => {
+    if (!isExam) {
+      resetAttemptState();
+      return;
+    }
+
+    if (retryInFlight.current) return;
+    retryInFlight.current = true;
+
+    try {
+      const resp = await api.post(`/taskBank/tasksets/${id}/start-exam/`);
+      const nextExamId = resp.data?.exam_id;
+
+      resetAttemptState();
+
+      if (nextExamId) {
+        navigate(`/tasksets/play/${id}?exam=${nextExamId}`, { replace: true });
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Не удалось начать новую попытку экзамена');
+    } finally {
+      retryInFlight.current = false;
+    }
   };
 
   if (loading) return <div>Загрузка...</div>;
   if (error) return <div>{error}</div>;
 
-  // экран статистики
   if (screen === "stats") {
     const total = tasks.length;
     const correctCount = Object.values(checked).filter(Boolean).length;
@@ -245,15 +274,15 @@ const TaskSetPlayer = () => {
   return (
     <div className="task-container">
       <div className='set-nav'>
-        {taskIndex != 0 &&
-          <ArrowLeftCircle 
-          className="arrow"
-          size={40}
-          onClick={() => goTo(taskIndex - 1)} />
+        {taskIndex !== 0 &&
+          <ArrowLeftCircle
+            className="arrow"
+            size={40}
+            onClick={() => goTo(taskIndex - 1)} />
         }
 
         {taskIndex < tasks.length - 1 ? (
-            <ArrowRightCircle 
+          <ArrowRightCircle
             className="arrow"
             size={40}
             onClick={() => goTo(taskIndex + 1)} />
@@ -263,16 +292,16 @@ const TaskSetPlayer = () => {
           </button>
         )}
       </div>
-      <div class="task-info">
+      <div className="task-info">
         <span>
           {task.subject} · {currentSet.name}
           {isExam && timeLeft !== null ? ` · Осталось: ${formatTime(timeLeft)}` : ""}
         </span>
-        <span class="progress"> Задание {taskIndex + 1}/{tasks.length}</span>
+        <span className="progress"> Задание {taskIndex + 1}/{tasks.length}</span>
       </div>
       {task && (
         <TaskItem
-          key={task.id}
+          key={`${examId || 'training'}-${task.id}`}
           task={task}
           examSessionId={isExam ? examId : null}
           locked={isExam && answers[task.id] !== undefined}
