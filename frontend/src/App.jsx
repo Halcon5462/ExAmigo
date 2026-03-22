@@ -1,19 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute';
+import api from './utils/api';
+import AchievementsPage from './pages/AchievementsPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import TestMatchPage from './pages/MatchPage';
 import ProfilePage from './pages/ProfilePage';
+import Shop from './pages/Shop';
 import TaskBank from './pages/TaskBank';
 import TaskCreator from './pages/TaskCreator';
-import Shop from './pages/Shop';
+import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
 import TaskSetCreator from './pages/TaskSetCreator';
 import TaskSetList from './pages/TaskSetList';
 import TaskSetPlayer from './pages/TaskSetPlayer';
-import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
-import ProtectedRoute from './components/ProtectedRoute';
-import api from './utils/api';
-import Header from './components/Header'
-import TestMatchPage from './pages/MatchPage'
 
 function App() {
     const [user, setUser] = useState(null);
@@ -64,7 +66,6 @@ function App() {
         if (typeof url !== 'string') return null;
         if (url.startsWith('http://') || url.startsWith('https://')) return url;
 
-        // DRF чаще всего отдает /media/...
         const origin = new URL(api.defaults.baseURL).origin;
         if (url.startsWith('/')) return `${origin}${url}`;
         return `${origin}/${url}`;
@@ -91,7 +92,6 @@ function App() {
 
             applyBackground(toAbsoluteMediaUrl(bgImage) || null);
         } catch (err) {
-            // В dev StrictMode эффекты могут вызываться дважды: не спамим консоль.
             const now = Date.now();
             if (now - lastEquippedErrorAt.current > 3000) {
                 console.error('Failed to fetch equipped:', err);
@@ -136,10 +136,10 @@ function App() {
 
                     <Route element={<ProtectedRoute user={user} />}>
                         <Route path="/" element={<HomePage user={user} />} />
-
                         <Route path="/tasks" element={<TaskBank />} />
                         <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/shop" element={<Shop />} />
+                        <Route path="/achievements" element={<AchievementsPage onLogout={handleLogout} />} />
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
                         <Route path="/tasksets" element={<TaskSetList />} />
                         <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
@@ -147,7 +147,14 @@ function App() {
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
                         <Route
                             path="/profile"
-                            element={<ProfilePage user={user} onLogout={handleLogout} equipped={equipped} refreshEquipped={fetchEquipped} />}
+                            element={
+                                <ProfilePage
+                                    user={user}
+                                    onLogout={handleLogout}
+                                    equipped={equipped}
+                                    refreshEquipped={fetchEquipped}
+                                />
+                            }
                         />
                     </Route>
 

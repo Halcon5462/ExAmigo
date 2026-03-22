@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 import CreateTaskSetFilters from '../components/Filter/CreateTaskSetFilters';
+import { SUBJECT_OPTIONS } from '../utils/subjectOptions';
 
 const TaskSetCreator = () => {
-  const SUBJECT_OPTIONS = [
-    { value: 'prof_math', label: 'Профильная математика' },
-    { value: 'russian', label: 'Русский язык' },
-    { value: 'physics', label: 'Физика' },
-    { value: 'informatic', label: 'Информатика' },
-  ];
-
   const [tasks, setTasks] = useState([]);
   const [selected, setSelected] = useState({});
   const [name, setName] = useState('');
@@ -120,7 +114,7 @@ const TaskSetCreator = () => {
   if (error) return <div>{error}</div>;
 
   const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
-  // const visibleTasks = 
+  // const visibleTasks =
   //   ? tasks.filter(t =>
   //       t.subject === subject
   //       || t.subject === selectedSubjectLabel

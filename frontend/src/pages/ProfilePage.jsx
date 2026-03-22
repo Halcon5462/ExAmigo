@@ -10,7 +10,6 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
     const [achievements, setAchievements] = useState([]);
-    const [progress, setProgress] = useState([]);
     const [products, setProducts] = useState([]);
     const [selectingId, setSelectingId] = useState(null);
     const [selectedFrameId, setSelectedFrameId] = useState(null);
@@ -33,8 +32,7 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
         const fetchData = async () => {
             try {
                 const requests = [
-                    api.get('/account/user-achievements/'),
-                    api.get('/account/user-progress/'),
+                    api.get('/achievements/'),
                     api.get('/products/products/')
                 ];
 
@@ -45,12 +43,11 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
                 const results = await Promise.all(requests);
 
                 setAchievements(results[0].data);
-                setProgress(results[1].data);
-                setProducts(results[2].data);
+                setProducts(results[1].data);
 
-                if (!initialUser && results[3]) {
-                    setUser(results[3].data);
-                    localStorage.setItem('user', JSON.stringify(results[3].data));
+                if (!initialUser && results[2]) {
+                    setUser(results[2].data);
+                    localStorage.setItem('user', JSON.stringify(results[2].data));
                 }
             } catch (err) {
                 console.error('Failed to fetch profile:', err);
@@ -156,7 +153,6 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
 
             <AchievementsList
                 achievements={achievements}
-                progress={progress}
             />
 
             <TaskStatisticsSection />
