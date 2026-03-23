@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import "../../static/css/auth.css";
+import '../../static/css/auth.css';
 
 const LoginPage = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -19,10 +19,12 @@ const LoginPage = ({ onLogin }) => {
 
         try {
             if (isLogin) {
+                // ВХОД
                 const response = await api.post('/account/login/', { email, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
             } else {
+                // РЕГИСТРАЦИЯ
                 const response = await api.post('/account/register/', { email, name, password });
                 const { access, refresh, user } = response.data;
                 onLogin(user, { access, refresh });
@@ -44,15 +46,22 @@ const LoginPage = ({ onLogin }) => {
         <div className="authPage">
             <div className="authPage_container">
 
+                <header className="authPage_header">
+                    <h1 className="header_logo">Informatics LMS</h1>
+                    <nav className="header_nav">
+                        <a href="/" className="nav_link">Главная</a>
+                        <a href="/tasks" className="nav_link">Банк заданий</a>
+                        <a href="/help" className="nav_link">Помощь</a>
+                    </nav>
+                </header>
+
                 <main className="authPage_main">
                     <div className="authPage_formContainer">
-                        <h2 className="authPage_title">
-                            {isLogin ? 'Вход в аккаунт' : 'Регистрация'}
-                        </h2>
+                        <h2 className="authPage_title">{isLogin ? 'Вход в аккаунт' : 'Регистрация'}</h2>
 
-                        {error && <div className="error-message authPage_error">{error}</div>}
+                        {error && <div className="error-message">{error}</div>}
 
-                        <form className="authPage_form" onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}>
                             <div className="authPage_inputGroup">
                                 <input
                                     type="email"
@@ -94,7 +103,7 @@ const LoginPage = ({ onLogin }) => {
                                 className="button button-primary authPage_button"
                                 disabled={loading}
                             >
-                                {loading ? 'Загрузка...' : (isLogin ? 'Войти' : 'Зарегистрироваться')}
+                                {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
                             </button>
                         </form>
 
