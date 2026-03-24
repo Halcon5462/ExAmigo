@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import '../../static/css/auth.css';
+import '../static/css/auth.css';
 
 const LoginPage = ({ onLogin }) => {
     const [isLogin, setIsLogin] = useState(true);
