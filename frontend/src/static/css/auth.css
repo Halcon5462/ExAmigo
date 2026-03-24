@@ -1,0 +1,81 @@
+.authPage {
+    min-height: 100vh;
+    background: var(--base-light);
+}
+
+.authPage_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.authPage_main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 150px);
+}
+
+.authPage_formContainer {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    border: 1px solid var(--grey);
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.authPage_title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.authPage_inputGroup {
+    margin-bottom: 20px;
+}
+
+.authPage_input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--grey);
+    border-radius: 12px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.authPage_input:focus {
+    border-color: var(--green);
+    outline: none;
+}
+
+.authPage_button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.authPage_footer {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.authPage_text {
+    margin-bottom: 5px;
+}
+
+.authPage_link {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.authPage_link:hover {
+    color: var(--dark-green);
+    text-decoration: underline;
+}
+
+.authPage_error {
+    color: var(--error);
+    margin-bottom: 15px;
+    text-align: center;
+}
