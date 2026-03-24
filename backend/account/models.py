@@ -1,12 +1,11 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.conf import settings
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from taskBank.models import Task
+
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, name, password=None):
         if not email:
-            raise ValueError('Email обязателен')
+            raise ValueError('Email РѕР±СЏР·Р°С‚РµР»РµРЅ')
         email = self.normalize_email(email)
         user = self.model(email=email, name=name)
         user.set_password(password)
@@ -20,18 +19,20 @@ class UserAccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     """
-    Модель пользователя.
+    РњРѕРґРµР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
 
-    Использую email как логин.
+    РСЃРїРѕР»СЊР·СѓСЋ email РєР°Рє Р»РѕРіРёРЅ.
 
-    Поля:
-    - email: уникальный, для входа
-    - name: имя пользователя
-    - is_active: активен ли аккаунт
-    - is_staff: доступ в админку
+    РџРѕР»СЏ:
+    - email: СѓРЅРёРєР°Р»СЊРЅС‹Р№, РґР»СЏ РІС…РѕРґР°
+    - name: РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+    - is_active: Р°РєС‚РёРІРµРЅ Р»Рё Р°РєРєР°СѓРЅС‚
+    - is_staff: РґРѕСЃС‚СѓРї РІ Р°РґРјРёРЅРєСѓ
     """
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -44,79 +45,3 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-class Achievement(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    target = models.PositiveIntegerField()
-    icon = models.ImageField(upload_to='achievements/icons/')
-    reward = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-class UserAchievement(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='achievements'
-    )
-    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
-    get_date = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'achievement')
-
-    def __str__(self):
-        return f"{self.user.email} - {self.achievement.name}"
-
-
-class UserAchievementProgress(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='progressToAchievement'
-    )
-    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
-    current_value = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        unique_together = ('user', 'achievement')
-
-    def __str__(self):
-        return f"{self.user.email} progress for {self.achievement.name}"
-
-    @property
-    def is_completed(self):
-        return self.current_value >= self.achievement.target
-
-
-class TaskAttempt(models.Model):
-    '''
-    Просто решение, бесконечное кол-во на одно задание
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="attempts",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    answer = models.TextField()
-    is_correct = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class TaskProgress(models.Model):
-    '''
-    Первое верное решение
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="task_progress",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    first_solved_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("user", "task")
