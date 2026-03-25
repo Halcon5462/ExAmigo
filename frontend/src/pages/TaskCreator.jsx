@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import api from '../utils/api';
+import '../static/css/task.css';
 
 const TaskCreator = () => {
-    const [tasks, setTasks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         subject: '',
         order_KIM: 1,
@@ -15,24 +13,6 @@ const TaskCreator = () => {
         image: null,
         file: null
     });
-
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const resp = await api.get('/taskBank/tasks/');
-                setTasks(resp.data);
-            } catch (e) {
-                console.error(e);
-                setError('Не удалось загрузить банк заданий');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTasks();
-    }, []);
-
-    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -60,16 +40,6 @@ const TaskCreator = () => {
                 }
             });
             alert('Успешно создано!');
-            setFormData({
-                subject: '',
-                order_KIM: 1,
-                type: '',
-                difficulty: 1,
-                description: '',
-                correct_answers: '',
-                image: null,
-                file: null
-            });
         } catch (err) {
             alert('Ошибка: ' + JSON.stringify(err.response?.data));
         }
@@ -77,55 +47,67 @@ const TaskCreator = () => {
 
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
-
         const fieldValue = type === 'file' ? files[0] : value;
-
-        setFormData(prev => ({
-            ...prev,
-            [name]: fieldValue
-        }));
+        setFormData(prev => ({ ...prev, [name]: fieldValue }));
     };
 
-    if (loading) {
-        return <div>Загрузка данных для создания задания...</div>;
-    }
-
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     return (
-        <div style={{ maxWidth: '500px' }}>
-            <h1>Новое задание</h1>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div>
-                    <label>
-                        Предмет:{' '}
-                        <select
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Выберите предмет</option>
-                            {subjects.map((subject) => (
-                                <option key={subject} value={subject}>
-                                    {subject}
-                                </option>
-                            ))}
-                        </select>
-                    </label>
+        <div className="taskCreator">
+            <h1 className="taskCreator_title text">Новое задание</h1>
+
+            <form onSubmit={handleSubmit} className="taskCreator_form">
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Предмет</label>
+                    <input
+                        name="subject"
+                        className="taskCreator_input description_text"
+                        placeholder="Предмет"
+                        onChange={handleChange}
+                        value={formData.subject}
+                        required
+                    />
                 </div>
-                <input name="order_KIM" type="number" placeholder="№ КИМ" onChange={handleChange} value={formData.order_KIM} required />
-                <input name="type" placeholder="Тип задания" onChange={handleChange} value={formData.type} required />
-                <input name="difficulty" type="number" min="1" max="5" placeholder="Сложность (1-5)" onChange={handleChange} value={formData.difficulty} required />
-                <textarea name="description" placeholder="Условие задания" onChange={handleChange} value={formData.description} required rows={5} />
-                <label>Изображение:</label>
-                <input type="file" name="image" onChange={handleChange} />
-                <label>Доп. файл:</label>
-                <input type="file" name="file" onChange={handleChange} />
-                <input name="correct_answers" placeholder="Верный ответ" onChange={handleChange} value={formData.correct_answers} required />
-                <button type="submit" style={{ padding: '10px', cursor: 'pointer' }}>Опубликовать</button>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Тип задания</label>
+                    <input
+                        name="type"
+                        className="taskCreator_input description_text"
+                        placeholder="Тип задания"
+                        onChange={handleChange}
+                        value={formData.type}
+                        required
+                    />
+                </div>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Условие задания</label>
+                    <textarea
+                        name="description"
+                  http://localhost:5173/tasks/create      className="taskCreator_textarea description_text"
+                        placeholder="Условие задания"
+                        onChange={handleChange}
+                        value={formData.description}
+                        rows={6}
+                        required
+                    />
+                </div>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Верный ответ</label>
+                    <input
+                        name="correct_answers"
+                        className="taskCreator_input description_text"
+                        placeholder="Верный ответ"
+                        onChange={handleChange}
+                        value={formData.correct_answers}
+                        required
+                    />
+                </div>
+
+                <button type="submit" className="btn_green taskCreator_button">
+                    Опубликовать
+                </button>
             </form>
         </div>
     );
