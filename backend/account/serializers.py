@@ -1,12 +1,40 @@
 from rest_framework import serializers
 
-from .models import UserAccount
+from .models import Avatar, UserAccount
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Avatar
+        fields = ['id', 'name', 'image']
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if not obj.image:
+            return None
+        if request is None:
+            return obj.image.url
+        return request.build_absolute_uri(obj.image.url)
 
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar_url = serializers.SerializerMethodField()
+
     class Meta:
         model = UserAccount
-        fields = ['id', 'email', 'name']
+        fields = ['id', 'email', 'name', 'avatar', 'avatar_default', 'avatar_url']
+
+    def get_avatar_url(self, obj):
+        avatar_url = obj.get_avatar_url()
+        request = self.context.get('request')
+
+        if not avatar_url:
+            return None
+        if request is None:
+            return avatar_url
+        return request.build_absolute_uri(avatar_url)
 
 
 class RegisterSerializer(serializers.Serializer):
