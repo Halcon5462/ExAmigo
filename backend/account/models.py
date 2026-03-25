@@ -20,6 +20,15 @@ class UserAccountManager(BaseUserManager):
         return user
 
 
+class Avatar(models.Model):
+    name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='avatars/defaults/')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     """
     РњРѕРґРµР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
@@ -35,6 +44,17 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    avatar = models.ImageField(
+        upload_to='avatars/custom/',
+        blank=True,
+        null=True,
+    )
+    avatar_default = models.ForeignKey(
+        Avatar,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -45,3 +65,10 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        if self.avatar_default and self.avatar_default.image:
+            return self.avatar_default.image.url
+        return None
