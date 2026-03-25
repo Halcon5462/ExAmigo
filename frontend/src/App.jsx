@@ -113,6 +113,11 @@ function App() {
         localStorage.setItem('user', JSON.stringify(userData));
     };
 
+    const handleUserUpdate = useCallback((userData) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+    }, []);
+
     const handleLogout = () => {
         setUser(null);
         localStorage.clear();
@@ -151,6 +156,7 @@ function App() {
                                 <ProfilePage
                                     user={user}
                                     onLogout={handleLogout}
+                                    onUserUpdate={handleUserUpdate}
                                     equipped={equipped}
                                     refreshEquipped={fetchEquipped}
                                 />
