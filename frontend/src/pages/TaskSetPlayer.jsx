@@ -154,58 +154,39 @@ const TaskSetPlayer = () => {
 
       <div className="task-player_card">
         {task && (
-          <>
-            <div className="task-player_type description_text">
-              Тип: {task.type}
-            </div>
-            <div className="task-player_difficulty description_text">
-              Сложность: {task.difficulty} / 5
-            </div>
+          <TaskItem
+            key={task.id}
+            task={task}
+            onAnswered={handleAnswered}
+          />
+        )}
+      </div>
 
-            {task.image && (
-              <div className="task-player_image">
-                <img src={task.image} alt="Задание" />
-              </div>
-            )}
-
-            <div className="task-player_description text">
-              {task.description}
-            </div>
-
-            <TaskItem
-              key={task.id}
-              task={task}
-              onAnswered={handleAnswered}
-            />
-          </>
+      <div className="task-player_buttons">
+        {taskIndex > 0 && (
+          <button
+            className="task-player_btn-back btn_text"
+            onClick={() => goTo(taskIndex - 1)}
+          >
+            ← Назад
+          </button>
         )}
 
-        <div className="task-player_buttons">
-          {taskIndex > 0 && (
-            <button
-              className="task-player_btn-back btn_text"
-              onClick={() => goTo(taskIndex - 1)}
-            >
-              ← Назад
-            </button>
-          )}
-
-          {taskIndex < tasks.length - 1 ? (
-            <button
-              className="task-player_btn-next btn_text"
-              onClick={() => goTo(taskIndex + 1)}
-            >
-              Далее →
-            </button>
-          ) : (
-            <button
-              className="task-player_btn-next btn_green"
-              onClick={() => setScreen("stats")}
-            >
-              Завершить
-            </button>
-          )}
-        </div>
+        {taskIndex < tasks.length - 1 ? (
+          <button
+            className="task-player_btn-next btn_text"
+            onClick={() => goTo(taskIndex + 1)}
+          >
+            Далее →
+          </button>
+        ) : (
+          <button
+            className="task-player_btn-next btn_green"
+            onClick={() => setScreen("stats")}
+          >
+            Завершить
+          </button>
+        )}
       </div>
     </div>
   );
