@@ -75,7 +75,7 @@ const TaskSetList = () => {
 
             <div className="taskset-filters">
                 <select name="testType" value={filters.testType} onChange={handleFilterChange}>
-                    <option value="">Тип теста</option>
+                    <option value="">Предмет</option>
                     {testTypes.map(type => (
                         <option key={type} value={type}>{type}</option>
                     ))}
@@ -138,7 +138,7 @@ const TaskSetList = () => {
                                 <span>{getDifficultyName(Math.round(set.average_difficulty))}</span>
                             </div>
                             <div className="taskset-card_info-item">
-                                <span className="taskset-card_info-label">Тип теста:</span>
+                                <span className="taskset-card_info-label">Предмет:</span>
                                 <span>{set.subject}</span>
                             </div>
                         </div>
