@@ -196,7 +196,7 @@ const TaskSetCreator = () => {
                       />
                     </td>
                     <td>{task.order_KIM}</td>
-                    <td>{task.subject}</td>
+                    <td>{task.subject_display || task.subject}</td>
                     <td>{task.type}</td>
                     <td>{task.difficulty}</td>
                     <td>
