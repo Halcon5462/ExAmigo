@@ -81,7 +81,7 @@ const TaskSetList = () => {
         <div key={set.id} style={{ border: '1px solid #ddd', marginBottom: '15px', padding: '10px' }}>
           <h3>{set.name}</h3>
           <p><strong>Тип:</strong> {set.type}</p>
-          {set.subject && <p><strong>Предмет:</strong> {set.subject}</p>}
+          {set.subject && <p><strong>Предмет:</strong> {set.subject_display || set.subject}</p>}
           <p><strong>Автор:</strong> {set.author_name || set.author_email || 'Аноним'}</p>
           <p><strong>Публичный:</strong> {set.is_public ? 'Да' : 'Нет'}</p>
           <p><strong>Заданий:</strong> {set.items?.length || 0}</p>
@@ -97,3 +97,4 @@ const TaskSetList = () => {
 };
 
 export default TaskSetList;
+
