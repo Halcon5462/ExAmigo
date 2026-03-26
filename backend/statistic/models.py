@@ -1,8 +1,8 @@
 from django.db import models
 from django.conf import settings
 
-from taskBank.models import Task
 from taskBank.ege_scoring import SubjectChoices
+
 
 class TaskAttempt(models.Model):
     '''
@@ -10,7 +10,7 @@ class TaskAttempt(models.Model):
     '''
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name="attempts",
     )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
@@ -32,7 +32,7 @@ class TaskProgress(models.Model):
     '''
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name="task_progress",
     )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
@@ -62,4 +62,3 @@ class TaskStatistics(models.Model):
 
     class Meta:
         unique_together = ("user", "subject", "order_KIM")
-
