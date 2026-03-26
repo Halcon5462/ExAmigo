@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
 import '../static/css/task.css';
 
 const TaskCreator = () => {
+    const [tasks, setTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         subject: '',
         order_KIM: 1,
@@ -13,6 +16,23 @@ const TaskCreator = () => {
         image: null,
         file: null
     });
+
+    useEffect(() => {
+        const fetchTasks = async () => {
+            try {
+                const resp = await api.get('/taskBank/tasks/');
+                setTasks(resp.data);
+            } catch (e) {
+                console.error(e);
+                setError('Не удалось загрузить банк заданий');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTasks();
+    }, []);
+
+    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,6 +60,16 @@ const TaskCreator = () => {
                 }
             });
             alert('Успешно создано!');
+            setFormData({
+                subject: '',
+                order_KIM: 1,
+                type: '',
+                difficulty: 1,
+                description: '',
+                correct_answers: '',
+                image: null,
+                file: null
+            });
         } catch (err) {
             alert('Ошибка: ' + JSON.stringify(err.response?.data));
         }
@@ -51,6 +81,14 @@ const TaskCreator = () => {
         setFormData(prev => ({ ...prev, [name]: fieldValue }));
     };
 
+    if (loading) {
+        return <div className="text_mini">Загрузка данных для создания задания...</div>;
+    }
+
+    if (error) {
+        return <div className="text_mini">{error}</div>;
+    }
+
     return (
         <div className="taskCreator">
             <h1 className="taskCreator_title text">Новое задание</h1>
@@ -58,12 +96,32 @@ const TaskCreator = () => {
             <form onSubmit={handleSubmit} className="taskCreator_form">
                 <div className="taskCreator_field">
                     <label className="taskCreator_label description_text">Предмет</label>
-                    <input
+                    <select
                         name="subject"
-                        className="taskCreator_input description_text"
-                        placeholder="Предмет"
-                        onChange={handleChange}
                         value={formData.subject}
+                        onChange={handleChange}
+                        className="taskCreator_select description_text"
+                        required
+                    >
+                        <option value="">Выберите предмет</option>
+                        {subjects.map((subject) => (
+                            <option key={subject} value={subject}>
+                                {subject}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* № КИМ */}
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">№ КИМ</label>
+                    <input
+                        name="order_KIM"
+                        type="number"
+                        placeholder="№ КИМ"
+                        onChange={handleChange}
+                        value={formData.order_KIM}
+                        className="taskCreator_input description_text"
                         required
                     />
                 </div>
@@ -72,10 +130,25 @@ const TaskCreator = () => {
                     <label className="taskCreator_label description_text">Тип задания</label>
                     <input
                         name="type"
-                        className="taskCreator_input description_text"
                         placeholder="Тип задания"
                         onChange={handleChange}
                         value={formData.type}
+                        className="taskCreator_input description_text"
+                        required
+                    />
+                </div>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Сложность (1-5)</label>
+                    <input
+                        name="difficulty"
+                        type="number"
+                        min="1"
+                        max="5"
+                        placeholder="Сложность (1-5)"
+                        onChange={handleChange}
+                        value={formData.difficulty}
+                        className="taskCreator_input description_text"
                         required
                     />
                 </div>
@@ -84,12 +157,32 @@ const TaskCreator = () => {
                     <label className="taskCreator_label description_text">Условие задания</label>
                     <textarea
                         name="description"
-                  http://localhost:5173/tasks/create      className="taskCreator_textarea description_text"
                         placeholder="Условие задания"
                         onChange={handleChange}
                         value={formData.description}
-                        rows={6}
+                        className="taskCreator_textarea description_text"
+                        rows={5}
                         required
+                    />
+                </div>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Изображение</label>
+                    <input
+                        type="file"
+                        name="image"
+                        onChange={handleChange}
+                        className="taskCreator_file"
+                    />
+                </div>
+
+                <div className="taskCreator_field">
+                    <label className="taskCreator_label description_text">Доп. файл</label>
+                    <input
+                        type="file"
+                        name="file"
+                        onChange={handleChange}
+                        className="taskCreator_file"
                     />
                 </div>
 
@@ -97,10 +190,10 @@ const TaskCreator = () => {
                     <label className="taskCreator_label description_text">Верный ответ</label>
                     <input
                         name="correct_answers"
-                        className="taskCreator_input description_text"
                         placeholder="Верный ответ"
                         onChange={handleChange}
                         value={formData.correct_answers}
+                        className="taskCreator_input description_text"
                         required
                     />
                 </div>
