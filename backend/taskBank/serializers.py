@@ -55,10 +55,14 @@ class TaskSetSerializer(serializers.ModelSerializer):
     items = TaskSetItemSerializer(many=True, required=False)
     author_name = serializers.CharField(source='author.name', read_only=True)
     author_email = serializers.EmailField(source='author.email', read_only=True)
+    subject_display = serializers.CharField(
+        source='get_subject_display',
+        read_only=True
+    )
 
     class Meta:
         model = TaskSet
-        fields = ['id', 'name', 'type', 'subject', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
+        fields = ['id', 'name', 'type', 'subject', 'subject_display', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
         read_only_fields = ['author', 'created_at']
 
     def create(self, validated_data):
