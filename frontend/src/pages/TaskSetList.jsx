@@ -80,7 +80,6 @@ const TaskSetList = () => {
                         <option key={type} value={type}>{type}</option>
                     ))}
                 </select>
-
                 <select name="difficulty" value={filters.difficulty} onChange={handleFilterChange}>
                     <option value="">Сложность</option>
                     {difficulties.map(level => (
@@ -139,20 +138,25 @@ const TaskSetList = () => {
                             </div>
                             <div className="taskset-card_info-item">
                                 <span className="taskset-card_info-label">Предмет:</span>
-                                <span>{set.subject}</span>
+                                <span>{set.subject_display || set.subject}</span>
                             </div>
                         </div>
                         {set.kim_tasks && (
                             <div className="taskset-card_kim description_text">
-                                Задания из КИМ: 1, 4, 7
+                                Задания из КИМ: {set.kim_tasks}
                             </div>
                         )}
-                        <button
-                            className="taskset-card_button btn_text"
-                            onClick={() => navigate(`/tasksets/play/${set.id}`)}
-                        >
+                        {set.type === 'exam' ? (
+                            <button className="taskset-card_button btn_text" onClick={() => startExam(set.id)}>
+                            Начать экзамен
+                            </button>
+                        ) : (
+                            <button 
+                            className="taskset-card_button btn_text" 
+                            onClick={() => navigate(`/tasksets/play/${set.id}`)}>
                             Начать
-                        </button>
+                            </button>
+                        )}
                     </div>
                 ))
             )}

@@ -1,7 +1,11 @@
 import React from 'react';
 
 const TaskBankFilters = ({ tasks, filters, onFilterChange }) => {
-    const subjects = [...new Set(tasks.map(t => t.subject).filter(Boolean))];
+    const subjects = [...new Map(
+        tasks
+            .filter(t => t.subject)
+            .map(t => [t.subject, t.subject_display || t.subject])
+    ).entries()].map(([value, label]) => ({ value, label }));
     const orders = [...new Set(tasks.map(t => t.order_KIM).filter(t => t !== null && t !== undefined))].sort((a, b) => a - b);
     const types = [...new Set(tasks.map(t => t.type).filter(Boolean))];
     const difficulties = [...new Set(tasks.map(t => t.difficulty).filter(t => t !== null && t !== undefined))].sort((a, b) => a - b);
@@ -17,7 +21,7 @@ const TaskBankFilters = ({ tasks, filters, onFilterChange }) => {
             <select name="subject" value={filters.subject || ''} onChange={handleChange} className="form-select">
                 <option value="">Все предметы</option>
                 {subjects.map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
+                    <option key={subject.value} value={subject.value}>{subject.label}</option>
                 ))}
             </select>
 

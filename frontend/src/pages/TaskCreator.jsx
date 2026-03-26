@@ -32,7 +32,11 @@ const TaskCreator = () => {
         fetchTasks();
     }, []);
 
-    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
+    const subjects = [...new Map(
+        tasks
+            .filter((t) => t.subject)
+            .map((t) => [t.subject, t.subject_display || t.subject])
+    ).entries()].map(([value, label]) => ({ value, label }));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -92,24 +96,25 @@ const TaskCreator = () => {
     return (
         <div className="taskCreator">
             <h1 className="taskCreator_title text">Новое задание</h1>
-
             <form onSubmit={handleSubmit} className="taskCreator_form">
                 <div className="taskCreator_field">
-                    <label className="taskCreator_label description_text">Предмет</label>
-                    <select
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        className="taskCreator_select description_text"
-                        required
-                    >
-                        <option value="">Выберите предмет</option>
-                        {subjects.map((subject) => (
-                            <option key={subject} value={subject}>
-                                {subject}
-                            </option>
-                        ))}
-                    </select>
+                    <label className="taskCreator_label description_text">
+                        Предмет:{' '}
+                        <select
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            className="taskCreator_select description_text"
+                            required
+                        >
+                            <option value="">Выберите предмет</option>
+                            {subjects.map((subject) => (
+                                <option key={subject.value} value={subject.value}>
+                                    {subject.label}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
                 </div>
 
                 {/* № КИМ */}
