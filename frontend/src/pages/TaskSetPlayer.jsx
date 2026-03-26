@@ -152,7 +152,7 @@ const TaskSetPlayer = () => {
         </div>
       </div>
 
-      <div className="task-player_card">
+      <div className="">
         {task && (
           <TaskItem
             key={task.id}
