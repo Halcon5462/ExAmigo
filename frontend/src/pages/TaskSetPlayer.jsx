@@ -242,7 +242,7 @@ const TaskSetPlayer = () => {
               return (
                 <tr key={task.id}>
                   <td>{task._order ?? i + 1}</td>
-                  <td>{task.subject}</td>
+                  <td>{task.subject_display || task.subject}</td>
                   <td>{task.type}</td>
                   <td>{task.difficulty}</td>
                   <td>{userAns ?? "—"}</td>
@@ -294,7 +294,7 @@ const TaskSetPlayer = () => {
       </div>
       <div className="task-info">
         <span>
-          {task.subject} · {currentSet.name}
+          {task.subject_display || task.subject} · {currentSet.name}
           {isExam && timeLeft !== null ? ` · Осталось: ${formatTime(timeLeft)}` : ""}
         </span>
         <span className="progress"> Задание {taskIndex + 1}/{tasks.length}</span>
@@ -316,3 +316,4 @@ const TaskSetPlayer = () => {
 };
 
 export default TaskSetPlayer;
+
