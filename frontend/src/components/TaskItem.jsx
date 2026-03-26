@@ -23,7 +23,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         }
 
         const response = await api.post(
-            `/account/task-progress/${task.id}/submit/`,
+            `/statistic/task-progress/${task.id}/submit/`,
             payload
         );
 
@@ -32,9 +32,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         setResult(correct ? 'correct' : 'wrong');
         setReward(reward);
         setFirstTime(first_time);
-        try{
-          onAnswered(task.id, userAnswer, correct)
-        } catch {}
+        onAnswered?.(task.id, userAnswer, correct);
 
     } catch (err) {
         console.error("Ошибка проверки:", err);

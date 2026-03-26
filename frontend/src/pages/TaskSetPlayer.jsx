@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../utils/api";
 import TaskItem from "../components/TaskItem";
@@ -121,7 +121,7 @@ const TaskSetPlayer = () => {
     return () => clearInterval(intervalId);
   }, [examStartedAt, examTimeLimit, isExam]);
 
-  const finishExam = async () => {
+  const finishExam = useCallback(async () => {
     if (!isExam) {
       setScreen("stats");
       return;
@@ -140,14 +140,14 @@ const TaskSetPlayer = () => {
     } finally {
       finishInFlight.current = false;
     }
-  };
+  }, [examId, isExam]);
 
   useEffect(() => {
     if (!isExam) return;
     if (timeLeft === null) return;
     if (timeLeft > 0) return;
     finishExam();
-  }, [timeLeft, isExam]);
+  }, [timeLeft, isExam, finishExam]);
 
   const formatTime = (sec) => {
     if (sec === null || sec === undefined) return "";

@@ -46,7 +46,7 @@ const TaskSetCreator = () => {
         delete newSel[taskId];
         const sorted = Object.entries(newSel).sort((a, b) => a[1] - b[1]);
         const renumbered = {};
-        sorted.forEach(([id, order], idx) => {
+        sorted.forEach(([id], idx) => {
           renumbered[id] = idx + 1;
         });
         return renumbered;
@@ -64,7 +64,7 @@ const TaskSetCreator = () => {
       const updated = { ...prev, [taskId]: newOrder };
       const sorted = Object.entries(updated).sort((a, b) => a[1] - b[1]);
       const renumbered = {};
-      sorted.forEach(([id, order], idx) => {
+      sorted.forEach(([id], idx) => {
         renumbered[id] = idx + 1;
       });
       return renumbered;
@@ -113,14 +113,6 @@ const TaskSetCreator = () => {
   if (loading) return <div>Загрузка заданий...</div>;
   if (error) return <div>{error}</div>;
 
-  const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
-  // const visibleTasks =
-  //   ? tasks.filter(t =>
-  //       t.subject === subject
-  //       || t.subject === selectedSubjectLabel
-  //       || t.subject_display === selectedSubjectLabel
-  //     )
-  //   : tasks;
   const filteredTasks = (setType === 'training')
   ? tasks.filter(task => {
     if (filters.subject && task.subject !== filters.subject) return false;
