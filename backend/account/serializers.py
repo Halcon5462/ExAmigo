@@ -54,3 +54,6 @@ class RegisterSerializer(serializers.Serializer):
             password=validated_data['password']
         )
         return user
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError("RegisterSerializer does not support update.")
