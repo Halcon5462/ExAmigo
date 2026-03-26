@@ -15,4 +15,3 @@ class TaskStatisticsSerializer(serializers.ModelSerializer):
             "correct_count",
             "last_attempt_at",
         ]
-
