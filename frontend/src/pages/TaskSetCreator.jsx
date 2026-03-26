@@ -114,16 +114,16 @@ const TaskSetCreator = () => {
   if (error) return <div>{error}</div>;
 
   const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
-  // const visibleTasks =
-  //   ? tasks.filter(t =>
-  //       t.subject === subject
-  //       || t.subject === selectedSubjectLabel
-  //       || t.subject_display === selectedSubjectLabel
-  //     )
-  //   : tasks;
   const filteredTasks = (setType === 'training')
   ? tasks.filter(task => {
-    if (filters.subject && task.subject !== filters.subject) return false;
+    if (
+      subject &&
+      task.subject !== subject &&
+      task.subject !== selectedSubjectLabel &&
+      task.subject_display !== selectedSubjectLabel
+    ) {
+      return false;
+    }
     if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
     if (filters.type && task.type !== filters.type) return false;
     if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
