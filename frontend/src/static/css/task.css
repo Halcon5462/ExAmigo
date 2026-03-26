@@ -1,51 +1,110 @@
-.task-card{
-    background:white;
-    padding:40px;
-    border-radius:14px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+.task-card {
+    background: white;
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
-.image-container{
-    text-align:center;
-    margin-bottom:25px;
+.image-container {
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-.image-container img{
-    max-width:200px;
+.image-container img {
+    max-width: 200px;
 }
 
-.task-description{
-    line-height:1.5;
-    margin-bottom:25px;
+.task-description {
+    line-height: 1.5;
+    margin-bottom: 25px;
 }
-.input-answer{
-    width:200px;
-    padding:10px;
-    font-size:16px;
-    border-radius:6px;
+
+.input-answer {
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
     border: 2px solid var(--light-blue);
-    &:focus{
-        border: 2px solid var(--dark-blue);
-        outline: none;
-    }
 }
-.btn-container{
+
+.input-answer:focus {
+    border: 2px solid var(--dark-blue);
+    outline: none;
+}
+
+.btn-container {
     display: flex;
     justify-content: space-between;
 }
-.btn-container button{
-    background-color:#6366f1;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    border-radius:8px;
-    cursor:pointer;
+
+.btn-container button {
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
     transition: 0.3s;
+}
 
-    &:hover{
-        background-color: #31327e;
-        transition: 0.3s;
+.btn-container button:hover {
+    background-color: #31327e;
+    transition: 0.3s;
+}
 
-    }
+
+.taskCreator {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.taskCreator_title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.taskCreator_form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.taskCreator_field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.taskCreator_label {
+    color: var(--base-dark);
+    font-weight: 500;
+}
+
+.taskCreator_input,
+.taskCreator_textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--grey);
+    border-radius: 12px;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.taskCreator_input:focus,
+.taskCreator_textarea:focus {
+    border-color: var(--green);
+    outline: none;
+}
+
+.taskCreator_textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.taskCreator_button {
+    width: 100%;
+    margin-top: 10px;
 }
