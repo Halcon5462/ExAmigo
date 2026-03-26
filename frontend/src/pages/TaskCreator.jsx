@@ -32,7 +32,11 @@ const TaskCreator = () => {
         fetchTasks();
     }, []);
 
-    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
+    const subjects = [...new Map(
+        tasks
+            .filter((t) => t.subject)
+            .map((t) => [t.subject, t.subject_display || t.subject])
+    ).entries()].map(([value, label]) => ({ value, label }));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -109,8 +113,8 @@ const TaskCreator = () => {
                         >
                             <option value="">Выберите предмет</option>
                             {subjects.map((subject) => (
-                                <option key={subject} value={subject}>
-                                    {subject}
+                                <option key={subject.value} value={subject.value}>
+                                    {subject.label}
                                 </option>
                             ))}
                         </select>
