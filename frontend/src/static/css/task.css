@@ -68,7 +68,7 @@
 .taskCreator_form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
 }
 
 .taskCreator_field {
@@ -83,6 +83,7 @@
 }
 
 .taskCreator_input,
+.taskCreator_select,
 .taskCreator_textarea {
     width: 100%;
     padding: 12px 16px;
@@ -91,9 +92,11 @@
     transition: border-color 0.2s;
     box-sizing: border-box;
     font-family: inherit;
+    background: white;
 }
 
 .taskCreator_input:focus,
+.taskCreator_select:focus,
 .taskCreator_textarea:focus {
     border-color: var(--green);
     outline: none;
@@ -102,6 +105,24 @@
 .taskCreator_textarea {
     resize: vertical;
     min-height: 120px;
+}
+
+.taskCreator_file {
+    padding: 8px 0;
+}
+
+.taskCreator_file::-webkit-file-upload-button {
+    padding: 8px 16px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.taskCreator_file::-webkit-file-upload-button:hover {
+    background: var(--dark-green);
 }
 
 .taskCreator_button {
