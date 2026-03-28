@@ -46,6 +46,11 @@ const TaskBank = () => {
     });
 
     const displayedSubjects = [...new Set(filteredTasks.map(t => t.subject).filter(Boolean))];
+    const subjectLabels = Object.fromEntries(
+        filteredTasks
+            .filter(task => task.subject)
+            .map(task => [task.subject, task.subject_display || task.subject])
+    );
 
     if (loading) return <div>Загрузка...</div>;
 
@@ -63,7 +68,7 @@ const TaskBank = () => {
             {displayedSubjects.map(subject => (
                 <div key={subject} className="task-container">
                     <div className="task-info">
-                        <span>{subject}</span>
+                        <span>{subjectLabels[subject] || subject}</span>
                     </div>
                     {filteredTasks
                         .filter(t => t.subject === subject)

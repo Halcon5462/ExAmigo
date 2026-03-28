@@ -113,9 +113,17 @@ const TaskSetCreator = () => {
   if (loading) return <div>Загрузка заданий...</div>;
   if (error) return <div>{error}</div>;
 
+
   const filteredTasks = (setType === 'training')
   ? tasks.filter(task => {
-    if (filters.subject && task.subject !== filters.subject) return false;
+    if (
+      subject &&
+      task.subject !== subject &&
+      task.subject !== selectedSubjectLabel &&
+      task.subject_display !== selectedSubjectLabel
+    ) {
+      return false;
+    }
     if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
     if (filters.type && task.type !== filters.type) return false;
     if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
@@ -188,7 +196,7 @@ const TaskSetCreator = () => {
                       />
                     </td>
                     <td>{task.order_KIM}</td>
-                    <td>{task.subject}</td>
+                    <td>{task.subject_display || task.subject}</td>
                     <td>{task.type}</td>
                     <td>{task.difficulty}</td>
                     <td>

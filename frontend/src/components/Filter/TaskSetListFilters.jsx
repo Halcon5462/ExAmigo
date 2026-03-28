@@ -1,7 +1,11 @@
 import React from 'react';
 
 const TaskSetListFilters = ({ taskSets, filters, onFilterChange }) => {
-    const testTypes = [...new Set(taskSets.map(ts => ts.subject).filter(Boolean))];
+    const testTypes = [...new Map(
+        taskSets
+            .filter(ts => ts.subject)
+            .map(ts => [ts.subject, ts.subject_display || ts.subject])
+    ).entries()].map(([value, label]) => ({ value, label }));
     const difficulties = [...new Set(taskSets.map(ts => ts.average_difficulty).filter(Boolean))].sort((a, b) => a - b);
     const authors = [...new Set(taskSets.map(ts => ts.author_name || ts.author_email || ts.author).filter(Boolean))];
 
@@ -17,7 +21,7 @@ const TaskSetListFilters = ({ taskSets, filters, onFilterChange }) => {
             <select name="testType" value={filters.testType || ''} onChange={handleChange} className="form-select">
                 <option value="">Тип теста</option>
                 {testTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
+                    <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
             </select>
 

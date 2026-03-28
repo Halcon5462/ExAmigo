@@ -30,7 +30,12 @@ const TaskSetAutoGenerator = () => {
         fetchTasks();
     }, []);
 
-    const subjects = [...new Set(tasks.map((t) => t.subject).filter(Boolean))];
+    const subjects = [...new Map(
+        tasks
+            .filter((t) => t.subject)
+            .map((t) => [t.subject, t.subject_display || t.subject])
+    ).entries()].map(([value, label]) => ({ value, label }));
+    const selectedSubjectLabel = subjects.find((item) => item.value === subject)?.label || subject;
 
     const availableNumbers = subject
         ? [...new Set(
@@ -111,8 +116,8 @@ const TaskSetAutoGenerator = () => {
                         >
                             <option value="">Выберите предмет</option>
                             {subjects.map((subj) => (
-                                <option key={subj} value={subj}>
-                                    {subj}
+                                <option key={subj.value} value={subj.value}>
+                                    {subj.label}
                                 </option>
                             ))}
                         </select>
@@ -144,7 +149,7 @@ const TaskSetAutoGenerator = () => {
 
                 {mode === 'custom' && subject && (
                     <div style={{ marginBottom: '10px' }}>
-                        <div>Номера заданий КИМ по предмету {subject}:</div>
+                        <div>Номера заданий КИМ по предмету {selectedSubjectLabel}:</div>
                         {availableNumbers.length === 0 && (
                             <div>Для этого предмета нет заданий в банке.</div>
                         )}
@@ -181,4 +186,5 @@ const TaskSetAutoGenerator = () => {
 };
 
 export default TaskSetAutoGenerator;
+
 
