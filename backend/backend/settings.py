@@ -3,9 +3,11 @@ from datetime import timedelta
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
 
 SECRET_KEY = 'django-insecure-06#!@fkg#*&@_ubc_pe#m)!p(q*y#-m7)iqi2-^urydh(c!2mu'
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'backend.logging_middleware.RequestLoggingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -117,4 +120,77 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "info_only": {
+            "()": "backend.logging_filters.ExactLevelFilter",
+            "level_name": "INFO",
+        },
+        "warning_only": {
+            "()": "backend.logging_filters.ExactLevelFilter",
+            "level_name": "WARNING",
+        },
+        "error_only": {
+            "()": "backend.logging_filters.ExactLevelFilter",
+            "level_name": "ERROR",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "info_file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "info.log",
+            "level": "INFO",
+            "filters": ["info_only"],
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
+        "warning_file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "warning.log",
+            "level": "WARNING",
+            "filters": ["warning_only"],
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
+        "error_file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "error.log",
+            "level": "ERROR",
+            "filters": ["error_only"],
+            "formatter": "verbose",
+            "encoding": "utf-8",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "backend.request": {
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "backend.security": {
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }

@@ -4,11 +4,17 @@ from .ege_scoring import get_task_score, SubjectChoices
 
 
 class TaskSetType(models.TextChoices):
+    """
+    Типы наборов заданий.
+    """
     TRAINING = "training", "Тренировка"
     EXAM = "exam", "Экзамен"
 
 
 class Task(models.Model):
+    """
+    Модель для задания.
+    """
     subject = models.CharField(
         max_length=50,
         choices=SubjectChoices.choices,
@@ -18,12 +24,12 @@ class Task(models.Model):
     difficulty = models.PositiveIntegerField(verbose_name="Сложность от 1 до 5")
     description = models.TextField(verbose_name="Описание задания")
     image = models.ImageField(
-        upload_to='tasks/images/', 
+        upload_to='tasks/images/',
         blank=True,
         null=True,
     )
     file = models.FileField(
-        upload_to='tasks/files/', 
+        upload_to='tasks/files/',
         blank=True,
         null=True,
     )
@@ -39,6 +45,9 @@ class Task(models.Model):
 
     @property
     def primary_score(self):
+        """
+        Возвращает первичный балл для задания.
+        """
         return get_task_score(self.subject, self.order_KIM)
 
 
@@ -49,9 +58,15 @@ class Task(models.Model):
 
 
     def __str__(self):
+        """
+        Возвращает строку с информацией о задании.
+        """
         return f"Задание {self.id}: {self.subject} - №{self.order_KIM} (сложность {self.difficulty}/5)"
 
 class TaskCorrectAnswer(models.Model):
+    """
+    Модель для правильного ответа на задание.
+    """
     task = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
@@ -84,6 +99,9 @@ class TaskSet(models.Model):
 
     @property
     def total_primary_score(self):
+        """
+        Возвращает суммарный первичный балл для набора заданий.
+        """
         return sum(item.task.primary_score for item in self.items.all())
 
     class Meta:
@@ -91,10 +109,16 @@ class TaskSet(models.Model):
         verbose_name_plural = "Комплекты заданий"
 
     def __str__(self):
+        """
+        Возвращает название набора заданий.
+        """
         return self.name
 
 
 class ExamSession(models.Model):
+    """
+    Модель для сессии экзамена.
+    """
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -137,5 +161,7 @@ class TaskSetItem(models.Model):
         verbose_name_plural = "Элементы комплекта"
 
     def __str__(self):
+        """
+        Возвращает строку с информацией о элементе набора заданий.
+        """
         return f"{self.task_set.name} - {self.task.id} (#{self.order})"
-    

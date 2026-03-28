@@ -11,17 +11,29 @@ from .serializers import ProductSerializer, ProductWriteSerializer, PurchaseSeri
 from .services import ProductService, equip_product
 
 class IsAdminOrReadOnly(permissions.BasePermission):
+    """
+    Разрешение, которое позволяет только администраторам выполнять небезопасные методы.
+    """
     def has_permission(self, request, view):
+        """
+        Проверяет, есть ли у пользователя разрешение на выполнение запроса.
+        """
         if request.method in permissions.SAFE_METHODS:
             return True
         return bool(request.user and request.user.is_staff)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet для продуктов.
+    """
     queryset = Product.objects.select_related("author").all()
     permission_classes = [IsAdminOrReadOnly]
 
     def get_serializer_class(self):
+        """
+        Возвращает класс сериализатора в зависимости от действия.
+        """
         if self.action in {"create", "update", "partial_update"}:
             return ProductWriteSerializer
         if self.action == "purchase":
@@ -29,6 +41,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         return ProductSerializer
 
     def get_queryset(self):
+        """
+        Возвращает queryset продуктов.
+        """
         qs = super().get_queryset()
 
         user = self.request.user
@@ -67,6 +82,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"], permission_classes=[permissions.IsAuthenticated])
     def purchase(self, request, pk=None):
+        """
+        Покупает продукт.
+        """
         product = self.get_object()
         serializer = PurchaseSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -98,9 +116,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class EquipProductView(APIView):
+    """
+    Представление для экипировки продукта.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        """
+        Обрабатывает POST-запрос для экипировки продукта.
+        """
         user_product_id = request.data.get("user_product_id")
         if not user_product_id:
             return Response({"error": "user_product_id is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -116,9 +140,15 @@ class EquipProductView(APIView):
 
 
 class EquippedItemsView(APIView):
+    """
+    Представление для получения экипированных предметов.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        """
+        Обрабатывает GET-запрос для получения экипированных предметов.
+        """
         items = (
             UserEquippedItem.objects.filter(profile=request.user)
             .select_related("product", "product__frame", "product__background")
@@ -137,4 +167,3 @@ class EquippedItemsView(APIView):
                 data[item.slot] = ProductSerializer(item.product).data
 
         return Response(data, status=status.HTTP_200_OK)
-

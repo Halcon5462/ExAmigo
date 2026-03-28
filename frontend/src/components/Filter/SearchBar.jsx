@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const SearchBar = ({
   placeholder = 'Поиск...',
@@ -6,11 +6,11 @@ const SearchBar = ({
   delay = 500
 }) => {
   const [query, setQuery] = useState('');
-  const [typingTimeout, setTypingTimeout] = useState(null);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
-    if (typingTimeout) {
-      clearTimeout(typingTimeout);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
     }
 
     const timeout = setTimeout(() => {
@@ -19,7 +19,7 @@ const SearchBar = ({
       }
     }, delay);
 
-    setTypingTimeout(timeout);
+    typingTimeoutRef.current = timeout;
 
     return () => clearTimeout(timeout);
   }, [query, delay, onSearch]);

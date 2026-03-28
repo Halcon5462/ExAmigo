@@ -4,6 +4,9 @@ from .models import Background, Frame, Product, ProductType
 
 
 class FrameSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для рамок.
+    """
     class Meta:
         model = Frame
         fields = ("id", "icon_frame")
@@ -11,6 +14,9 @@ class FrameSerializer(serializers.ModelSerializer):
 
 
 class BackgroundSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для фонов.
+    """
     class Meta:
         model = Background
         fields = ("id", "image_background")
@@ -18,6 +24,9 @@ class BackgroundSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для продуктов.
+    """
     frame = FrameSerializer(read_only=True)
     background = BackgroundSerializer(read_only=True)
     remaining = serializers.IntegerField(read_only=True)
@@ -40,6 +49,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для записи продуктов.
+    """
     icon_frame = serializers.ImageField(required=False, allow_null=True, write_only=True)
     image_background = serializers.ImageField(required=False, allow_null=True, write_only=True)
 
@@ -60,6 +72,9 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         read_only_fields = ("id",)
 
     def validate(self, attrs):
+        """
+        Проверяет, что у лимитированного товара указан stock.
+        """
         is_limited = attrs.get("is_limited", getattr(self.instance, "is_limited", False))
         stock = attrs.get("stock", getattr(self.instance, "stock", None))
         if is_limited and stock is None:
@@ -69,6 +84,9 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         return attrs
 
     def _apply_related_images(self, product: Product, *, icon_frame, image_background):
+        """
+        Применяет связанные изображения.
+        """
         if icon_frame is not None:
             if product.type != ProductType.FRAME:
                 raise serializers.ValidationError({"icon_frame": "icon_frame можно задавать только для type=frame."})
@@ -84,6 +102,9 @@ class ProductWriteSerializer(serializers.ModelSerializer):
             product.background.save(update_fields=["image_background"])
 
     def create(self, validated_data):
+        """
+        Создает продукт.
+        """
         icon_frame = validated_data.pop("icon_frame", None)
         image_background = validated_data.pop("image_background", None)
         product = super().create(validated_data)
@@ -92,6 +113,9 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         return product
 
     def update(self, instance, validated_data):
+        """
+        Обновляет продукт.
+        """
         icon_frame = validated_data.pop("icon_frame", None)
         image_background = validated_data.pop("image_background", None)
         product = super().update(instance, validated_data)
@@ -101,13 +125,18 @@ class ProductWriteSerializer(serializers.ModelSerializer):
 
 
 class PurchaseSerializer(serializers.Serializer):
+    """
+    Сериализатор для покупки.
+    """
     quantity = serializers.IntegerField(min_value=1, default=1, required=False)
 
 
 class PurchaseResponseSerializer(serializers.Serializer):
+    """
+    Сериализатор для ответа на покупку.
+    """
     product_id = serializers.IntegerField()
     product_name = serializers.CharField()
     new_balance = serializers.IntegerField()
     user_product_id = serializers.IntegerField()
     purchased_at = serializers.DateTimeField()
-

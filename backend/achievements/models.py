@@ -3,6 +3,9 @@ from django.db import models
 
 
 class Achievement(models.Model):
+    """
+    Модель для ачивок.
+    """
     ACTION_TYPES = [
         ("solve_tasks", "Решить задачи"),
         ("first_try", "С первого раза"),
@@ -21,10 +24,16 @@ class Achievement(models.Model):
         db_table = "account_achievement"
 
     def __str__(self):
+        """
+        Возвращает имя ачивки.
+        """
         return self.name
 
 
 class UserAchievement(models.Model):
+    """
+    Модель для связи пользователя и ачивки.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -38,10 +47,16 @@ class UserAchievement(models.Model):
         unique_together = ("user", "achievement")
 
     def __str__(self):
+        """
+        Возвращает строку с email пользователя и именем ачивки.
+        """
         return f"{self.user.email} - {self.achievement.name}"
 
 
 class UserAchievementProgress(models.Model):
+    """
+    Модель для отслеживания прогресса пользователя в получении ачивки.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -55,8 +70,14 @@ class UserAchievementProgress(models.Model):
         unique_together = ("user", "achievement")
 
     def __str__(self):
+        """
+        Возвращает строку с email пользователя и именем ачивки.
+        """
         return f"{self.user.email} progress for {self.achievement.name}"
 
     @property
     def is_completed(self):
+        """
+        Возвращает True, если прогресс пользователя достиг цели ачивки.
+        """
         return self.current_value >= self.achievement.target

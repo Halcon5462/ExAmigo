@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FilterSection = ({ label, name, value, options, onChange, placeholder = "Все" }) => {
+const FilterSection = ({ name, value, options, onChange, placeholder = "Все" }) => {
     return (
         <div className="filter-section">
             <select
