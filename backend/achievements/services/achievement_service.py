@@ -5,8 +5,14 @@ from achievements.services.factory import AchievementStrategyFactory
 
 
 class AchievementService:
+    """
+    Сервис для работы с ачивками.
+    """
     @staticmethod
     def handle_event(user, event, context=None):
+        """
+        Обрабатывает событие и проверяет, нужно ли выдать ачивку.
+        """
         context = context or {}
 
         try:

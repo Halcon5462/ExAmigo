@@ -4,6 +4,9 @@ from .models import TaskStatistics
 
 
 class TaskStatisticsSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для статистики по заданиям.
+    """
     class Meta:
         model = TaskStatistics
         fields = [

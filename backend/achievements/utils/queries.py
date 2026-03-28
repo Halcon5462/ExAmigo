@@ -5,6 +5,9 @@ from achievements.models import Achievement, UserAchievement, UserAchievementPro
 
 
 def get_user_achievements(user):
+    """
+    Возвращает все ачивки с прогрессом пользователя.
+    """
     progress_subquery = UserAchievementProgress.objects.filter(
         user=user,
         achievement=OuterRef("pk"),

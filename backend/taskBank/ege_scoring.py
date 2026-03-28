@@ -2,6 +2,9 @@ from django.db import models
 
 
 class SubjectChoices(models.TextChoices):
+    """
+    Выбор предметов.
+    """
     MATH = "prof_math", "Профильная математика"
     RUSSIAN = "russian", "Русский язык"
     PHYSICS = "physics", "Физика"
@@ -38,6 +41,9 @@ EGE_TASK_SCORES = {
 }
 
 def get_task_score(subject, order_kim):
+    """
+    Возвращает балл за задание ЕГЭ.
+    """
     subject_scores = EGE_TASK_SCORES.get(subject)
 
     if not subject_scores:

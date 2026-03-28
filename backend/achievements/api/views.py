@@ -8,9 +8,15 @@ from achievements.utils.queries import get_user_achievements
 
 
 class AchievementListView(APIView):
+    """
+    Представление для получения списка ачивок пользователя.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        """
+        Обрабатывает GET-запрос для получения списка ачивок пользователя.
+        """
         try:
             achievements = get_user_achievements(request.user)
             serializer = AchievementListSerializer(achievements, many=True)

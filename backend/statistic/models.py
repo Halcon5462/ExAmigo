@@ -5,9 +5,9 @@ from taskBank.ege_scoring import SubjectChoices
 
 
 class TaskAttempt(models.Model):
-    '''
+    """
     Просто решение, бесконечное кол-во на одно задание
-    '''
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -27,9 +27,9 @@ class TaskAttempt(models.Model):
 
 
 class TaskProgress(models.Model):
-    '''
+    """
     Первое верное решение
-    '''
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -43,6 +43,9 @@ class TaskProgress(models.Model):
 
 
 class TaskStatistics(models.Model):
+    """
+    Статистика по заданиям для пользователя.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

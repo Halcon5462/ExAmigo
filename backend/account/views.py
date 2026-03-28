@@ -10,9 +10,15 @@ from .serializers import AvatarSerializer, RegisterSerializer, UserSerializer
 
 
 class RegisterView(generics.GenericAPIView):
+    """
+    Представление для регистрации нового пользователя.
+    """
     serializer_class = RegisterSerializer
 
     def post(self, request, *_args, **_kwargs):
+        """
+        Обрабатывает POST-запрос для регистрации нового пользователя.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -27,15 +33,28 @@ class RegisterView(generics.GenericAPIView):
 
 
 class ProfileView(generics.RetrieveAPIView):
+    """
+    Представление для получения профиля текущего пользователя.
+    """
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
+        """
+        Возвращает текущего пользователя.
+        """
         return self.request.user
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Кастомное представление для получения пары токенов.
+    Добавляет данные пользователя в ответ.
+    """
     def post(self, request, *args, **kwargs):
+        """
+        Обрабатывает POST-запрос для получения пары токенов.
+        """
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             user = UserAccount.objects.get(email=request.data['email'])
@@ -44,16 +63,25 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class AvatarListView(generics.ListAPIView):
+    """
+    Представление для получения списка активных аватаров по умолчанию.
+    """
     queryset = Avatar.objects.filter(is_active=True)
     serializer_class = AvatarSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class ChangeAvatarView(APIView):
+    """
+    Представление для изменения аватара пользователя.
+    """
     permission_classes = [permissions.IsAuthenticated]
     parser_classes = [JSONParser, MultiPartParser, FormParser]
 
     def post(self, request):
+        """
+        Обрабатывает POST-запрос для изменения аватара пользователя.
+        """
         user = request.user
         avatar_id = request.data.get('avatar_id')
         avatar_file = request.FILES.get('avatar')

@@ -6,6 +6,9 @@ from achievements.services.strategies import (
 
 
 class AchievementStrategyFactory:
+    """
+    Фабрика для стратегий ачивок.
+    """
     strategies = {
         "solve_tasks": SolveTasksStrategy(),
         "first_try": FirstTryStrategy(),
@@ -14,4 +17,7 @@ class AchievementStrategyFactory:
 
     @classmethod
     def get_strategy(cls, action_type):
+        """
+        Возвращает стратегию по типу действия.
+        """
         return cls.strategies.get(action_type)

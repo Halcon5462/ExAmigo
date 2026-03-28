@@ -3,8 +3,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Match
 
 class MatchConsumer(AsyncWebsocketConsumer):
+    """
+    Консьюмер для матча.
+    """
 
     async def connect(self):
+        """
+        Подключается к WebSocket.
+        """
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.room_group_name = f"match_{self.match_id}"
 
@@ -17,12 +23,18 @@ class MatchConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"type": "info", "message": "Connected to WebSocket"}))
 
     async def disconnect(self, close_code):
+        """
+        Отключается от WebSocket.
+        """
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
     async def receive(self, text_data):
+        """
+        Получает данные из WebSocket.
+        """
         data = json.loads(text_data)
         action = data.get("action")
 
@@ -47,6 +59,9 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 )
 
     async def match_start(self, event):
+        """
+        Отправляет сообщение о начале матча.
+        """
         await self.send(text_data=json.dumps({
             "type": "match_start",
             "message": event["message"]

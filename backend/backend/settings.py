@@ -126,10 +126,6 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
-        "debug_only": {
-            "()": "backend.logging_filters.ExactLevelFilter",
-            "level_name": "DEBUG",
-        },
         "info_only": {
             "()": "backend.logging_filters.ExactLevelFilter",
             "level_name": "INFO",
@@ -150,14 +146,6 @@ LOGGING = {
         },
     },
     "handlers": {
-        "debug_file": {
-            "class": "logging.FileHandler",
-            "filename": LOG_DIR / "debug.log",
-            "level": "DEBUG",
-            "filters": ["debug_only"],
-            "formatter": "verbose",
-            "encoding": "utf-8",
-        },
         "info_file": {
             "class": "logging.FileHandler",
             "filename": LOG_DIR / "info.log",
@@ -184,23 +172,23 @@ LOGGING = {
         },
         "console": {
             "class": "logging.StreamHandler",
-            "level": "DEBUG",
+            "level": "INFO",
             "formatter": "verbose",
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["debug_file", "info_file", "warning_file", "error_file", "console"],
-            "level": "DEBUG" if DEBUG else "INFO",
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
+            "level": "INFO",
             "propagate": True,
         },
         "backend.request": {
-            "handlers": ["debug_file", "info_file", "warning_file", "error_file", "console"],
-            "level": "DEBUG" if DEBUG else "INFO",
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
+            "level": "INFO",
             "propagate": False,
         },
         "backend.security": {
-            "handlers": ["debug_file", "info_file", "warning_file", "error_file", "console"],
+            "handlers": ["info_file", "warning_file", "error_file", "console"],
             "level": "INFO",
             "propagate": False,
         },

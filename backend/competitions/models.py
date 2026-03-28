@@ -3,6 +3,9 @@ from django.db import models
 
 
 class Match(models.Model):
+    """
+    Модель для матча.
+    """
 
     STATUS_CHOICES = [
         ("waiting", "Waiting"),

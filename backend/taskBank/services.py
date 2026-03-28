@@ -7,11 +7,17 @@ from statistic.models import TaskStatistics, TaskProgress
 
 
 def exam_time_left(exam):
+    """
+    Возвращает оставшееся время экзамена в секундах.
+    """
     elapsed = (timezone.now() - exam.started_at).total_seconds()
     return max(0, exam.time_limit - int(elapsed))
 
 
 def finish_exam_session(exam):
+    """
+    Завершает сессию экзамена.
+    """
     if exam.is_finished:
         return exam
 
@@ -63,7 +69,7 @@ def pick_task(user, subject: str, number: int, difficulty: int) -> Task | None:
     )
     if task:
         return task
-    
+
     task = (
         Task.objects.filter(
             subject=subject,
@@ -75,7 +81,7 @@ def pick_task(user, subject: str, number: int, difficulty: int) -> Task | None:
     )
     if task:
         return task
-    
+
     return (
         Task.objects.filter(
             subject=subject,
@@ -93,6 +99,9 @@ class TaskSetGenerator:
 
     @staticmethod
     def generate(user, subject: str, task_numbers: list[int]) -> list[Task]:
+        """
+        Генерирует список заданий.
+        """
         tasks: list[Task] = []
 
         for number in task_numbers:

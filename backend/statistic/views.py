@@ -15,16 +15,25 @@ from .services import update_task_statistics
 
 
 class TaskStatisticsListView(generics.ListAPIView):
+    """
+    Представление для получения списка статистики по заданиям.
+    """
     serializer_class = TaskStatisticsSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        """
+        Возвращает статистику по заданиям для текущего пользователя.
+        """
         return TaskStatistics.objects.filter(user=self.request.user).order_by(
             "subject", "order_KIM"
         )
 
 
 class TaskSubmitView(APIView):
+    """
+    Представление для отправки ответа на задание.
+    """
     permission_classes = [IsAuthenticated]
 
     DIFFICULTY_MAP = {
@@ -36,6 +45,9 @@ class TaskSubmitView(APIView):
     }
 
     def post(self, request, pk):
+        """
+        Обрабатывает POST-запрос для отправки ответа на задание.
+        """
         task = Task.objects.get(pk=pk)
         user = request.user
         user_answer = request.data.get("answer", "").strip()

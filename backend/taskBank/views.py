@@ -16,11 +16,17 @@ from django.utils import timezone
 from django.db.models import F
 
 class TaskViewSet(ModelViewSet):
+    """
+    ViewSet для работы с заданиями.
+    """
     queryset = Task.objects.prefetch_related("correct_answers").all()
     serializer_class = TaskSerializer
 
     @action(detail=True, methods=["post"])
     def check(self, request, pk=None):
+        """
+        Проверяет ответ пользователя на задание.
+        """
         task = self.get_object()
         user_answer = request.data.get("answer")
 
@@ -37,6 +43,9 @@ class TaskSetViewSet(ModelViewSet):
     serializer_class = TaskSetSerializer
     @action(detail=False, methods=["post"], url_path="generate-exam", permission_classes=[IsAuthenticated])
     def generate_exam(self, request):
+        """
+        Генерирует экзаменационный вариант.
+        """
         subject = request.data.get("subject")
         name = request.data.get("name") or "Экзамен"
         is_public = bool(request.data.get("is_public", False))
@@ -130,7 +139,7 @@ class TaskSetViewSet(ModelViewSet):
                 {"detail": "Поле 'subject' обязательно."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         if mode == "full":
 
             numbers_qs = (
@@ -170,7 +179,7 @@ class TaskSetViewSet(ModelViewSet):
             is_public=False,
             author=user if user.is_authenticated else None,
         )
-        
+
         for order_index, task in enumerate(tasks, start=1):
             TaskSetItem.objects.create(
                 task_set=task_set,
@@ -183,10 +192,16 @@ class TaskSetViewSet(ModelViewSet):
 
 
 class StartExamView(APIView):
+    """
+    Начинает сессию экзамена.
+    """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
+        """
+        Обрабатывает POST-запрос для начала сессии экзамена.
+        """
         taskset = TaskSet.objects.get(pk=pk)
 
         if taskset.type != TaskSetType.EXAM:
@@ -206,13 +221,19 @@ class StartExamView(APIView):
             "time_limit": exam.time_limit,
             "started_at": exam.started_at,
         })
-        
+
 
 class ExamSessionDetailView(APIView):
+    """
+    Возвращает информацию о сессии экзамена.
+    """
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request, exam_id):
+        """
+        Обрабатывает GET-запрос для получения информации о сессии экзамена.
+        """
         exam = ExamSession.objects.get(
             id=exam_id,
             user=request.user
@@ -235,10 +256,16 @@ class ExamSessionDetailView(APIView):
 
 
 class FinishExamView(APIView):
+    """
+    Завершает сессию экзамена.
+    """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request, exam_id):
+        """
+        Обрабатывает POST-запрос для завершения сессии экзамена.
+        """
         exam = ExamSession.objects.get(
             id=exam_id,
             user=request.user
