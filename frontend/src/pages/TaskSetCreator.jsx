@@ -113,7 +113,7 @@ const TaskSetCreator = () => {
   if (loading) return <div>Загрузка заданий...</div>;
   if (error) return <div>{error}</div>;
 
-
+  const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
   const filteredTasks = (setType === 'training')
   ? tasks.filter(task => {
     if (
