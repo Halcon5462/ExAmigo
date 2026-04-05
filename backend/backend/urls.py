@@ -14,7 +14,6 @@ urlpatterns = [
     path('api/streak/', include('streak.urls')),
     path("api/match/", include("competitions.urls")),
     path('api/statistic/', include('statistic.urls')),
->>>>>>> backend/backend/urls.py
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

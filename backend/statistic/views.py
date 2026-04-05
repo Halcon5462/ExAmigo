@@ -13,6 +13,8 @@ from .models import TaskAttempt, TaskProgress, TaskStatistics
 from .serializers import TaskStatisticsSerializer
 from .services import update_task_statistics
 
+from streak.services import update_user_streak
+
 
 class TaskStatisticsListView(generics.ListAPIView):
     """
@@ -114,6 +116,11 @@ class TaskSubmitView(APIView):
             )
 
             if is_correct:
+                try:
+                    update_user_streak(user)
+                    print(f"🔥 Серия обновлена для пользователя {user.email}")
+                except Exception as e:
+                    print(f"❌ Ошибка при обновлении серии: {e}")
                 _, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
                     first_time = True
