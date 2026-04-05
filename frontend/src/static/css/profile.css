@@ -1,0 +1,344 @@
+/* frontend/src/static/css/profile.css */
+
+/* ========== ОБЩИЕ СТИЛИ ========== */
+.profilePage {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.profilePage_title {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* ========== БЛОК 1: ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ ========== */
+.profilePage_userBlock {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.profilePage_avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
+.profilePage_avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profilePage_avatar-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.profilePage_avatar-upload {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    background: var(--green);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.profilePage_avatar-upload:hover {
+    background: var(--dark-green);
+}
+
+.profilePage_userInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profilePage_name {
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--base-dark);
+}
+
+.profilePage_email {
+    color: var(--dark-grey);
+    margin: 0;
+}
+
+.profilePage_id {
+    color: var(--dark-grey);
+    margin: 0;
+}
+
+.profilePage_coins {
+    color: var(--green);
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+}
+
+.profilePage_logout-btn {
+    margin-top: 8px;
+    padding: 8px 20px;
+    background: var(--error);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    width: fit-content;
+    transition: background 0.2s;
+}
+
+.profilePage_logout-btn:hover {
+    background: #c0392b;
+}
+
+/* ========== БЛОК 2: МОИ ДОСТИЖЕНИЯ ========== */
+.profilePage_achievementsBlock {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profilePage_section-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--light-grey);
+}
+
+.profilePage_achievements {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profilePage_achievement {
+    padding: 16px;
+    background: var(--light-grey);
+    border-radius: 16px;
+    transition: transform 0.2s;
+}
+
+.profilePage_achievement:hover {
+    transform: translateX(4px);
+}
+
+.profilePage_achievement-name {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.profilePage_achievement-desc {
+    color: var(--dark-grey);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.profilePage_achievement-date {
+    color: var(--dark-grey);
+    font-size: 12px;
+}
+
+.profilePage_empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--dark-grey);
+}
+
+/* ========== БЛОК 3: МОЙ ИНВЕНТАРЬ ========== */
+.profilePage_inventoryBlock {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profilePage_filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--light-grey);
+    border-radius: 16px;
+}
+
+.profilePage_filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profilePage_filter-label {
+    font-weight: 500;
+}
+
+.profilePage_filter-select,
+.profilePage_filter-input {
+    padding: 8px 12px;
+    border: 1px solid var(--grey);
+    border-radius: 12px;
+    background: white;
+    font-family: inherit;
+}
+
+.profilePage_filter-select:focus,
+.profilePage_filter-input:focus {
+    border-color: var(--green);
+    outline: none;
+}
+
+.profilePage_filter-input {
+    min-width: 180px;
+}
+
+.profilePage_inventory {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.profilePage_item {
+    background: var(--light-grey);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.2s;
+}
+
+.profilePage_item:hover {
+    transform: translateY(-2px);
+}
+
+.profilePage_item-name {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.profilePage_item-author {
+    color: var(--dark-grey);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.profilePage_item-count {
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.profilePage_item-button {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.profilePage_item-button:hover {
+    background: var(--dark-green);
+}
+
+.profilePage_item-button.remove {
+    background: var(--grey);
+    color: var(--base-dark);
+}
+
+.profilePage_item-button.remove:hover {
+    background: var(--dark-grey);
+    color: white;
+}
+
+/* ========== БЛОК 4: КРАТКАЯ СТАТИСТИКА ========== */
+.profilePage_statsBlock {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profilePage_statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.profilePage_statCard {
+    background: var(--light-grey);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.profilePage_statCard:hover {
+    transform: translateY(-2px);
+}
+
+.profilePage_statValue {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 8px;
+}
+
+.profilePage_statLabel {
+    color: var(--dark-grey);
+    font-size: 14px;
+}
+
+.profilePage_statsButton {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.profilePage_detailStatsBtn {
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.profilePage_detailStatsBtn:hover {
+    background: var(--dark-green);
+    transform: translateY(-2px);
+}
