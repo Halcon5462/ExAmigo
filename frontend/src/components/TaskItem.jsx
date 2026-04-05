@@ -2,19 +2,29 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import '../static/css/task.css'
 
-const TaskItem = ({ task }) => {
-  const [userAnswer, setUserAnswer] = useState("");
-  const [result, setResult] = useState(null);
+const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect }) => {
+  const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
+  const [result, setResult] = useState(
+    initialCorrect === true ? 'correct' : initialCorrect === false ? 'wrong' : null
+  );
   const [reward, setReward] = useState(0);
   const [firstTime, setFirstTime] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
   const checkAnswer = async () => {
+    if (locked || disabledByTime) return;
     if (!userAnswer.trim()) return;
 
     try {
+        setErrorMsg(null);
+        const payload = { answer: userAnswer };
+        if (examSessionId) {
+          payload.exam_session = examSessionId;
+        }
+
         const response = await api.post(
-            `/account/task-progress/${task.id}/submit/`,
-            { answer: userAnswer }
+            `/statistic/task-progress/${task.id}/submit/`,
+            payload
         );
 
         const { correct, reward, first_time } = response.data;
@@ -22,9 +32,11 @@ const TaskItem = ({ task }) => {
         setResult(correct ? 'correct' : 'wrong');
         setReward(reward);
         setFirstTime(first_time);
+        onAnswered?.(task.id, userAnswer, correct);
 
     } catch (err) {
         console.error("Ошибка проверки:", err);
+        setErrorMsg(err?.response?.data?.error || "Ошибка проверки ответа");
         setResult(null);
         setReward(0);
         setFirstTime(null);
@@ -82,16 +94,20 @@ const TaskItem = ({ task }) => {
           onChange={(e) => setUserAnswer(e.target.value)}
           placeholder="Введите ответ"
           className="input-answer"
+          disabled={locked || disabledByTime}
         />
-        <button onClick={checkAnswer} className="btn_text">
+        <button onClick={checkAnswer} className="btn_text" disabled={locked || disabledByTime}>
           Проверить
         </button>
       </div>
+
+      {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
 
       {result == 'correct' && (
           <p style={{color: 'green'}}>
               ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
               {firstTime == false && "Вы уже проходили эту задачу ранее."}
+              Это {task.primary_score} первичных баллов
           </p>
       )}
       {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}

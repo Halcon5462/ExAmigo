@@ -4,11 +4,17 @@ from django.core.exceptions import ValidationError
 from django.db.models import F
 
 class ProductType(models.TextChoices):
+    """
+    Типы продуктов.
+    """
     FRAME = "frame", "Frame"
     BACKGROUND = "background", "Background"
 
 
 class Product(models.Model):
+    """
+    Модель продукта.
+    """
     type = models.CharField(
         max_length=20,
         choices=ProductType.choices,
@@ -30,9 +36,15 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
+        """
+        Возвращает строку с типом и названием продукта.
+        """
         return f"{self.get_type_display()}: {self.name}"
 
     def clean(self):
+        """
+        Проверяет, что у лимитированного товара указан stock.
+        """
         if self.is_limited:
             if self.stock is None:
                 raise ValidationError({"stock": "Для лимитированного товара нужно указать stock."})
@@ -41,11 +53,17 @@ class Product(models.Model):
 
     @property
     def remaining(self) -> int | None:
+        """
+        Возвращает оставшееся количество товара.
+        """
         if not self.is_limited:
             return None
         return max((self.stock or 0) - self.sold_count, 0)
 
     def is_available(self, quantity: int = 1) -> bool:
+        """
+        Проверяет, доступен ли товар для покупки.
+        """
         if quantity <= 0:
             return False
         if not self.is_limited:
@@ -53,6 +71,9 @@ class Product(models.Model):
         return (self.sold_count + quantity) <= (self.stock or 0)
 
     def purchase(self, quantity: int = 1, *, using: str | None = None) -> int:
+        """
+        Совершает покупку товара.
+        """
         if quantity <= 0:
             raise ValidationError({"quantity": "quantity должен быть > 0."})
 
@@ -78,6 +99,9 @@ class Product(models.Model):
         return self.sold_count
 
     def _ensure_related(self):
+        """
+        Создает или удаляет связанные объекты Frame или Background.
+        """
         if self.type == ProductType.FRAME:
             Frame.objects.get_or_create(product=self)
             Background.objects.filter(product=self).delete()
@@ -86,6 +110,9 @@ class Product(models.Model):
             Frame.objects.filter(product=self).delete()
 
     def save(self, *args, **kwargs):
+        """
+        Сохраняет продукт и связанные объекты.
+        """
         old_type = None
         if self.pk:
             old_type = type(self).objects.filter(pk=self.pk).values_list("type", flat=True).first()
@@ -97,6 +124,9 @@ class Product(models.Model):
 
 
 class Frame(models.Model):
+    """
+    Модель рамки.
+    """
     icon_frame = models.ImageField(upload_to="frames/icons/", null=True, blank=True)
     product = models.OneToOneField(
         Product,
@@ -106,6 +136,9 @@ class Frame(models.Model):
 
 
 class Background(models.Model):
+    """
+    Модель фона.
+    """
     image_background = models.ImageField(upload_to="backgrounds/images/", null=True, blank=True)
     product = models.OneToOneField(
         Product,
@@ -143,5 +176,41 @@ class UserProduct(models.Model):
         ordering = ["-purchased_at"]
 
     def __str__(self) -> str:
+        """
+        Возвращает строку с пользователем и продуктом.
+        """
         return f"{self.user} — {self.product}"
 
+
+class UserEquippedItem(models.Model):
+    """
+    Модель для экипированных предметов.
+    """
+    profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='equipped_items',
+        verbose_name='Профиль'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='equipped_by',
+        verbose_name='Товар'
+    )
+    slot = models.CharField(
+        max_length=20,
+        choices=ProductType.choices,
+        verbose_name='Тип товара'
+    )
+    equipped_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('profile', 'slot')
+        ordering = ['-equipped_at']
+
+    def __str__(self) -> str:
+        """
+        Возвращает строку с профилем, слотом и продуктом.
+        """
+        return f"{self.profile} -> {self.slot}: {self.product}"

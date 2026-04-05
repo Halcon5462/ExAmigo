@@ -3,7 +3,9 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-from .models import Product, ProductType
+from .models import Product, ProductType, UserEquippedItem, UserProduct
+from .serializers import ProductWriteSerializer
+from .services import ProductService, equip_product
 
 
 class ProductBehaviorTests(TestCase):
@@ -63,6 +65,80 @@ class ProductBehaviorTests(TestCase):
         p.refresh_from_db()
         self.assertEqual(p.sold_count, 2)
 
+    def test_is_available_returns_false_for_non_positive_quantity(self):
+        product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+
+        self.assertFalse(product.is_available(0))
+
+    def test_product_write_serializer_requires_stock_for_limited_product(self):
+        serializer = ProductWriteSerializer(
+            data={
+                "type": ProductType.FRAME,
+                "name": "F1",
+                "description": "d",
+                "cost": 10,
+                "is_limited": True,
+            }
+        )
+
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("stock", serializer.errors)
+
+
+class ProductServiceTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user = User.objects.create_user(email="u@example.com", name="U", password="pass")
+        self.user.wallet.balance = 100
+        self.user.wallet.save(update_fields=["balance", "updated_at"])
+        self.product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+
+    def test_purchase_product_creates_user_product_and_updates_balance(self):
+        result = ProductService.purchase_product(self.user, self.product, quantity=1)
+
+        self.user.wallet.refresh_from_db()
+        self.product.refresh_from_db()
+        self.assertTrue(UserProduct.objects.filter(user=self.user, product=self.product).exists())
+        self.assertEqual(self.user.wallet.balance, 90)
+        self.assertEqual(result["sold_count"], 1)
+
+    def test_purchase_product_rejects_duplicate_purchase(self):
+        UserProduct.objects.create(user=self.user, product=self.product)
+
+        with self.assertRaises(ValueError):
+            ProductService.purchase_product(self.user, self.product)
+
+    def test_equip_product_updates_existing_slot(self):
+        first_product = self.product
+        second_product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F2",
+            description="d",
+            cost=15,
+            is_limited=False,
+        )
+        first_user_product = UserProduct.objects.create(user=self.user, product=first_product)
+        second_user_product = UserProduct.objects.create(user=self.user, product=second_product)
+        equip_product(self.user, first_user_product.id)
+
+        equipped_product = equip_product(self.user, second_user_product.id)
+
+        slot = UserEquippedItem.objects.get(profile=self.user, slot=ProductType.FRAME)
+        self.assertEqual(equipped_product.id, second_product.id)
+        self.assertEqual(slot.product_id, second_product.id)
+
 
 class ProductApiTests(TestCase):
     def setUp(self):
@@ -91,3 +167,73 @@ class ProductApiTests(TestCase):
         wallet.refresh_from_db()
         self.assertEqual(p.sold_count, 3)
         self.assertEqual(wallet.balance, 70)
+
+    def test_purchase_endpoint_rejects_duplicate_purchase(self):
+        product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+        UserProduct.objects.create(user=self.user, product=product)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(f"/api/products/products/{product.id}/purchase/", {"quantity": 1}, format="json")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_product_list_marks_already_purchased_for_authenticated_user(self):
+        product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+        user_product = UserProduct.objects.create(user=self.user, product=product)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/products/products/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.data[0]["already_purchased"])
+        self.assertEqual(response.data[0]["user_product_id"], user_product.id)
+
+    def test_equip_endpoint_equips_owned_product(self):
+        product = Product.objects.create(
+            type=ProductType.BACKGROUND,
+            name="B1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+        user_product = UserProduct.objects.create(user=self.user, product=product)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post(
+            "/api/products/equip/",
+            {"user_product_id": user_product.id},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["type"], ProductType.BACKGROUND)
+
+    def test_equipped_items_returns_current_slots(self):
+        frame = Product.objects.create(
+            type=ProductType.FRAME,
+            name="F1",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+        user_product = UserProduct.objects.create(user=self.user, product=frame)
+        equip_product(self.user, user_product.id)
+
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/products/equipped/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["frame"]["id"], frame.id)
+        self.assertIsNone(response.data["background"])

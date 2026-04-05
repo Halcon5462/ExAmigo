@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../utils/api';
-import ProductkItem from '../components/ProductkItem';
+import ProductItem from '../components/ProductItem.jsx';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -66,7 +66,7 @@ const Shop = () => {
             {products.length === 0 && <p>Товары не найдены.</p>}
 
             {products.map(product => (
-                <ProductkItem
+                <ProductItem
                     key={product.id}
                     product={product}
                     onPurchase={handlePurchase}

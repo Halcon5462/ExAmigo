@@ -1,10 +1,15 @@
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-from django.conf import settings
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from taskBank.models import Task
+
 
 class UserAccountManager(BaseUserManager):
+    """
+    Менеджер для модели пользователя.
+    """
     def create_user(self, email, name, password=None):
+        """
+        Создает и сохраняет пользователя с указанным email, именем и паролем.
+        """
         if not email:
             raise ValueError('Email обязателен')
         email = self.normalize_email(email)
@@ -14,26 +19,59 @@ class UserAccountManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, password=None):
+        """
+        Создает и сохраняет суперпользователя с указанным email, именем и паролем.
+        """
         user = self.create_user(email, name, password)
         user.is_superuser = True
         user.is_staff = True
         user.save(using=self._db)
         return user
 
+
+class Avatar(models.Model):
+    """
+    Модель для аватаров по умолчанию.
+    """
+    name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='avatars/defaults/')
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        """
+        Возвращает имя аватара.
+        """
+        return self.name
+
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     """
     Модель пользователя.
 
-    Использую email как логин.
+    Использует email как логин.
 
     Поля:
     - email: уникальный, для входа
     - name: имя пользователя
+    - avatar: кастомный аватар пользователя
+    - avatar_default: аватар по умолчанию
     - is_active: активен ли аккаунт
     - is_staff: доступ в админку
     """
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    avatar = models.ImageField(
+        upload_to='avatars/custom/',
+        blank=True,
+        null=True,
+    )
+    avatar_default = models.ForeignKey(
+        Avatar,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -43,80 +81,21 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name']
 
     def __str__(self):
+        """
+        Возвращает email пользователя.
+        """
         return self.email
 
-class Achievement(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    target = models.PositiveIntegerField()
-    icon = models.ImageField(upload_to='achievements/icons/')
-    reward = models.CharField(max_length=255, blank=True, null=True)
+    def get_avatar_url(self):
+        """
+        Возвращает URL аватара пользователя.
 
-    def __str__(self):
-        return self.name
-
-class UserAchievement(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='achievements'
-    )
-    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
-    get_date = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'achievement')
-
-    def __str__(self):
-        return f"{self.user.email} - {self.achievement.name}"
-
-
-class UserAchievementProgress(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='progressToAchievement'
-    )
-    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
-    current_value = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        unique_together = ('user', 'achievement')
-
-    def __str__(self):
-        return f"{self.user.email} progress for {self.achievement.name}"
-
-    @property
-    def is_completed(self):
-        return self.current_value >= self.achievement.target
-
-
-class TaskAttempt(models.Model):
-    '''
-    Просто решение, бесконечное кол-во на одно задание
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="attempts",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    answer = models.TextField()
-    is_correct = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class TaskProgress(models.Model):
-    '''
-    Первое верное решение
-    '''
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
-        related_name="task_progress",
-    )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
-    first_solved_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ("user", "task")
+        Если у пользователя есть кастомный аватар, возвращается его URL.
+        В противном случае, если у пользователя есть аватар по умолчанию, возвращается его URL.
+        В противном случае, возвращается None.
+        """
+        if self.avatar:
+            return self.avatar.url
+        if self.avatar_default and self.avatar_default.image:
+            return self.avatar_default.image.url
+        return None

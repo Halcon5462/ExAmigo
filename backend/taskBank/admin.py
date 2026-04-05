@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from .models import Task, TaskCorrectAnswer
+from .models import TaskSet, TaskSetItem
+from .models import ExamSession
+from .ege_scoring import SubjectChoices
 
 admin.site.site_header = "Панель управления Exam Service"
 admin.site.site_title = "Администрирование Exam Service"
@@ -115,24 +118,21 @@ class TaskAdmin(admin.ModelAdmin):
 
     def colored_subject(self, obj):
         colors = {
-            'Математика': 'blue',
-            'Профильная математика': 'blue',
-            'Русский язык': 'green',
-            'Физика': 'purple',
-            'Информатика': 'orange',
-            'Химия': 'red',
-            'Биология': 'brown',
-            'История': 'darkblue',
-            'Обществознание': 'teal',
+            SubjectChoices.MATH: "blue",
+            SubjectChoices.RUSSIAN: "green",
+            SubjectChoices.PHYSICS: "purple",
+            SubjectChoices.INFORM: "orange",
         }
-        color = colors.get(obj.subject, 'black')
+
+        color = colors.get(obj.subject, "black")
+
         return format_html(
-            '<span style="color: {}; font-weight: bold;">{}</span>',
+            '<span style="color:{}; font-weight:bold;">{}</span>',
             color,
-            obj.subject
+            obj.get_subject_display()
         )
 
-    colored_subject.short_description = 'Предмет'
+    colored_subject.short_description = "Предмет"
     colored_subject.admin_order_field = 'subject'
 
     def has_image(self, obj):
@@ -213,3 +213,85 @@ class TaskCorrectAnswerAdmin(admin.ModelAdmin):
 
     task_subject.short_description = 'Предмет'
     task_subject.admin_order_field = 'task__subject'
+
+
+class TaskSetItemInline(admin.TabularInline):
+    model = TaskSetItem
+    extra = 1
+    autocomplete_fields = ["task"]
+    ordering = ("order",)
+
+@admin.register(TaskSet)
+class TaskSetAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "type",
+        "subject",
+        "average_difficulty",
+        "author",
+        "is_public",
+        "created_at",
+    )
+
+    list_filter = (
+        "type",
+        "subject",
+        "is_public",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+        "author__username",
+    )
+
+    inlines = [TaskSetItemInline]
+
+    autocomplete_fields = ["author"]
+
+
+@admin.register(ExamSession)
+class ExamSessionAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "task_set",
+        "started_at",
+        "finished_at",
+        "time_limit",
+        "is_finished",
+        "score",
+    )
+
+    list_filter = (
+        "is_finished",
+        "started_at",
+        "task_set__subject",
+    )
+
+    autocomplete_fields = (
+        "user",
+        "task_set",
+    )
+
+    ordering = ("-started_at",)
+
+@admin.register(TaskSetItem)
+class TaskSetItemAdmin(admin.ModelAdmin):
+    list_display = (
+        "task_set",
+        "task",
+        "order",
+    )
+
+    list_filter = (
+        "task_set",
+        "task__subject",
+    )
+
+    search_fields = (
+        "task_set__name",
+        "task__description",
+    )
+
+    ordering = ("task_set", "order")

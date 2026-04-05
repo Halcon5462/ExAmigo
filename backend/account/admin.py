@@ -1,33 +1,48 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import UserAccount, UserAchievement, Achievement
+
+from .models import Avatar, UserAccount
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'is_active')
+    list_filter = ('is_active',)
+    search_fields = ('name',)
+
 
 class UserAccountAdmin(UserAdmin):
-    list_display = ('email', 'name', 'is_staff', 'is_active')
+    list_display = ('email', 'name', 'avatar_default', 'is_staff', 'is_active')
     search_fields = ('email', 'name')
     ordering = ('email',)
 
     fieldsets = (
-        (None, {'fields': ('email', 'name', 'password')}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
+        (None, {'fields': ('email', 'name', 'password', 'avatar', 'avatar_default')}),
+        (
+            'Permissions',
+            {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')},
+        ),
         ('Important dates', {'fields': ('last_login',)}),
     )
 
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'name', 'password1', 'password2', 'is_staff', 'is_active'),
-        }),
+        (
+            None,
+            {
+                'classes': ('wide',),
+                'fields': (
+                    'email',
+                    'name',
+                    'password1',
+                    'password2',
+                    'avatar',
+                    'avatar_default',
+                    'is_staff',
+                    'is_active',
+                ),
+            },
+        ),
     )
 
-@admin.register(UserAchievement)
-class UserAchievementAdmin(admin.ModelAdmin):
-    list_display = ('user', 'achievement', 'get_date')
-    search_fields = ('user__email', 'achievement__name')
-
-@admin.register(Achievement)
-class AchievementAdmin(admin.ModelAdmin):
-    list_display = ('name', 'target', 'reward')
-    search_fields = ('name',)
 
 admin.site.register(UserAccount, UserAccountAdmin)
