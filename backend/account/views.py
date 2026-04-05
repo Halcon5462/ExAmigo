@@ -126,3 +126,46 @@ class ChangeAvatarView(APIView):
             {'error': 'Нужно передать avatar_id или avatar'},
             status=status.HTTP_400_BAD_REQUEST
         )
+'''
+<<<<<<< backend/account/views.py
+        reward = 0
+        first_time = False
+        transaction_data = None
+
+        with transaction.atomic():
+            TaskAttempt.objects.create(user=user, task=task, answer=user_answer, is_correct=is_correct)
+            if is_correct:
+                from streak.services import update_user_streak
+                try:
+                    update_user_streak(user)
+                    print(f"🔥 Серия обновлена для пользователя {user.email}")
+                except Exception as e:
+                    print(f"❌ Ошибка при обновлении серии: {e}")
+                    
+                progress, created = TaskProgress.objects.get_or_create(user=user, task=task)
+                if created:
+                    first_time = True
+                    difficulty_str = self.DIFFICULTY_MAP.get(task.difficulty, 'easy')
+                    try:
+                        transaction_data = WalletService.add_task_reward(
+                            user=user,
+                            task_difficulty=difficulty_str,
+                            task_title= f'{task.subject}, №{task.order_KIM}, сложность: {task.difficulty}',
+                        )
+                        reward = transaction_data['amount']
+                    except Exception as e:
+                        print(f"Error awarding points: {e}")
+
+        response_data = {
+            "correct": is_correct,
+            "first_time": first_time,
+            "reward": reward,
+        }
+
+        if transaction_data:
+            response_data["new_balance"] = transaction_data["new_balance"]
+
+        return Response(response_data)
+=======
+>>>>>>> backend/account/views.py
+'''
