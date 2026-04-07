@@ -3,8 +3,8 @@ import AvatarPicker from './AvatarPicker.jsx';
 
 const UserInfo = ({ user, onLogout, frameImage, onUserUpdate }) => {
     return (
-        <div className="profilePage_userBlock">
-            <div className="profilePage_avatar">
+        <div className="profilePage_card">
+            <div className="profilePage_avatarBlock">
                 <AvatarPicker
                     user={user}
                     frameImage={frameImage}
@@ -15,7 +15,9 @@ const UserInfo = ({ user, onLogout, frameImage, onUserUpdate }) => {
                 <h2 className="profilePage_name text">{user.name || user.username}</h2>
                 <p className="profilePage_email description_text">{user.email}</p>
                 <p className="profilePage_id description_text">ID: {user.id}</p>
-                <p className="profilePage_coins text_mini">Мои Умконы: {user.coins || 0}</p>
+
+                <p className="profilePage_coins text_mini">Мои Умкоины: {user.coins || 0}</p>
+
                 <button className="profilePage_logoutBtn btn_text" onClick={onLogout}>
                     Выйти из аккаунта
                 </button>
