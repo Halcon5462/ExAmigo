@@ -56,23 +56,37 @@ class MatchConsumer(AsyncWebsocketConsumer):
         """
         Подключение пользователя
         """
-        match = await Match.objects.aget(id=self.match_id)
+        match = await Match.objects.select_related(
+            "host", "opponent", "task_set"
+        ).aget(id=self.match_id)
 
-        if match.opponent is None:
-            match.opponent = user
-            match.status = "started"
-            await match.asave()
+        # если это хост — просто ждём
+        if user.id == match.host.id:
+            return
 
-            # создаём экзамены для обоих
-            exam_data = await self.create_exam_sessions(match)
+        # если уже есть opponent — не пускаем
+        if match.opponent is not None:
+            await self.send_json({
+                "type": "error",
+                "message": "Match already full"
+            })
+            return
 
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "match_start",
-                    "exam_data": exam_data
-                }
-            )
+        # подключается второй игрок
+        match.opponent = user
+        match.status = "started"
+        await match.asave()
+
+        # создаём экзамены
+        exam_data = await self.create_exam_sessions(match)
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "match_start",
+                "exam_data": exam_data
+            }
+        )
 
     async def handle_answer(self, user, data):
         """
@@ -121,7 +135,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
         taskset = match.task_set  # ВАЖНО: матч должен хранить task_set
 
         exam1 = ExamSession.objects.create(
-            user=match.creator,
+            user=match.host,
             task_set=taskset,
             time_limit=3 * 60 * 60
         )
@@ -135,7 +149,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
         return {
             "taskset_id": taskset.id,
             "players": {
-                match.creator.id: exam1.id,
+                match.host.id: exam1.id,
                 match.opponent.id: exam2.id,
             }
         }
