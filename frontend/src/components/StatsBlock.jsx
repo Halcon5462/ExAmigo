@@ -4,13 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const StatsBlock = ({ stats }) => {
     const navigate = useNavigate();
 
-    const goToStatistics = () => {
-        navigate('/statistics');
-    };
-
     return (
         <div className="profilePage_statsBlock">
-            <h2 className="profilePage_section-title text">Статистика</h2>
+            <h2 className="profilePage_sectionTitle text">Статистика</h2>
             <div className="profilePage_statsGrid">
                 <div className="profilePage_statCard">
                     <div className="profilePage_statValue">{stats.totalTasks || 0}</div>
@@ -30,7 +26,7 @@ const StatsBlock = ({ stats }) => {
                 </div>
             </div>
             <div className="profilePage_statsButton">
-                <button className="profilePage_detailStatsBtn btn_text" onClick={goToStatistics}>
+                <button className="profilePage_detailStatsBtn btn_text" onClick={() => navigate('/statistics')}>
                     Подробная статистика →
                 </button>
             </div>

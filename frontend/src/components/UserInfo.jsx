@@ -16,7 +16,7 @@ const UserInfo = ({ user, onLogout, frameImage, onUserUpdate }) => {
                 <p className="profilePage_email description_text">{user.email}</p>
                 <p className="profilePage_id description_text">ID: {user.id}</p>
                 <p className="profilePage_coins text_mini">Мои Умконы: {user.coins || 0}</p>
-                <button className="profilePage_logout-btn btn_text" onClick={onLogout}>
+                <button className="profilePage_logoutBtn btn_text" onClick={onLogout}>
                     Выйти из аккаунта
                 </button>
             </div>
