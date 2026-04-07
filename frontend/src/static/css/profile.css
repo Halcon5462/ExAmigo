@@ -1,6 +1,5 @@
 /* frontend/src/static/css/profile.css */
 
-/* ========== ОБЩИЕ СТИЛИ ========== */
 .profilePage {
     max-width: 1000px;
     margin: 0 auto;
@@ -12,123 +11,76 @@
     text-align: center;
 }
 
-/* ========== БЛОК 1: ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ ========== */
-.profilePage_userBlock {
+/* ========== БЛОК АВАТАРКИ ========== */
+.profilePage_avatarBlock {
     background: white;
     border-radius: 24px;
     padding: 32px;
-    padding-bottom: 60px;
     margin-bottom: 32px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
-    align-items: center;
-    gap: 32px;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 1;
-}
-
-.profilePage_avatar {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    flex-shrink: 0;
-}
-
-.profilePage_avatar-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.profilePage_avatar-frame {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    pointer-events: none;
-}
-
-.profilePage_avatar .avatar-picker {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-.profilePage_avatar .avatar-picker button {
-    position: absolute;
-    bottom: -10px;
-    right: -10px;
-    background: var(--green);
-    border: none;
-    border-radius: 50%;
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 18px;
-    transition: background 0.2s;
-    z-index: 10;
 }
 
-.profilePage_avatar .avatar-picker button:hover {
-    background: var(--dark-green);
-    transform: scale(1.05);
-}
-
-.profilePage_userInfo {
-    flex: 1;
+/* ========== БЛОК БАЛАНСА ========== */
+.profilePage .user-balance {
+    background: white;
+    border-radius: 24px;
+    padding: 20px 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.profilePage_name {
-    font-size: 28px;
-    font-weight: 600;
-    margin: 0;
+/* ========== КАРТОЧКА ПРОФИЛЯ ========== */
+.profilePage_card {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profilePage_field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--light-grey);
+}
+
+.profilePage_field:last-of-type {
+    border-bottom: none;
+}
+
+.profilePage_label {
+    font-weight: 500;
     color: var(--base-dark);
 }
 
-.profilePage_email {
+.profilePage_value {
     color: var(--dark-grey);
-    margin: 0;
 }
 
-.profilePage_id {
-    color: var(--dark-grey);
-    margin: 0;
-}
-
-.profilePage_coins {
-    color: var(--green);
-    font-weight: 600;
-    font-size: 20px;
-    margin: 0;
-}
-
-.profilePage_logout-btn {
-    margin-top: 8px;
-    padding: 8px 20px;
+.profilePage_logoutBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
     background: var(--error);
     color: white;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    width: fit-content;
+    width: 100%;
     transition: background 0.2s;
 }
 
-.profilePage_logout-btn:hover {
+.profilePage_logoutBtn:hover {
     background: #c0392b;
 }
 
-/* ========== БЛОК 2: МОИ ДОСТИЖЕНИЯ ========== */
+/* ========== БЛОК ДОСТИЖЕНИЙ ========== */
 .profilePage_achievementsBlock {
     background: white;
     border-radius: 24px;
@@ -137,7 +89,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.profilePage_section-title {
+.profilePage_sectionTitle {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 24px;
@@ -162,18 +114,19 @@
     transform: translateX(4px);
 }
 
-.profilePage_achievement-name {
+.profilePage_achievementName {
     font-weight: 600;
     margin-bottom: 6px;
+    color: var(--base-dark);
 }
 
-.profilePage_achievement-desc {
+.profilePage_achievementDesc {
     color: var(--dark-grey);
     font-size: 14px;
     margin-bottom: 8px;
 }
 
-.profilePage_achievement-date {
+.profilePage_achievementDate {
     color: var(--dark-grey);
     font-size: 12px;
 }
@@ -184,7 +137,7 @@
     color: var(--dark-grey);
 }
 
-/* ========== БЛОК 3: МОЙ ИНВЕНТАРЬ ========== */
+/* ========== БЛОК ИНВЕНТАРЯ ========== */
 .profilePage_inventoryBlock {
     background: white;
     border-radius: 24px;
@@ -193,6 +146,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Фильтры */
 .profilePage_filters {
     display: flex;
     flex-wrap: wrap;
@@ -209,12 +163,13 @@
     gap: 8px;
 }
 
-.profilePage_filter-label {
+.profilePage_filterLabel {
     font-weight: 500;
+    color: var(--base-dark);
 }
 
-.profilePage_filter-select,
-.profilePage_filter-input {
+.profilePage_filterSelect,
+.profilePage_filterInput {
     padding: 8px 12px;
     border: 1px solid var(--grey);
     border-radius: 12px;
@@ -222,16 +177,17 @@
     font-family: inherit;
 }
 
-.profilePage_filter-select:focus,
-.profilePage_filter-input:focus {
+.profilePage_filterSelect:focus,
+.profilePage_filterInput:focus {
     border-color: var(--green);
     outline: none;
 }
 
-.profilePage_filter-input {
+.profilePage_filterInput {
     min-width: 180px;
 }
 
+/* Сетка предметов */
 .profilePage_inventory {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -249,25 +205,26 @@
     transform: translateY(-2px);
 }
 
-.profilePage_item-name {
+.profilePage_itemName {
     font-weight: 600;
     font-size: 18px;
     margin-bottom: 8px;
+    color: var(--base-dark);
 }
 
-.profilePage_item-author {
+.profilePage_itemAuthor {
     color: var(--dark-grey);
     font-size: 14px;
     margin-bottom: 8px;
 }
 
-.profilePage_item-count {
+.profilePage_itemCount {
     color: var(--green);
     font-weight: 600;
     margin-bottom: 16px;
 }
 
-.profilePage_item-button {
+.profilePage_itemButton {
     background: var(--green);
     color: white;
     border: none;
@@ -278,21 +235,21 @@
     transition: background 0.2s;
 }
 
-.profilePage_item-button:hover {
+.profilePage_itemButton:hover {
     background: var(--dark-green);
 }
 
-.profilePage_item-button.remove {
+.profilePage_itemButtonRemove {
     background: var(--grey);
     color: var(--base-dark);
 }
 
-.profilePage_item-button.remove:hover {
+.profilePage_itemButtonRemove:hover {
     background: var(--dark-grey);
     color: white;
 }
 
-/* ========== БЛОК 4: СТАТИСТИКА ========== */
+/* ========== БЛОК СТАТИСТИКИ ========== */
 .profilePage_statsBlock {
     background: white;
     border-radius: 24px;
