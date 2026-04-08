@@ -96,7 +96,7 @@ const AvatarPicker = ({ user, frameImage, onUserUpdate }) => {
             </div>
 
             <div className="avatar-controls">
-                <label className="btn_green avatar-upload-btn">
+                <label className="btn_green avatar-upload-btn btn_text">
                     Загрузить свою аватарку
                     <input
                         ref={fileInputRef}
