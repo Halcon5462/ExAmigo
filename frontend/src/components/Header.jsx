@@ -1,5 +1,6 @@
 import '../static/css/header.css';
 import '../static/css/style.css';
+import Streak from './Streak';
 
 const Header = () => {
     return (
@@ -18,6 +19,7 @@ const Header = () => {
                 <a href="/tasksets/create">Создать комплект</a>
                 <a href="/tasksets/auto">Адаптивный вариант</a>
             </nav>
+            <Streak />
         </header>
     );
 };
