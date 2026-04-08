@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/shop/', include('shop.urls')),
     path('api/products/', include('products.urls')),
     path('api/tools/', include('tools.urls')),
+    path('api/streak/', include('streak.urls')),
     path("api/match/", include("competitions.urls")),
     path('api/statistic/', include('statistic.urls')),
 ]

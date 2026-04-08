@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 
 from .models import Background, Frame, Product, ProductType, UserEquippedItem, UserProduct
@@ -22,8 +23,47 @@ class UserProductInline(admin.TabularInline):
     can_delete = False
 
 
+class ProductAdminForm(forms.ModelForm):
+    icon_frame = forms.ImageField(required=False, label="Изображение рамки")
+    image_background = forms.ImageField(required=False, label="Изображение фона")
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not self.instance.pk:
+            return
+
+        frame = getattr(self.instance, "frame", None)
+        background = getattr(self.instance, "background", None)
+
+        if frame and frame.icon_frame:
+            self.fields["icon_frame"].initial = frame.icon_frame
+
+        if background and background.image_background:
+            self.fields["image_background"].initial = background.image_background
+
+    def clean(self):
+        cleaned_data = super().clean()
+        product_type = cleaned_data.get("type")
+        icon_frame = cleaned_data.get("icon_frame")
+        image_background = cleaned_data.get("image_background")
+
+        if product_type == ProductType.FRAME and image_background:
+            self.add_error("image_background", "Для рамки нельзя загружать фон.")
+
+        if product_type == ProductType.BACKGROUND and icon_frame:
+            self.add_error("icon_frame", "Для фона нельзя загружать рамку.")
+
+        return cleaned_data
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = (
         "id",
         "type",
@@ -66,6 +106,15 @@ class ProductAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "Файлы товара",
+            {
+                "fields": (
+                    "icon_frame",
+                    "image_background",
+                ),
+            },
+        ),
+        (
             "Meta",
             {
                 "fields": ("created_at",),
@@ -74,13 +123,26 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
     def get_inlines(self, request, obj):
-        if not obj:
-            return []
-        if obj.type == ProductType.FRAME:
-            return [FrameInline]
-        if obj.type == ProductType.BACKGROUND:
-            return [BackgroundInline]
         return []
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+
+        product = form.instance
+
+        if product.type == ProductType.FRAME:
+            frame, _ = Frame.objects.get_or_create(product=product)
+            if "icon_frame" in form.changed_data:
+                frame.icon_frame = form.cleaned_data.get("icon_frame") or None
+                frame.save(update_fields=("icon_frame",))
+            Background.objects.filter(product=product).delete()
+
+        if product.type == ProductType.BACKGROUND:
+            background, _ = Background.objects.get_or_create(product=product)
+            if "image_background" in form.changed_data:
+                background.image_background = form.cleaned_data.get("image_background") or None
+                background.save(update_fields=("image_background",))
+            Frame.objects.filter(product=product).delete()
 
     @admin.display(description="Remaining")
     def remaining_display(self, obj: Product):
