@@ -8,13 +8,21 @@ const AchievementsBlock = ({ achievements }) => {
         {achievements.length === 0 ? (
           <div className="profilePage_empty description_text">Нет достижений</div>
         ) : (
-          achievements.map((ach) => (
+          achievements.filter(a => a.is_obtained).map((ach) => (
             <div key={ach.id} className="profilePage_achievement">
               <div className="profilePage_achievementName text_mini">{ach.name}</div>
               <div className="profilePage_achievementDesc description_text">{ach.description}</div>
-              <div className="profilePage_achievementDate text_mini">
-                Получено: {new Date(ach.earned_at).toLocaleDateString()}
-              </div>
+              {ach.is_obtained ? (
+                <div className="profilePage_achievementDate text_mini">
+                  Получено: {new Date(ach.earned_at).toLocaleDateString()}
+                </div>
+                ):
+                (
+                <div className="profilePage_achievementDate text_mini">
+                  Еще не получено
+                </div>
+                )
+              }
             </div>
           ))
         )}
