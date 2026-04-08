@@ -20,7 +20,8 @@ class CreateMatchView(APIView):
         tasks = generator.generate(
             user=request.user,
             subject=subject,
-            task_numbers=list(range(1, 13))
+            task_numbers=list(range(1, 27)),
+            match=True,
         )
 
         task_set = TaskSet.objects.create(

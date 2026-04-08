@@ -43,9 +43,10 @@ const MatchCreatePage = () => {
 
                 const examId = examData.players[userId];
                 const tasksetId = examData.taskset_id;
+                const totalTasks = examData.total_tasks;
 
                 navigate(`/match/play/${matchId}`, {
-                    state: { examId, tasksetId }
+                    state: { examId, tasksetId, totalTasks}
                 });
             }
         };
@@ -63,7 +64,7 @@ const MatchCreatePage = () => {
             const matchId = matchResp.data.match_id;
             setCurrentMatchId(matchId);
 
-            // 🔥 сразу подключаемся как первый игрок
+            //сразу подключаемся как первый игрок
             connectToMatch(matchId);
 
         } catch (err) {
