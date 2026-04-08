@@ -63,7 +63,7 @@ const MatchCreatePage = () => {
             const matchId = matchResp.data.match_id;
             setCurrentMatchId(matchId);
 
-            // 🔥 сразу подключаемся как первый игрок
+            //сразу подключаемся как первый игрок
             connectToMatch(matchId);
 
         } catch (err) {
