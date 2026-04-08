@@ -16,6 +16,8 @@ import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
 import TaskSetCreator from './pages/TaskSetCreator';
 import TaskSetList from './pages/TaskSetList';
 import TaskSetPlayer from './pages/TaskSetPlayer';
+import MatchPlayerPage from "./pages/MatchPlayerPage";
+import MatchCreatePage from "./pages/MatchCreatePage";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -148,7 +150,8 @@ function App() {
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
                         <Route path="/tasksets" element={<TaskSetList />} />
                         <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
-                        <Route path="/match" element={<TestMatchPage />} />
+                        <Route path="/match" element={<MatchCreatePage />} />
+                        <Route path="/match/play/:matchId" element={<MatchPlayerPage />} />
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
                         <Route
                             path="/profile"

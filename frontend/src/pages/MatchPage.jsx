@@ -46,6 +46,14 @@ export default function TestMatchPage() {
     addMessage("Sent join request");
   };
 
+  const sendAnswer = () => {
+    socketRef.current.send(JSON.stringify({
+      action: "answer",
+      task_id: 1,
+      answer: "2"
+    }));
+};
+
   return (
     <div style={{ padding: "40px" }}>
       <h1>WebSocket Match Test (JWT)</h1>
@@ -65,6 +73,7 @@ export default function TestMatchPage() {
         <button onClick={joinMatch} style={{ marginLeft: 10 }}>
           Join Match
         </button>
+        <button onClick={sendAnswer}>Send Answer</button>
       </div>
 
       <h3>Messages</h3>

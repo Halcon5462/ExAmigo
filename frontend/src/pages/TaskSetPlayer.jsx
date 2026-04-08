@@ -6,11 +6,17 @@ import '../static/css/setPlayer.css'
 
 import { ArrowRightCircle, ArrowLeftCircle } from 'lucide-react';
 
-const TaskSetPlayer = () => {
-  const { id } = useParams();
+const TaskSetPlayer = ({
+  forcedTasksetId = null,
+  forcedExamId = null,
+  externalOnAnswered = null
+}) => {
   const navigate = useNavigate();
+  const params = useParams();
   const location = useLocation();
-  const examId = new URLSearchParams(location.search).get("exam");
+  const id = forcedTasksetId || params.id;
+  const examIdFromUrl = new URLSearchParams(location.search).get("exam");
+  const examId = forcedExamId || examIdFromUrl;
   const isExam = Boolean(examId);
   const finishInFlight = useRef(false);
   const retryInFlight = useRef(false);
@@ -170,6 +176,10 @@ const TaskSetPlayer = () => {
       ...prev,
       [taskId]: correct,
     }));
+
+    if (externalOnAnswered) {
+      externalOnAnswered(taskId, answer, correct);
+    }
   };
 
   const goTo = (index) => {
