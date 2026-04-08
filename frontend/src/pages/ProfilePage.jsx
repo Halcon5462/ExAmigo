@@ -45,7 +45,7 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
                 const requests = [
                     api.get('/achievements/'),
                     api.get('/products/products/'),
-                    api.get('/statistics/user/'),
+                    //api.get('/statistics/user/'),
                 ];
 
                 if (!initialUser) {

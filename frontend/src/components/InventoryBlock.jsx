@@ -1,4 +1,5 @@
 import React from 'react';
+import ProductItem from './ProductItem.jsx';
 
 const InventoryBlock = ({
   products,
@@ -8,8 +9,9 @@ const InventoryBlock = ({
   onSelectFrame,
   onSelectBackground,
 }) => {
-  const frames = products.filter((p) => p.type === 'frame');
-  const backgrounds = products.filter((p) => p.type === 'background');
+  const purchased = (products || []).filter(p => Boolean(p?.already_purchased));
+  const frames = purchased.filter((p) => p.type === 'frame');
+  const backgrounds = purchased.filter((p) => p.type === 'background');
 
   return (
     <div className="profilePage_inventoryBlock">
@@ -19,17 +21,24 @@ const InventoryBlock = ({
         <>
           <h3 className="text_mini">Рамки</h3>
           <div className="profilePage_inventory">
-            {frames.map((item) => (
-              <div key={item.id} className="profilePage_item">
-                <img src={item.icon} alt={item.name} />
-                <button
-                  onClick={() => onSelectFrame(item)}
-                  disabled={selectingId === item.id}
-                  className={`btn_text ${selectedFrameId === item.id ? 'active' : ''}`}
-                >
-                  {selectedFrameId === item.id ? 'Выбрано' : 'Выбрать'}
-                </button>
-              </div>
+            {frames.map((product) => (
+              <ProductItem
+                  key={product.id}
+                  product={product}
+                  onSelect={() => onSelectFrame?.(product)}
+                  selecting={selectingId === product.id}
+                  selected={selectedFrameId === product.id}
+              />
+              // <div key={item.id} className="profilePage_item">
+              //   <img src={item.icon} alt={item.name} />
+              //   <button
+              //     onClick={() => onSelectFrame(item)}
+              //     disabled={selectingId === item.id}
+              //     className={`btn_text ${selectedFrameId === item.id ? 'active' : ''}`}
+              //   >
+              //     {selectedFrameId === item.id ? 'Выбрано' : 'Выбрать'}
+              //   </button>
+              // </div>
             ))}
           </div>
         </>
@@ -39,17 +48,24 @@ const InventoryBlock = ({
         <>
           <h3 className="text_mini">Фоны</h3>
           <div className="profilePage_inventory">
-            {backgrounds.map((item) => (
-              <div key={item.id} className="profilePage_item">
-                <img src={item.icon} alt={item.name} />
-                <button
-                  onClick={() => onSelectBackground(item)}
-                  disabled={selectingId === item.id}
-                  className={`btn_text ${selectedBackgroundId === item.id ? 'active' : ''}`}
-                >
-                  {selectedBackgroundId === item.id ? 'Выбрано' : 'Выбрать'}
-                </button>
-              </div>
+            {backgrounds.map((product) => (
+              <ProductItem
+                  key={product.id}
+                  product={product}
+                  onSelect={() => onSelectBackground?.(product)}
+                  selecting={selectingId === product.id}
+                  selected={selectedBackgroundId === product.id}
+              />
+              // <div key={item.id} className="profilePage_item">
+              //   <img src={item.icon} alt={item.name} />
+              //   <button
+              //     onClick={() => onSelectBackground(item)}
+              //     disabled={selectingId === item.id}
+              //     className={`btn_text ${selectedBackgroundId === item.id ? 'active' : ''}`}
+              //   >
+              //     {selectedBackgroundId === item.id ? 'Выбрано' : 'Выбрать'}
+              //   </button>
+              // </div>
             ))}
           </div>
         </>
