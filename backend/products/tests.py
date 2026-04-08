@@ -1,9 +1,13 @@
+from django.contrib import admin
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from django.test import RequestFactory
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
-from .models import Product, ProductType, UserEquippedItem, UserProduct
+from .admin import ProductAdmin, ProductAdminForm
+from .models import Background, Frame, Product, ProductType, UserEquippedItem, UserProduct
 from .serializers import ProductWriteSerializer
 from .services import ProductService, equip_product
 
@@ -89,6 +93,87 @@ class ProductBehaviorTests(TestCase):
 
         self.assertFalse(serializer.is_valid())
         self.assertIn("stock", serializer.errors)
+
+
+class ProductAdminTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.product_admin = ProductAdmin(Product, admin.site)
+
+    def test_product_admin_form_rejects_background_file_for_frame(self):
+        form = ProductAdminForm(
+            data={
+                "type": ProductType.FRAME,
+                "name": "F1",
+                "description": "d",
+                "cost": 10,
+                "is_limited": False,
+                "sold_count": 0,
+                "author": "",
+            },
+            files={
+                "image_background": SimpleUploadedFile(
+                    "background.gif",
+                    (
+                        b"GIF87a\x01\x00\x01\x00\x80\x00\x00"
+                        b"\x00\x00\x00\xff\xff\xff!\xf9\x04\x01"
+                        b"\x00\x00\x00\x00,\x00\x00\x00\x00\x01"
+                        b"\x00\x01\x00\x00\x02\x02D\x01\x00;"
+                    ),
+                    content_type="image/gif",
+                )
+            },
+        )
+        form.fields["author"].required = False
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("image_background", form.errors)
+
+    def test_product_admin_save_related_creates_frame_from_product_form(self):
+        product = Product.objects.create(
+            type=ProductType.FRAME,
+            name="Frame product",
+            description="d",
+            cost=10,
+            is_limited=False,
+        )
+        request = self.factory.post("/admin/products/product/add/")
+        form = ProductAdminForm(
+            data={
+                "type": ProductType.FRAME,
+                "name": "Frame product",
+                "description": "d",
+                "cost": 10,
+                "is_limited": False,
+                "sold_count": 0,
+                "author": "",
+            },
+            files={
+                "icon_frame": SimpleUploadedFile(
+                    "frame.gif",
+                    (
+                        b"GIF87a\x01\x00\x01\x00\x80\x00\x00"
+                        b"\x00\x00\x00\xff\xff\xff!\xf9\x04\x01"
+                        b"\x00\x00\x00\x00,\x00\x00\x00\x00\x01"
+                        b"\x00\x01\x00\x00\x02\x02D\x01\x00;"
+                    ),
+                    content_type="image/gif",
+                )
+            },
+            instance=product,
+        )
+        form.fields["author"].required = False
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+        product = form.save(commit=False)
+        self.product_admin.save_model(request, product, form, change=True)
+        self.product_admin.save_related(request, form, [], change=True)
+
+        product.refresh_from_db()
+        self.assertTrue(Frame.objects.filter(product=product).exists())
+        self.assertEqual(Background.objects.filter(product=product).count(), 0)
+        self.assertTrue(product.frame.icon_frame.name.endswith("frame.gif"))
 
 
 class ProductServiceTests(TestCase):
