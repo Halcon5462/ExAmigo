@@ -2,9 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../utils/api";
 import TaskItem from "../components/TaskItem";
-import '../static/css/setPlayer.css'
+import "../static/css/setPlayer.css";
 
-import { ArrowRightCircle, ArrowLeftCircle } from 'lucide-react';
+import TaskNavigation from "../components/taskSetPlayer/TaskNavigation";
+import TaskHeader from "../components/taskSetPlayer/TaskHeader";
+import TaskStats from "../components/taskSetPlayer/TaskStats";
+import useExamTimer from "../components/taskSetPlayer/UseExamTimer";
 
 const TaskSetPlayer = ({
   forcedTasksetId = null,
@@ -14,10 +17,13 @@ const TaskSetPlayer = ({
   const navigate = useNavigate();
   const params = useParams();
   const location = useLocation();
+
   const id = forcedTasksetId || params.id;
   const examIdFromUrl = new URLSearchParams(location.search).get("exam");
   const examId = forcedExamId || examIdFromUrl;
+
   const isExam = Boolean(examId);
+
   const finishInFlight = useRef(false);
   const retryInFlight = useRef(false);
 
@@ -34,8 +40,9 @@ const TaskSetPlayer = ({
 
   const [examStartedAt, setExamStartedAt] = useState(null);
   const [examTimeLimit, setExamTimeLimit] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(null);
   const [serverScore, setServerScore] = useState(null);
+
+  const timeLeft = useExamTimer(isExam, examStartedAt, examTimeLimit);
 
   const resetAttemptState = () => {
     setAnswers({});
@@ -44,7 +51,6 @@ const TaskSetPlayer = ({
     setScreen("playing");
     setExamStartedAt(null);
     setExamTimeLimit(null);
-    setTimeLeft(null);
     setServerScore(null);
   };
 
@@ -68,7 +74,6 @@ const TaskSetPlayer = ({
         setCurrentSet(set);
         setTasks(taskDetails);
       } catch (e) {
-        console.error(e);
         setError("Не удалось загрузить комплект заданий");
       } finally {
         setLoading(false);
@@ -90,15 +95,12 @@ const TaskSetPlayer = ({
 
         setExamStartedAt(resp.data?.started_at);
         setExamTimeLimit(resp.data?.time_limit);
-        setTimeLeft(resp.data?.time_left);
         setServerScore(resp.data?.score);
 
         if (resp.data?.is_finished) {
           setScreen("stats");
         }
-      } catch (e) {
-        console.error(e);
-      }
+      } catch {}
     };
 
     fetchExam();
@@ -109,23 +111,6 @@ const TaskSetPlayer = ({
       clearInterval(pollId);
     };
   }, [examId, isExam]);
-
-  useEffect(() => {
-    if (!isExam) return;
-    if (!examStartedAt || !examTimeLimit) return;
-
-    const startedMs = Date.parse(examStartedAt);
-
-    const tick = () => {
-      const elapsed = Math.floor((Date.now() - startedMs) / 1000);
-      const left = Math.max(0, Number(examTimeLimit) - elapsed);
-      setTimeLeft(left);
-    };
-
-    tick();
-    const intervalId = setInterval(tick, 1000);
-    return () => clearInterval(intervalId);
-  }, [examStartedAt, examTimeLimit, isExam]);
 
   const finishExam = useCallback(async () => {
     if (!isExam) {
@@ -139,9 +124,6 @@ const TaskSetPlayer = ({
     try {
       const resp = await api.post(`/taskBank/exams/${examId}/finish/`);
       setServerScore(resp.data?.score);
-      setScreen("stats");
-    } catch (e) {
-      console.error(e);
       setScreen("stats");
     } finally {
       finishInFlight.current = false;
@@ -161,30 +143,20 @@ const TaskSetPlayer = ({
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
     const ss = s % 60;
-
     const pad = (n) => String(n).padStart(2, "0");
     return `${pad(h)}:${pad(m)}:${pad(ss)}`;
   };
 
   const handleAnswered = (taskId, answer, correct) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [taskId]: answer,
-    }));
-
-    setChecked((prev) => ({
-      ...prev,
-      [taskId]: correct,
-    }));
+    setAnswers((prev) => ({ ...prev, [taskId]: answer }));
+    setChecked((prev) => ({ ...prev, [taskId]: correct }));
 
     if (externalOnAnswered) {
       externalOnAnswered(taskId, answer, correct);
     }
   };
 
-  const goTo = (index) => {
-    setTaskIndex(index);
-  };
+  const goTo = (index) => setTaskIndex(index);
 
   const retry = async () => {
     if (!isExam) {
@@ -204,9 +176,6 @@ const TaskSetPlayer = ({
       if (nextExamId) {
         navigate(`/tasksets/play/${id}?exam=${nextExamId}`, { replace: true });
       }
-    } catch (e) {
-      console.error(e);
-      alert('Не удалось начать новую попытку экзамена');
     } finally {
       retryInFlight.current = false;
     }
@@ -216,66 +185,17 @@ const TaskSetPlayer = ({
   if (error) return <div>{error}</div>;
 
   if (screen === "stats") {
-    const total = tasks.length;
-    const correctCount = Object.values(checked).filter(Boolean).length;
-    const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-
     return (
-      <div style={{ padding: "20px" }}>
-        <h2>Результаты: {currentSet?.name}</h2>
-        {isExam && (
-          <p>
-            Итог экзамена (backend): {serverScore ?? correctCount} из {total}
-          </p>
-        )}
-        <p>
-          Верных ответов: {correctCount} из {total} ({pct}%)
-        </p>
-
-        <table border="1" cellPadding="5" style={{ borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th>№</th>
-              <th>Предмет</th>
-              <th>Тип</th>
-              <th>Сложность</th>
-              <th>Ваш ответ</th>
-              <th>Результат</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {tasks.map((task, i) => {
-              const isCorrect = checked[task.id];
-              const userAns = answers[task.id];
-
-              return (
-                <tr key={task.id}>
-                  <td>{task._order ?? i + 1}</td>
-                  <td>{task.subject_display || task.subject}</td>
-                  <td>{task.type}</td>
-                  <td>{task.difficulty}</td>
-                  <td>{userAns ?? "—"}</td>
-                  <td>
-                    {userAns !== undefined
-                      ? isCorrect
-                        ? "Верно"
-                        : "Неверно"
-                      : "Не отвечено"}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        <br />
-
-        <button onClick={retry}>Пройти снова</button>{" "}
-        <button onClick={() => navigate("/tasksets")}>
-          К списку вариантов
-        </button>
-      </div>
+      <TaskStats
+        currentSet={currentSet}
+        isExam={isExam}
+        serverScore={serverScore}
+        tasks={tasks}
+        checked={checked}
+        answers={answers}
+        retry={retry}
+        navigate={navigate}
+      />
     );
   }
 
@@ -283,35 +203,26 @@ const TaskSetPlayer = ({
 
   return (
     <div className="task-container">
-      <div className='set-nav'>
-        {taskIndex !== 0 &&
-          <ArrowLeftCircle
-            className="arrow"
-            size={40}
-            onClick={() => goTo(taskIndex - 1)} />
-        }
+      <TaskNavigation
+        taskIndex={taskIndex}
+        tasksLength={tasks.length}
+        goTo={goTo}
+        finishExam={finishExam}
+      />
 
-        {taskIndex < tasks.length - 1 ? (
-          <ArrowRightCircle
-            className="arrow"
-            size={40}
-            onClick={() => goTo(taskIndex + 1)} />
-        ) : (
-          <button className="btn_green" onClick={finishExam}>
-            Завершить
-          </button>
-        )}
-      </div>
-      <div className="task-info">
-        <span>
-          {task.subject_display || task.subject} · {currentSet.name}
-          {isExam && timeLeft !== null ? ` · Осталось: ${formatTime(timeLeft)}` : ""}
-        </span>
-        <span className="progress"> Задание {taskIndex + 1}/{tasks.length}</span>
-      </div>
+      <TaskHeader
+        task={task}
+        currentSet={currentSet}
+        isExam={isExam}
+        timeLeft={timeLeft}
+        formatTime={formatTime}
+        taskIndex={taskIndex}
+        total={tasks.length}
+      />
+
       {task && (
         <TaskItem
-          key={`${examId || 'training'}-${task.id}`}
+          key={`${examId || "training"}-${task.id}`}
           task={task}
           examSessionId={isExam ? examId : null}
           locked={isExam && answers[task.id] !== undefined}
@@ -326,4 +237,3 @@ const TaskSetPlayer = ({
 };
 
 export default TaskSetPlayer;
-
