@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import AchievementsList from '../components/AchievementsList.jsx';
-import AvatarPicker from '../components/AvatarPicker.jsx';
-import PurchasedItemList from '../components/PurchasedItemList.jsx';
+import UserInfo from '../components/UserInfo.jsx';
+import AchievementsBlock from '../components/AchievementsBlock.jsx';
+import InventoryBlock from '../components/InventoryBlock.jsx';
+import StatsBlock from '../components/StatsBlock.jsx';
 import UserBalance from '../components/UserBalance.jsx';
+import PurchasedItemList from '../components/PurchasedItemList.jsx';
 import TaskStatisticsSection from '../components/TaskStatisticsSection.jsx';
+import '../static/css/profile.css';
 
 const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refreshEquipped }) => {
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
     const [achievements, setAchievements] = useState([]);
     const [products, setProducts] = useState([]);
+    const [stats, setStats] = useState({});
     const [selectingId, setSelectingId] = useState(null);
     const [selectedFrameId, setSelectedFrameId] = useState(null);
     const [selectedBackgroundId, setSelectedBackgroundId] = useState(null);
@@ -40,7 +44,8 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
             try {
                 const requests = [
                     api.get('/achievements/'),
-                    api.get('/products/products/')
+                    api.get('/products/products/'),
+                    api.get('/statistics/user/'),
                 ];
 
                 if (!initialUser) {
@@ -51,10 +56,11 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
 
                 setAchievements(results[0].data);
                 setProducts(results[1].data);
+                setStats(results[2].data);
 
-                if (!initialUser && results[2]) {
-                    setUser(results[2].data);
-                    onUserUpdate?.(results[2].data);
+                if (!initialUser && results[3]) {
+                    setUser(results[3].data);
+                    onUserUpdate?.(results[3].data);
                 }
             } catch (err) {
                 console.error('Failed to fetch profile:', err);
@@ -80,7 +86,6 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
     const handleSelectFrame = async (product) => {
         if (!product?.user_product_id) return;
         setSelectingId(product.id);
-
         try {
             await api.post('/products/equip/', { user_product_id: product.user_product_id });
             await refreshEquipped?.();
@@ -92,18 +97,12 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
     const handleSelectBackground = async (product) => {
         if (!product?.user_product_id) return;
         setSelectingId(product.id);
-
         try {
             await api.post('/products/equip/', { user_product_id: product.user_product_id });
             await refreshEquipped?.();
         } finally {
             setSelectingId(null);
         }
-    };
-
-    const handleLogout = () => {
-        onLogout();
-        navigate('/login');
     };
 
     if (loading) {
@@ -114,56 +113,50 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
         return <div className="loading">Пользователь не найден</div>;
     }
 
-    return (
-        <div className="profile-container">
-            <h1>Профиль пользователя</h1>
 
-            <AvatarPicker
+return (
+    <div className="profilePage">
+        <h1 className="profilePage_title text">Профиль пользователя</h1>
+
+        <div className="profilePage_avatarBlock">
+            <UserInfo
                 user={user}
                 frameImage={frameImage}
                 onUserUpdate={(nextUser) => {
                     setUser(nextUser);
                     onUserUpdate?.(nextUser);
                 }}
+                onLogout={onLogout}
             />
-
-            <UserBalance />
-
-            <div className="profile-card">
-                <div className="profile-field">
-                    <label>Email:</label>
-                    <span>{user.email}</span>
-                </div>
-
-                <div className="profile-field">
-                    <label>Имя:</label>
-                    <span>{user.name}</span>
-                </div>
-
-                <div className="profile-field">
-                    <label>ID:</label>
-                    <span>{user.id}</span>
-                </div>
-
-                <button className="logout-btn" onClick={handleLogout}>
-                    Выйти из аккаунта
-                </button>
-            </div>
-
-            <PurchasedItemList
-                products={products}
-                selectingId={selectingId}
-                selectedFrameId={selectedFrameId}
-                selectedBackgroundId={selectedBackgroundId}
-                onSelectFrame={handleSelectFrame}
-                onSelectBackground={handleSelectBackground}
-            />
-
-            <AchievementsList achievements={achievements} />
-
-            <TaskStatisticsSection />
         </div>
-    );
+
+        <UserBalance />
+
+        <AchievementsBlock achievements={achievements} />
+
+        <InventoryBlock
+            products={products}
+            selectingId={selectingId}
+            selectedFrameId={selectedFrameId}
+            selectedBackgroundId={selectedBackgroundId}
+            onSelectFrame={handleSelectFrame}
+            onSelectBackground={handleSelectBackground}
+         />
+
+         <StatsBlock stats={stats} />
+
+         <PurchasedItemList
+             products={products}
+             selectingId={selectingId}
+             selectedFrameId={selectedFrameId}
+             selectedBackgroundId={selectedBackgroundId}
+             onSelectFrame={handleSelectFrame}
+             onSelectBackground={handleSelectBackground}
+         />
+
+         <TaskStatisticsSection />
+     </div>
+ );
 };
 
 export default ProfilePage;
