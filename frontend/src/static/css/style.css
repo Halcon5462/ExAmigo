@@ -104,9 +104,13 @@ body {
     gap: 10px;
 }
 
-.avatar-upload-btn{
-    position: relative;
-    overflow: hidden;
+.avatar-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    padding: 0 16px;
+    line-height: normal;
 }
 
 .avatar-file-input{
