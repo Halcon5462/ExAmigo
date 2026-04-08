@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from "../utils/api";
 
 const Streak = () => {
   const [streak, setStreak] = useState({
@@ -9,31 +9,41 @@ const Streak = () => {
   });
 
   useEffect(() => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      setStreak(prev => ({ ...prev, loading: false }));
+      return;
+    }
+
+    let mounted = true;
+
     const fetchStreakData = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        if (!token) {
-          setStreak(prev => ({ ...prev, loading: false }));
-          return;
-        }
+        const response = await api.get('/streak/me/');
 
-        const response = await axios.get('/api/streak/me/', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        if (!mounted) return;
 
         setStreak({
           current: response.data.current_streak,
           lastActivityDate: response.data.last_activity_date,
           loading: false
         });
+
       } catch (error) {
         console.error('Ошибка загрузки серии:', error);
+
+        if (!mounted) return;
+
         setStreak(prev => ({ ...prev, loading: false }));
       }
-    };
+  };
 
-    fetchStreakData();
-  }, []);
+  fetchStreakData();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
 
   const isActiveToday = () => {
     if (!streak.lastActivityDate) return false;
