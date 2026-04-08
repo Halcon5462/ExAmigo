@@ -145,9 +145,11 @@ class MatchConsumer(AsyncWebsocketConsumer):
             task_set=taskset,
             time_limit=3 * 60 * 60
         )
+        total_tasks = taskset.items.count()
 
         return {
             "taskset_id": taskset.id,
+            "total_tasks": total_tasks,
             "players": {
                 match.host.id: exam1.id,
                 match.opponent.id: exam2.id,
