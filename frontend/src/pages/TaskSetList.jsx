@@ -17,6 +17,18 @@ const TaskSetList = () => {
     });
     const navigate = useNavigate();
 
+    const startExam = async (setId) => {
+        try {
+        const resp = await api.post(`/taskBank/tasksets/${setId}/start-exam/`);
+        const examId = resp.data?.exam_id;
+        navigate(`/tasksets/play/${setId}?exam=${examId}`);
+        } catch (e) {
+        console.error(e);
+        alert('Не удалось начать экзамен');
+        }
+    };
+
+
     useEffect(() => {
         const fetchTaskSets = async () => {
             try {
@@ -123,6 +135,7 @@ const TaskSetList = () => {
                 filteredTaskSets.map(set => (
                     <div key={set.id} className="taskset-card">
                         <h3 className="taskset-card_title">{set.name}</h3>
+                        <p><strong>Тип:</strong> {set.type}</p>
                         <div className="taskset-card_info">
                             <div className="taskset-card_info-item">
                                 <span className="taskset-card_info-label">Автор:</span>
