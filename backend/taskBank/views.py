@@ -36,6 +36,28 @@ class TaskViewSet(ModelViewSet):
 
         return Response({"correct": is_correct})
 
+    @action(detail=True, methods=["get"])
+    def get_queryset(self):
+        qs = Task.objects.prefetch_related("correct_answers")
+
+        subject = self.request.query_params.get("subject")
+        order_kim = self.request.query_params.get("order_KIM")
+        type_ = self.request.query_params.get("type")
+        difficulty = self.request.query_params.get("difficulty")
+        author = self.request.query_params.get("author")
+
+        if subject:
+            qs = qs.filter(subject=subject)
+        if order_kim:
+            qs = qs.filter(order_KIM=order_kim)
+        if type_:
+            qs = qs.filter(type=type_)
+        if difficulty:
+            qs = qs.filter(difficulty=difficulty)
+        if author:
+            qs = qs.filter(author=author)
+
+        return qs
 
 class TaskSetViewSet(ModelViewSet):
     """CRUD for TaskSet (комплекты заданий)"""
@@ -275,4 +297,28 @@ class FinishExamView(APIView):
 
         return Response({
             "score": exam.score
+        })
+
+class SubjectChoicesView(APIView):
+    def get(self, request):
+        return Response([
+            {"value": v, "label": l}
+            for v, l in SubjectChoices.choices
+        ])
+
+class TaskFilterOptionsView(APIView):
+    def get(self, request):
+        tasks = Task.objects.all()
+        return Response({
+            "subjects": [
+                {"value": v, "label": l} for v, l in SubjectChoices.choices
+            ],
+            "orders": sorted(tasks.values_list("order_KIM", flat=True).distinct()),
+            "types": list(tasks.values_list("type", flat=True).distinct()),
+            "difficulties": sorted(tasks.values_list("difficulty", flat=True).distinct()),
+            "authors": list(
+                tasks.exclude(author=None)
+                     .values_list("author__name", flat=True)  # исправлено
+                     .distinct()
+            ),
         })
