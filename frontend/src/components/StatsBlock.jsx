@@ -9,15 +9,15 @@ const StatsBlock = ({ stats }) => {
       <h2 className="profilePage_sectionTitle text">Статистика</h2>
       <div className="profilePage_statsGrid">
         <div className="profilePage_statCard">
-          <div className="profilePage_statValue">{stats.totalTasks || '-'}</div>
+          <div className="profilePage_statValue">{stats.totalTasks ?? '-'}</div>
           <div className="profilePage_statLabel description_text">Всего заданий</div>
         </div>
         <div className="profilePage_statCard">
-          <div className="profilePage_statValue">{stats.completedTasks || '-'}</div>
+          <div className="profilePage_statValue">{stats.completedTasks ?? '-'}</div>
           <div className="profilePage_statLabel description_text">Выполнено</div>
         </div>
         <div className="profilePage_statCard">
-          <div className="profilePage_statValue">{stats.correctAnswers || '-'}</div>
+          <div className="profilePage_statValue">{stats.correctAnswers ?? '-'}</div>
           <div className="profilePage_statLabel description_text">Верных ответов</div>
         </div>
         <div className="profilePage_statCard">
