@@ -32,6 +32,35 @@ class TaskStatisticsListView(generics.ListAPIView):
         )
 
 
+class SubjectStatisticsList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        subjects = (
+            TaskStatistics.objects
+            .filter(user=request.user)
+            .values_list("subject", flat=True)
+            .distinct()
+        )
+
+        return Response(list(subjects))
+
+
+class SubjectStatisticsDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, subject):
+        stats = (
+            TaskStatistics.objects
+            .filter(user=request.user, subject=subject)
+            .order_by("order_KIM")
+        )
+
+        return Response({
+            "tasks": list(stats.values())
+        })
+
+
 class TaskSubmitView(APIView):
     """
     Представление для отправки ответа на задание.
