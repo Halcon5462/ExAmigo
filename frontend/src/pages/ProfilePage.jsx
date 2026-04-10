@@ -7,7 +7,6 @@ import InventoryBlock from '../components/InventoryBlock.jsx';
 import StatsBlock from '../components/StatsBlock.jsx';
 import UserBalance from '../components/UserBalance.jsx';
 import PurchasedItemList from '../components/PurchasedItemList.jsx';
-import TaskStatisticsSection from '../components/TaskStatisticsSection.jsx';
 import '../static/css/profile.css';
 
 const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refreshEquipped }) => {
@@ -45,7 +44,7 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
                 const requests = [
                     api.get('/achievements/'),
                     api.get('/products/products/'),
-                    //api.get('/statistics/user/'),
+                    api.get('/statistic/tasks/'),
                 ];
 
                 if (!initialUser) {
@@ -56,7 +55,27 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
 
                 setAchievements(results[0].data);
                 setProducts(results[1].data);
-                setStats(results[2].data);
+                const taskStats = results[2].data || [];
+                const totalTasks = taskStats.length;
+                const completedTasks = taskStats.filter((item) => item.correct_count > 0).length;
+                const correctAnswers = taskStats.reduce(
+                    (sum, item) => sum + (item.correct_count || 0),
+                    0
+                );
+                const attemptsCount = taskStats.reduce(
+                    (sum, item) => sum + (item.attempts_count || 0),
+                    0
+                );
+                const averageScore = attemptsCount
+                    ? Math.round((correctAnswers / attemptsCount) * 100)
+                    : 0;
+
+                setStats({
+                    totalTasks,
+                    completedTasks,
+                    correctAnswers,
+                    averageScore,
+                });
 
                 if (!initialUser && results[3]) {
                     setUser(results[3].data);
@@ -154,7 +173,6 @@ return (
              onSelectBackground={handleSelectBackground}
          />
 
-         <TaskStatisticsSection />
      </div>
  );
 };
