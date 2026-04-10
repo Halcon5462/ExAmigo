@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import StatisticsChart from '../components/statistics/StatisticsChart';
+import TaskStatisticsSection from '../components/TaskStatisticsSection';
 import TasksList from '../components/statistics/TasksList';
 import api from '../utils/api';
 import '../static/css/statistics.css';
@@ -49,6 +50,7 @@ const SubjectStatisticsPage = () => {
             </div>
 
             <StatisticsChart data={stats} />
+            <TaskStatisticsSection stats={stats} />
             <TasksList stats={stats} />
         </div>
     );
