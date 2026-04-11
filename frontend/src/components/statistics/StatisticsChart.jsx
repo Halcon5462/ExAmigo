@@ -19,9 +19,18 @@ const StatisticsChart = ({ data }) => {
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data}>
                         <XAxis dataKey="order_KIM" />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="correct_count" stroke="#4A9776" strokeWidth={3} />
+                        <YAxis domain={[0, 100]} allowDecimals={false} tickFormatter={(value) => `${value}%`} />
+                        <Tooltip
+                            formatter={(value) => [`${value}%`, 'Процент верных ответов']}
+                            labelFormatter={(value) => `Задание №${value}`}
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="accuracy_percent"
+                            name="Процент верных ответов"
+                            stroke="#4A9776"
+                            strokeWidth={3}
+                        />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
