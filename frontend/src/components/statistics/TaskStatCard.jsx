@@ -4,6 +4,10 @@ const TaskStatCard = ({ item }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const getAccuracy = () => {
+        if (typeof item.accuracy_percent === 'number') {
+            return item.accuracy_percent;
+        }
+
         if (!item.attempts_count) {
             return 0;
         }
@@ -30,6 +34,7 @@ const TaskStatCard = ({ item }) => {
                 <div className="taskStatCard_details">
                     <p className="description_text">Попытки: {item.attempts_count}</p>
                     <p className="description_text">Верные: {item.correct_count}</p>
+                    <p className="description_text">Процент верных: {getAccuracy()}%</p>
                     <p className="description_text">С первого раза: {item.correct_first_try}</p>
                 </div>
             )}
