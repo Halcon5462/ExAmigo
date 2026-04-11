@@ -1,4 +1,4 @@
-from django.db import transaction
+﻿from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -30,6 +30,36 @@ class TaskStatisticsListView(generics.ListAPIView):
         return TaskStatistics.objects.filter(user=self.request.user).order_by(
             "subject", "order_KIM"
         )
+
+
+class SubjectStatisticsList(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        subjects = (
+            TaskStatistics.objects
+            .filter(user=request.user)
+            .values_list("subject", flat=True)
+            .distinct()
+        )
+
+        return Response(list(subjects))
+
+
+class SubjectStatisticsDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, subject):
+        stats = (
+            TaskStatistics.objects
+            .filter(user=request.user, subject=subject)
+            .order_by("order_KIM")
+        )
+        serializer = TaskStatisticsSerializer(stats, many=True)
+
+        return Response({
+            "tasks": serializer.data
+        })
 
 
 class TaskSubmitView(APIView):
@@ -166,3 +196,5 @@ class TaskSubmitView(APIView):
             response_data["new_balance"] = transaction_data["new_balance"]
 
         return Response(response_data)
+
+

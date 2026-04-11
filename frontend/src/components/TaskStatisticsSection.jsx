@@ -1,45 +1,17 @@
-import { useEffect, useState } from 'react';
-import api from '../utils/api';
-
 const MAX_BAR_WIDTH = 200;
 
-const TaskStatisticsSection = () => {
-    const [stats, setStats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await api.get('/statistic/tasks/');
-                setStats(response.data);
-            } catch (err) {
-                console.error('Failed to load task statistics:', err);
-                setError('Не удалось загрузить статистику заданий');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
-    if (loading) {
-        return <div>Загрузка статистики заданий...</div>;
-    }
-
-    if (error) {
-        return <div>{error}</div>;
-    }
-
+const TaskStatisticsSection = ({ stats = [] }) => {
     if (!stats.length) {
-        return <div>Пока нет данных по решению заданий.</div>;
+        return <div>Нет данных по решению заданий.</div>;
     }
 
-    const maxAttempts = Math.max(...stats.map((s) => s.attempts_count || 0), 1);
+    const maxAttempts = Math.max(...stats.map((item) => item.attempts_count || 0), 1);
 
     const getBarWidth = (value) => {
-        if (!value) return 0;
+        if (!value) {
+            return 0;
+        }
+
         return (value / maxAttempts) * MAX_BAR_WIDTH;
     };
 
@@ -91,4 +63,3 @@ const TaskStatisticsSection = () => {
 };
 
 export default TaskStatisticsSection;
-

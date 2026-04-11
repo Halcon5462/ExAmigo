@@ -1,4 +1,4 @@
-from datetime import timedelta
+﻿from datetime import timedelta
 
 from django.test import TestCase
 from django.utils import timezone
@@ -271,3 +271,20 @@ class StatisticApiTests(TestCase):
         self.assertEqual(self.user.wallet.balance, 0)
         self.assertEqual(stats.correct_count, 1)
         self.assertEqual(stats.correct_first_try, 0)
+
+    def test_subject_statistics_detail_returns_accuracy_percent(self):
+        TaskStatistics.objects.create(
+            user=self.user,
+            subject=SubjectChoices.MATH,
+            order_KIM=1,
+            attempts_count=5,
+            correct_count=3,
+            correct_first_try=1,
+        )
+
+        response = self.client.get(f"/api/statistic/subjects/{SubjectChoices.MATH}/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["tasks"]), 1)
+        self.assertEqual(response.data["tasks"][0]["accuracy_percent"], 60)
+
