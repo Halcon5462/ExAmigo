@@ -45,7 +45,7 @@ const SubjectStatisticsPage = () => {
             <div className="statisticsPage_header">
                 <h1 className="statisticsPage_title text">Статистика: {subject}</h1>
                 <p className="statisticsPage_subtitle description_text">
-                    График показывает количество верных решений по каждому номеру задания.
+                    График показывает процент верных ответов по каждому номеру задания.
                 </p>
             </div>
 
