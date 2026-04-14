@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
-import AchievementsList from '../components/AchievementsList.jsx';
+import UserInfo from '../components/UserInfo.jsx';
+import AchievementsBlock from '../components/AchievementsBlock.jsx';
+import InventoryBlock from '../components/InventoryBlock.jsx';
+import StatsBlock from '../components/StatsBlock.jsx';
+import UserBalance from '../components/UserBalance.jsx';
 import PurchasedItemList from '../components/PurchasedItemList.jsx';
-import UserBalance from '../components/UserBalance.jsx'; // Добавить
-import TaskStatisticsSection from '../components/TaskStatisticsSection.jsx';
+import '../static/css/profile.css';
 
-const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped }) => {
+const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refreshEquipped }) => {
     const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
     const [achievements, setAchievements] = useState([]);
     const [products, setProducts] = useState([]);
+    const [stats, setStats] = useState({});
     const [selectingId, setSelectingId] = useState(null);
     const [selectedFrameId, setSelectedFrameId] = useState(null);
     const [selectedBackgroundId, setSelectedBackgroundId] = useState(null);
 
     const navigate = useNavigate();
 
-    const avatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%25" height="100%25" fill="%23FFD54F"/><circle cx="88" cy="108" r="18" fill="%23000"/><circle cx="168" cy="108" r="18" fill="%23000"/><path d="M70 170 Q128 220 186 170" stroke="%23000" stroke-width="12" fill="none" stroke-linecap="round"/></svg>';
     const toAbsoluteMediaUrl = (url) => {
         if (!url) return null;
         if (typeof url !== 'string') return null;
@@ -26,14 +29,22 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
         if (url.startsWith('/')) return `${origin}${url}`;
         return `${origin}/${url}`;
     };
-    const frameImage = toAbsoluteMediaUrl(equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null);
+
+    const frameImage = toAbsoluteMediaUrl(
+        equipped?.frame?.frame?.icon_frame || equipped?.frame?.icon_frame || null
+    );
+
+    useEffect(() => {
+        setUser(initialUser);
+    }, [initialUser]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const requests = [
                     api.get('/achievements/'),
-                    api.get('/products/products/')
+                    api.get('/products/products/'),
+                    api.get('/statistic/tasks/'),
                 ];
 
                 if (!initialUser) {
@@ -44,10 +55,31 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
 
                 setAchievements(results[0].data);
                 setProducts(results[1].data);
+                const taskStats = results[2].data || [];
+                const totalTasks = taskStats.length;
+                const completedTasks = taskStats.filter((item) => item.correct_count > 0).length;
+                const correctAnswers = taskStats.reduce(
+                    (sum, item) => sum + (item.correct_count || 0),
+                    0
+                );
+                const attemptsCount = taskStats.reduce(
+                    (sum, item) => sum + (item.attempts_count || 0),
+                    0
+                );
+                const averageScore = attemptsCount
+                    ? Math.round((correctAnswers / attemptsCount) * 100)
+                    : 0;
 
-                if (!initialUser && results[2]) {
-                    setUser(results[2].data);
-                    localStorage.setItem('user', JSON.stringify(results[2].data));
+                setStats({
+                    totalTasks,
+                    completedTasks,
+                    correctAnswers,
+                    averageScore,
+                });
+
+                if (!initialUser && results[3]) {
+                    setUser(results[3].data);
+                    onUserUpdate?.(results[3].data);
                 }
             } catch (err) {
                 console.error('Failed to fetch profile:', err);
@@ -61,7 +93,7 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
         };
 
         fetchData();
-    }, [initialUser, onLogout, navigate]);
+    }, [initialUser, navigate, onLogout, onUserUpdate]);
 
     useEffect(() => {
         const nextFrameId = equipped?.frame?.id ?? null;
@@ -73,7 +105,6 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
     const handleSelectFrame = async (product) => {
         if (!product?.user_product_id) return;
         setSelectingId(product.id);
-
         try {
             await api.post('/products/equip/', { user_product_id: product.user_product_id });
             await refreshEquipped?.();
@@ -85,18 +116,12 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
     const handleSelectBackground = async (product) => {
         if (!product?.user_product_id) return;
         setSelectingId(product.id);
-
         try {
             await api.post('/products/equip/', { user_product_id: product.user_product_id });
             await refreshEquipped?.();
         } finally {
             setSelectingId(null);
         }
-    };
-
-    const handleLogout = () => {
-        onLogout();
-        navigate('/login');
     };
 
     if (loading) {
@@ -107,57 +132,49 @@ const ProfilePage = ({ user: initialUser, onLogout, equipped, refreshEquipped })
         return <div className="loading">Пользователь не найден</div>;
     }
 
-    return (
-        <div className="profile-container">
-            <h1>Профиль пользователя</h1>
 
-            {/*  нужно блок добавить */}
-            <div className="avatar-wrapper">
-                <img src={avatar} alt="avatar" className="avatar-img" />
-                {frameImage && (
-                    <img src={frameImage} alt="frame" className="avatar-frame" />
-                )}
-            </div>
+return (
+    <div className="profilePage">
+        <h1 className="profilePage_title text">Профиль пользователя</h1>
 
-            <UserBalance />
-
-            <div className="profile-card">
-                <div className="profile-field">
-                    <label>Email:</label>
-                    <span>{user.email}</span>
-                </div>
-
-                <div className="profile-field">
-                    <label>Имя:</label>
-                    <span>{user.name}</span>
-                </div>
-
-                <div className="profile-field">
-                    <label>ID:</label>
-                    <span>{user.id}</span>
-                </div>
-
-                <button className="logout-btn" onClick={handleLogout}>
-                    Выйти из аккаунта
-                </button>
-            </div>
-
-            <PurchasedItemList
-                products={products}
-                selectingId={selectingId}
-                selectedFrameId={selectedFrameId}
-                selectedBackgroundId={selectedBackgroundId}
-                onSelectFrame={handleSelectFrame}
-                onSelectBackground={handleSelectBackground}
+        <div className="profilePage_avatarBlock">
+            <UserInfo
+                user={user}
+                frameImage={frameImage}
+                onUserUpdate={(nextUser) => {
+                    setUser(nextUser);
+                    onUserUpdate?.(nextUser);
+                }}
+                onLogout={onLogout}
             />
-
-            <AchievementsList
-                achievements={achievements}
-            />
-
-            <TaskStatisticsSection />
         </div>
-    );
+
+        <UserBalance />
+
+        <AchievementsBlock achievements={achievements} />
+
+        <InventoryBlock
+            products={products}
+            selectingId={selectingId}
+            selectedFrameId={selectedFrameId}
+            selectedBackgroundId={selectedBackgroundId}
+            onSelectFrame={handleSelectFrame}
+            onSelectBackground={handleSelectBackground}
+         />
+
+         <StatsBlock stats={stats} />
+
+         <PurchasedItemList
+             products={products}
+             selectingId={selectingId}
+             selectedFrameId={selectedFrameId}
+             selectedBackgroundId={selectedBackgroundId}
+             onSelectFrame={handleSelectFrame}
+             onSelectBackground={handleSelectBackground}
+         />
+
+     </div>
+ );
 };
 
 export default ProfilePage;

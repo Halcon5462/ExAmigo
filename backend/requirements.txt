@@ -6,3 +6,6 @@ Pillow
 sphinx
 channels
 daphne
+pylint
+pylint-django
+coverage

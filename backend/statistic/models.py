@@ -1,16 +1,16 @@
 from django.db import models
 from django.conf import settings
 
-from taskBank.models import Task
 from taskBank.ege_scoring import SubjectChoices
 
+
 class TaskAttempt(models.Model):
-    '''
+    """
     Просто решение, бесконечное кол-во на одно задание
-    '''
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name="attempts",
     )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
@@ -27,12 +27,12 @@ class TaskAttempt(models.Model):
 
 
 class TaskProgress(models.Model):
-    '''
+    """
     Первое верное решение
-    '''
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
         related_name="task_progress",
     )
     task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
@@ -43,6 +43,9 @@ class TaskProgress(models.Model):
 
 
 class TaskStatistics(models.Model):
+    """
+    Статистика по заданиям для пользователя.
+    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -62,4 +65,3 @@ class TaskStatistics(models.Model):
 
     class Meta:
         unique_together = ("user", "subject", "order_KIM")
-

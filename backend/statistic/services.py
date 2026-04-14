@@ -7,7 +7,7 @@ def update_task_statistics(user, task, is_correct: bool, first_time: bool) -> No
     """
     Обновляет агрегированную статистику по заданию.
     """
-    stats, created = TaskStatistics.objects.get_or_create(
+    stats, _ = TaskStatistics.objects.get_or_create(
         user=user,
         subject=task.subject,
         order_KIM=task.order_KIM,
@@ -22,4 +22,3 @@ def update_task_statistics(user, task, is_correct: bool, first_time: bool) -> No
 
     stats.last_attempt_at = timezone.now()
     stats.save()
-

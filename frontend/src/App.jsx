@@ -16,6 +16,10 @@ import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
 import TaskSetCreator from './pages/TaskSetCreator';
 import TaskSetList from './pages/TaskSetList';
 import TaskSetPlayer from './pages/TaskSetPlayer';
+import MatchPlayerPage from "./pages/MatchPlayerPage";
+import MatchCreatePage from "./pages/MatchCreatePage";
+import StatisticMainPage from './pages/StatisticMainPage';
+import SubjectStatisticsPage from './pages/SubjectStatisticsPage';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -113,6 +117,11 @@ function App() {
         localStorage.setItem('user', JSON.stringify(userData));
     };
 
+    const handleUserUpdate = useCallback((userData) => {
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+    }, []);
+
     const handleLogout = () => {
         setUser(null);
         localStorage.clear();
@@ -143,14 +152,18 @@ function App() {
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
                         <Route path="/tasksets" element={<TaskSetList />} />
                         <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
-                        <Route path="/match" element={<TestMatchPage />} />
+                        <Route path="/match" element={<MatchCreatePage />} />
+                        <Route path="/match/play/:matchId" element={<MatchPlayerPage />} />
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
+                        <Route path="/statistics" element={<StatisticMainPage />} />
+                        <Route path="/statistics/:subject" element={<SubjectStatisticsPage />} />
                         <Route
                             path="/profile"
                             element={
                                 <ProfilePage
                                     user={user}
                                     onLogout={handleLogout}
+                                    onUserUpdate={handleUserUpdate}
                                     equipped={equipped}
                                     refreshEquipped={fetchEquipped}
                                 />

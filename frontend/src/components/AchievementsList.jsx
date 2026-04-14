@@ -1,22 +1,4 @@
 import React from 'react';
-import api from '../utils/api';
-
-// const toAbsoluteMediaUrl = (url) => {
-//     if (!url || typeof url !== 'string') {
-//         return null;
-//     }
-
-//     if (url.startsWith('http://') || url.startsWith('https://')) {
-//         return url;
-//     }
-
-//     const origin = new URL(api.defaults.baseURL).origin;
-//     if (url.startsWith('/')) {
-//         return `${origin}${url}`;
-//     }
-
-//     return `${origin}/${url}`;
-// };
 
 const AchievementsList = ({ achievements = [] }) => {
     return (

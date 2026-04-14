@@ -1,10 +1,13 @@
-from django.db.models import Exists, IntegerField, OuterRef, Subquery, Value
+from django.db.models import Exists, IntegerField, OuterRef, Subquery, Value, DateTimeField
 from django.db.models.functions import Coalesce
 
 from achievements.models import Achievement, UserAchievement, UserAchievementProgress
 
 
 def get_user_achievements(user):
+    """
+    Возвращает все ачивки с прогрессом пользователя.
+    """
     progress_subquery = UserAchievementProgress.objects.filter(
         user=user,
         achievement=OuterRef("pk"),
@@ -13,6 +16,10 @@ def get_user_achievements(user):
         user=user,
         achievement=OuterRef("pk"),
     )
+    earned_at_subquery = UserAchievement.objects.filter(
+        user=user,
+        achievement=OuterRef("pk"),
+    ).values("get_date")[:1]
 
     return Achievement.objects.annotate(
         current_value=Coalesce(
@@ -20,4 +27,5 @@ def get_user_achievements(user):
             Value(0),
         ),
         is_obtained=Exists(obtained_subquery),
+        earned_at=Subquery(earned_at_subquery, output_field=DateTimeField()),
     )

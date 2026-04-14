@@ -46,7 +46,7 @@ const TaskSetCreator = () => {
         delete newSel[taskId];
         const sorted = Object.entries(newSel).sort((a, b) => a[1] - b[1]);
         const renumbered = {};
-        sorted.forEach(([id, order], idx) => {
+        sorted.forEach(([id], idx) => {
           renumbered[id] = idx + 1;
         });
         return renumbered;
@@ -64,7 +64,7 @@ const TaskSetCreator = () => {
       const updated = { ...prev, [taskId]: newOrder };
       const sorted = Object.entries(updated).sort((a, b) => a[1] - b[1]);
       const renumbered = {};
-      sorted.forEach(([id, order], idx) => {
+      sorted.forEach(([id], idx) => {
         renumbered[id] = idx + 1;
       });
       return renumbered;
@@ -114,16 +114,16 @@ const TaskSetCreator = () => {
   if (error) return <div>{error}</div>;
 
   const selectedSubjectLabel = SUBJECT_OPTIONS.find(opt => opt.value === subject)?.label;
-  // const visibleTasks =
-  //   ? tasks.filter(t =>
-  //       t.subject === subject
-  //       || t.subject === selectedSubjectLabel
-  //       || t.subject_display === selectedSubjectLabel
-  //     )
-  //   : tasks;
   const filteredTasks = (setType === 'training')
   ? tasks.filter(task => {
-    if (filters.subject && task.subject !== filters.subject) return false;
+    if (
+      subject &&
+      task.subject !== subject &&
+      task.subject !== selectedSubjectLabel &&
+      task.subject_display !== selectedSubjectLabel
+    ) {
+      return false;
+    }
     if (filters.orderKIM && String(task.order_KIM) !== filters.orderKIM) return false;
     if (filters.type && task.type !== filters.type) return false;
     if (filters.difficulty && String(task.difficulty) !== filters.difficulty) return false;
@@ -196,7 +196,7 @@ const TaskSetCreator = () => {
                       />
                     </td>
                     <td>{task.order_KIM}</td>
-                    <td>{task.subject}</td>
+                    <td>{task.subject_display || task.subject}</td>
                     <td>{task.type}</td>
                     <td>{task.difficulty}</td>
                     <td>

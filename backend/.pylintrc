@@ -1,0 +1,21 @@
+[MASTER]
+ignore-patterns = migrations
+ignore-paths = .*[/\\]migrations[/\\].*
+
+[MESSAGES CONTROL]
+disable =
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    too-few-public-methods,
+    too-many-return-statements,
+    too-many-locals,
+    no-member,
+    abstract-method,
+    invalid-str-returned,
+    unused-argument,
+    duplicate-code,
+    import-error
+
+[FORMAT]
+max-line-length = 100

@@ -1,8 +1,12 @@
 from django.conf import settings
 from django.db import models
+from taskBank.models import TaskSet
 
 
 class Match(models.Model):
+    """
+    Модель для матча.
+    """
 
     STATUS_CHOICES = [
         ("waiting", "Waiting"),
@@ -28,6 +32,13 @@ class Match(models.Model):
         max_length=20,
         choices=STATUS_CHOICES,
         default="waiting"
+    )
+
+    task_set = models.ForeignKey(
+        TaskSet,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

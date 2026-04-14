@@ -9,6 +9,9 @@ from .models import Product
 
 
 class ProductService:
+    """
+    Сервис для работы с продуктами.
+    """
 
     @classmethod
     def purchase_product(cls, user, product: Product, quantity: int = 1) -> dict:
@@ -50,6 +53,9 @@ class ProductService:
 
 
 def equip_product(user, user_product_id):
+    """
+    Экипирует продукт.
+    """
     user_product = UserProduct.objects.get(user=user, id=user_product_id)
     product = user_product.product
     slot = product.type
@@ -61,4 +67,3 @@ def equip_product(user, user_product_id):
     )
     equipped.save()
     return product
-
