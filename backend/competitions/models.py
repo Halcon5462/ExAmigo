@@ -42,3 +42,5 @@ class Match(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+    host_finished = models.BooleanField(default=False)
+    opponent_finished = models.BooleanField(default=False)

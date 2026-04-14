@@ -1,16 +1,14 @@
 import React from "react";
 
-const OpponentProgressBar = ({ progress, totalTasks }) => {
-  const values = Object.values(progress);
-
+const OpponentProgressBar = ({ progress, taskIds }) => {
   return (
     <div style={{ display: "flex", gap: "5px", marginBottom: "10px" }}>
-      {Array.from({ length: totalTasks || 0 }).map((_, i) => {
-        const isCorrect = values[i];
+      {taskIds.map((taskId) => {
+        const isCorrect = progress[taskId];
 
         return (
           <div
-            key={i}
+            key={taskId}
             style={{
               width: "10px",
               height: "10px",

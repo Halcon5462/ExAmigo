@@ -12,7 +12,8 @@ import useExamTimer from "../components/taskSetPlayer/UseExamTimer";
 const TaskSetPlayer = ({
   forcedTasksetId = null,
   forcedExamId = null,
-  externalOnAnswered = null
+  externalOnAnswered = null,
+  matchEnd = null
 }) => {
   const navigate = useNavigate();
   const params = useParams();
@@ -128,6 +129,8 @@ const TaskSetPlayer = ({
     } finally {
       finishInFlight.current = false;
     }
+
+    matchEnd()
   }, [examId, isExam]);
 
   useEffect(() => {
@@ -152,7 +155,7 @@ const TaskSetPlayer = ({
     setChecked((prev) => ({ ...prev, [taskId]: correct }));
 
     if (externalOnAnswered) {
-      externalOnAnswered(taskId, answer, correct);
+      externalOnAnswered(taskId, answer, correct, tasks);
     }
   };
 
