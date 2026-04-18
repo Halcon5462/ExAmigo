@@ -22,19 +22,20 @@ class HintView(APIView):
             return Response({"error": "Задание не найдено"}, status=404)
 
         #Проверка кеша
-        if hasattr(task, "hint"):
+        cached_hint = task.hints.filter(level=level).first()
+        if cached_hint:
             return Response({
-                "hint": task.hint.hint,
+                "hint": cached_hint.hint,
                 "cached": True
             })
 
         #Списание валюты
-        profile = request.user.profile
-        if profile.coins < 1:
-            return Response({"error": "Не достаточно монет"}, status=403)
+        # profile = request.user.wallet
+        # if profile.balance < 1:
+        #     return Response({"error": "Не достаточно монет"}, status=403)
 
-        profile.coins -= 1
-        profile.save()
+        # profile.balance -= 1
+        # profile.save()
 
         #Генерация
         prompt = f"""
@@ -46,7 +47,7 @@ class HintView(APIView):
         - Коротко (1-2 предложения)
 
         Задание:
-        {task.text}
+        {task.description}
         """
 
         response = requests.post(
@@ -69,7 +70,11 @@ class HintView(APIView):
 
         # Сохраняем
         try:
-            TaskHint.objects.create(task_id=task_id, hint=hint_text)
+            TaskHint.objects.create(
+                task=task,
+                level=level,
+                hint=hint_text
+            )
         except IntegrityError:
             pass  # уже кто-то сохранил
 
