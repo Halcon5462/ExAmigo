@@ -7,86 +7,90 @@ stages:
   - build
   - documentation
 
-# ---------------------
+# =====================
+# CACHE
+# =====================
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - backend/.cache/pip
+    - backend/.venv/
+    - frontend/node_modules/
+
+# =====================
 # BACKEND SETUP
-# ---------------------
+# =====================
 .backend_setup:
   before_script:
     - cd backend
+    - python -m venv .venv
+    - source .venv/bin/activate
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
 
-# ---------------------
-# STYLE (BACKEND)
-# ---------------------
+# =====================
+# STYLE
+# =====================
 pylint:
   stage: style
   extends: .backend_setup
   script:
     - pylint --fail-under=6 --ignore-paths="docs/*" .
     - echo "Pylint complete."
-  artifacts:
-    when: on_success
-    expire_in: 30 days
 
 pycodestyle:
   stage: style
   extends: .backend_setup
   script:
     - pycodestyle --max-line-length=120 .
-    - echo "Pycodestyle complete."
-  artifacts:
-    when: on_failure
-    expire_in: 30 days
 
-# ---------------------
-# TESTS (DJANGO)
-# ---------------------
+# =====================
+# TESTS
+# =====================
 unittest:
   stage: test
   extends: .backend_setup
   script:
     - python manage.py test
-  artifacts:
-    when: on_failure
-    expire_in: 30 days
 
-# ---------------------
+# =====================
 # COVERAGE
-# ---------------------
+# =====================
 coverage:
   stage: coverage
   extends: .backend_setup
   script:
+    - pip install coverage
     - coverage run manage.py test
     - coverage report -m
     - coverage html
   artifacts:
     paths:
       - backend/htmlcov/
-    expire_in: 30 days
-  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
 
-# ---------------------
+# =====================
 # FRONTEND BUILD
-# ---------------------
+# =====================
 frontend-build:
   stage: build
   image: node:20-alpine
+  cache:
+    key: frontend-cache
+    paths:
+      - frontend/node_modules/
   before_script:
     - cd frontend
     - npm install
   script:
-    - npm run dev
+    - npm run build
   artifacts:
     paths:
       - frontend/build/
-    expire_in: 30 days
 
-# ---------------------
-# DOCUMENTATION (SPHINX)
-# ---------------------
+# =====================
+# DOCS
+# =====================
 sphinx:
   stage: documentation
   before_script:
@@ -97,4 +101,3 @@ sphinx:
   artifacts:
     paths:
       - docs/build/
-    expire_in: 30 days
