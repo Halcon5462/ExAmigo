@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import '../static/css/task.css'
 
+import { BlockMath } from 'react-katex'
+import 'katex/dist/katex.min.css';
+
 const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect }) => {
   const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
   const [result, setResult] = useState(
@@ -81,6 +84,10 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       )}
       <div className="task-description description_text">
           {task.description}
+          <br/>
+          {task.formula && (
+            <BlockMath math={task.formula} />
+          )}
       </div>
       {task.file && (
         <button onClick={() => downloadFile(task.file)}>
