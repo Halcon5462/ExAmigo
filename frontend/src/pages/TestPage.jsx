@@ -148,7 +148,7 @@ const TestPage = () => {
                                         }}
                                     >
                                         <strong>Уровень {lvl}:</strong>
-                                        <p style={{ margin: 0 }}>{text}</p>
+                                        <p style={{ margin: 0, whiteSpace: "pre-line" }}>{text}</p>
                                     </div>
                                 ))}
                             </div>
