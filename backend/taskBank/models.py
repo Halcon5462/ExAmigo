@@ -22,6 +22,11 @@ class Task(models.Model):
     order_KIM = models.PositiveIntegerField(verbose_name="Номер задания из КИМ")
     type = models.CharField(max_length=100, verbose_name="Тип задания из КИМ")
     difficulty = models.PositiveIntegerField(verbose_name="Сложность от 1 до 5")
+    formula = models.TextField(
+        verbose_name="Формула/Уравнение для задания если есть",
+        blank=True,
+        null=True,
+    )
     description = models.TextField(verbose_name="Описание задания")
     image = models.ImageField(
         upload_to='tasks/images/',
