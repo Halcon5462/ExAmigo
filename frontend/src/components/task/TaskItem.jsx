@@ -117,8 +117,12 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       {task.already_solved && (
           <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
       )}
-      <HintSection taskId={task.id} />
-      <AskSection taskId={task.id} />
+      {!examSessionId && 
+      <>
+        <HintSection taskId={task.id} />
+        <AskSection taskId={task.id} />
+      </>
+      }
     </div>
   );
 };
