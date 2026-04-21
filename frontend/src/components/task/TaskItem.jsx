@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import api from "../utils/api";
-import '../static/css/task.css'
+import api from "../../utils/api";
+import '../../static/css/task.css'
+
+import HintSection from "./HintSection";
+import AskSection from "./AskSection";
 
 const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect }) => {
   const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
@@ -114,6 +117,8 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       {task.already_solved && (
           <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
       )}
+      <HintSection taskId={task.id} />
+      <AskSection taskId={task.id} />
     </div>
   );
 };
