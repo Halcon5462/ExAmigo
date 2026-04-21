@@ -80,14 +80,14 @@ const TestPage = () => {
             }));
 
         } catch (err) {
-            alert("Ошибка при запросе");
+            alert(err.response?.data?.error || "Ошибка при получении подсказки");
         } finally {
             setLoadingQuestionId(null);
         }
     };
 
     const getHintText = (task, level) => {
-        if (loadingTaskId === task.id) return "...";
+        if (loadingTaskId === task.id) return "Думаем...";
         if (hints[task.id]?.[level]) return "✓ Получено";
         return `Получить (-${prices[level]} 💰)`;
     };
