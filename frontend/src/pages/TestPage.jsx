@@ -1,35 +1,102 @@
 import React, { useState, useEffect } from "react";
 import api from "../utils/api";
-import TaskItem from "../components/TaskItem";
+import TaskItem from "../components/task/TaskItem";
 
 const TestPage = () => {
-    const [tasks, setTasks] = useState([])
+    const [tasks, setTasks] = useState([]);
     const [hints, setHints] = useState({});
+    const [selectedLevels, setSelectedLevels] = useState({});
     const [loadingTaskId, setLoadingTaskId] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const handleGetHint = async (task) => {
-        //уже есть подсказка — не дергаем повторно
-        if (hints[task.id]) return;
+    const [questions, setQuestions] = useState({});
+    const [answers, setAnswers] = useState({});
+    const [loadingQuestionId, setLoadingQuestionId] = useState(null);
+
+    const [prices, setPrices] = useState({});
+
+    const handleGetHint = async (task, level) => {
+        // уже есть подсказка
+        if (hints[task.id]?.[level]) {
+            setSelectedLevels(prev => ({
+                ...prev,
+                [task.id]: level
+            }));
+            return;
+        }
 
         setLoadingTaskId(task.id);
 
         try {
             const res = await api.post("/helpAi/hint/", {
                 task_id: task.id,
-                task: task.text,
+                level: level,
             });
 
-            setHints((prev) => ({
+            setHints(prev => ({
                 ...prev,
-                [task.id]: res.data.hint,
+                [task.id]: {
+                    ...prev[task.id],
+                    [level]: res.data.hint
+                }
             }));
+
+            setSelectedLevels(prev => ({
+                ...prev,
+                [task.id]: level
+            }));
+
         } catch (err) {
             alert(err.response?.data?.error || "Ошибка при получении подсказки");
         } finally {
             setLoadingTaskId(null);
         }
     };
+
+    const handleAskQuestion = async (task) => {
+        const question = questions[task.id];
+
+        if (!question) {
+            alert("Введите вопрос");
+            return;
+        }
+
+        if (answers[task.id]){
+            alert('Подсказка уже получена!');
+            return;
+        }
+
+        setLoadingQuestionId(task.id);
+
+        try {
+            const res = await api.post("/helpAi/ask/", {
+                task_id: task.id,
+                question: question,
+            });
+
+            setAnswers(prev => ({
+                ...prev,
+                [task.id]: res.data.answer
+            }));
+
+        } catch (err) {
+            alert(err.response?.data?.error || "Ошибка при получении подсказки");
+        } finally {
+            setLoadingQuestionId(null);
+        }
+    };
+
+    const getHintText = (task, level) => {
+        if (loadingTaskId === task.id) return "Думаем...";
+        if (hints[task.id]?.[level]) return "✓ Получено";
+        return `Получить (-${prices[level]} 💰)`;
+    };
+
+    useEffect(() => {
+        api.get("/helpAi/prices/").then(res => {
+            setPrices(res.data);
+        });
+    }, []);
 
     useEffect(() => {
         const fetchTasks = async () => {
@@ -46,53 +113,13 @@ const TestPage = () => {
     }, []);
 
     if (loading) return <div>Загрузка...</div>;
+
     return (
-        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <h2>Тест подсказок</h2>
-
-        {tasks.map((task) => (
-            <div
-            key={task.id}
-            style={{
-                border: "1px solid #ccc",
-                padding: "15px",
-                marginBottom: "15px",
-                borderRadius: "10px",
-            }}
-            >
-            {/* Твое задание */}
-            <TaskItem task={task} />
-
-            {/* Кнопка подсказки */}
-            <button
-                onClick={() => handleGetHint(task)}
-                disabled={loadingTaskId === task.id}
-                style={{ marginTop: "10px" }}
-            >
-                {loadingTaskId === task.id
-                ? "Загрузка..."
-                : hints[task.id]
-                ? "Подсказка получена"
-                : "Получить подсказку (-1 💰)"}
-            </button>
-
-            {/* Вывод подсказки */}
-            {hints[task.id] && (
-                <div
-                style={{
-                    marginTop: "10px",
-                    padding: "10px",
-                    background: "#f5f5f5",
-                    borderRadius: "5px",
-                }}
-                >
-                <strong>Подсказка:</strong>
-                <p>{hints[task.id]}</p>
-                </div>
-            )}
-            </div>
+        <>
+        {tasks.map(task => (
+            <TaskItem key={task.id} task={task} />
         ))}
-        </div>
+    </>
     );
 };
 
