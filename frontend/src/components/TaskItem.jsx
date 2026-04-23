@@ -83,8 +83,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         </div>
       )}
       <div className="task-description description_text">
-          {task.description}
-          <br/>
+          <p style={{ whiteSpace: "pre-line" }}>{task.description}</p>
           {task.formula && (
             <BlockMath math={task.formula} />
           )}
