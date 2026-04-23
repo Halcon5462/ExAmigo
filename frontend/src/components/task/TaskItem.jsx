@@ -5,6 +5,9 @@ import '../../static/css/task.css'
 import HintSection from "./HintSection";
 import AskSection from "./AskSection";
 
+import { BlockMath } from 'react-katex'
+import 'katex/dist/katex.min.css';
+
 const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect }) => {
   const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
   const [result, setResult] = useState(
@@ -83,7 +86,10 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         </div>
       )}
       <div className="task-description description_text">
-          {task.description}
+          <p style={{ whiteSpace: "pre-line" }}>{task.description}</p>
+          {task.formula && (
+            <BlockMath math={task.formula} />
+          )}
       </div>
       {task.file && (
         <button onClick={() => downloadFile(task.file)}>
