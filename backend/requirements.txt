@@ -6,6 +6,7 @@ Pillow
 sphinx
 channels
 daphne
+pycodestyle
 pylint
 pylint-django
 coverage
