@@ -54,7 +54,7 @@ unittest:
   stage: test
   extends: .backend_setup
   script:
-    - python manage.py test || true
+    - python manage.py test
 
 # =====================
 # COVERAGE
@@ -64,7 +64,7 @@ coverage:
   extends: .backend_setup
   script:
     - pip install coverage
-    - coverage run manage.py test || true 
+    - coverage run manage.py test
     - coverage report -m
     - coverage html
   artifacts:
