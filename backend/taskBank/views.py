@@ -309,16 +309,50 @@ class SubjectChoicesView(APIView):
 class TaskFilterOptionsView(APIView):
     def get(self, request):
         tasks = Task.objects.all()
+
+        def _as_int(value):
+            if value is None:
+                return None
+            try:
+                return int(round(float(value)))
+            except (TypeError, ValueError):
+                return None
+
+        orders_raw = (
+            tasks.exclude(order_KIM__isnull=True)
+            .values_list("order_KIM", flat=True)
+            .distinct()
+        )
+        orders = sorted({v for v in (_as_int(x) for x in orders_raw) if v is not None})
+
+        difficulties_raw = (
+            tasks.exclude(difficulty__isnull=True)
+            .values_list("difficulty", flat=True)
+            .distinct()
+        )
+        difficulties = sorted({v for v in (_as_int(x) for x in difficulties_raw) if v is not None})
+
+        types_raw = (
+            tasks.exclude(type__isnull=True)
+            .exclude(type__exact="")
+            .values_list("type", flat=True)
+            .distinct()
+        )
+        types = sorted({t.strip() for t in types_raw if isinstance(t, str) and t.strip()})
+
+        authors_raw = (
+            tasks.exclude(author=None)
+            .values_list("author__name", flat=True)
+            .distinct()
+        )
+        authors = sorted({a.strip() for a in authors_raw if isinstance(a, str) and a.strip()})
+
         return Response({
             "subjects": [
                 {"value": v, "label": l} for v, l in SubjectChoices.choices
             ],
-            "orders": sorted(tasks.values_list("order_KIM", flat=True).distinct()),
-            "types": list(tasks.values_list("type", flat=True).distinct()),
-            "difficulties": sorted(tasks.values_list("difficulty", flat=True).distinct()),
-            "authors": list(
-                tasks.exclude(author=None)
-                     .values_list("author__name", flat=True)  # исправлено
-                     .distinct()
-            ),
+            "orders": orders,
+            "types": types,
+            "difficulties": difficulties,
+            "authors": authors,
         })
