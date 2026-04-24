@@ -19,6 +19,9 @@ import TaskSetList from './pages/TaskSetList';
 import TaskSetPlayer from './pages/TaskSetPlayer';
 import MatchPlayerPage from "./pages/MatchPlayerPage";
 import MatchCreatePage from "./pages/MatchCreatePage";
+import StatisticMainPage from './pages/StatisticMainPage';
+import SubjectStatisticsPage from './pages/SubjectStatisticsPage';
+import TestPage from './pages/TestPage';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -155,6 +158,11 @@ function App() {
                         <Route path="/match" element={<MatchCreatePage />} />
                         <Route path="/match/play/:matchId" element={<MatchPlayerPage />} />
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
+                        <Route path="/statistics" element={<StatisticMainPage />} />
+                        <Route path="/statistics/:subject" element={<SubjectStatisticsPage />} />
+
+                        <Route path="/test" element={<TestPage />} />
+
                         <Route
                             path="/profile"
                             element={

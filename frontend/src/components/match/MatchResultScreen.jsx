@@ -1,6 +1,6 @@
 import React from "react";
 
-const MatchResultScreen = ({ myChecked, opponentProgress, totalTasks }) => {
+const MatchResultScreen = ({ myChecked, opponentProgress, tasks }) => {
   const myScore = Object.values(myChecked).filter(Boolean).length;
   const oppScore = Object.values(opponentProgress).filter(Boolean).length;
 
@@ -31,15 +31,15 @@ const MatchResultScreen = ({ myChecked, opponentProgress, totalTasks }) => {
         </thead>
 
         <tbody>
-          {Array.from({ length: totalTasks }).map((_, i) => {
-            const myVal = Object.values(myChecked)[i];
-            const oppVal = Object.values(opponentProgress)[i];
+          {tasks.map((task, i) => {
+            const myVal = myChecked[task.id];
+            const oppVal = opponentProgress[task.id];
 
             return (
-              <tr key={i}>
+              <tr key={task.id}>
                 <td>{i + 1}</td>
-                <td>{myVal ? "✔" : "✖"}</td>
-                <td>{oppVal ? "✔" : "✖"}</td>
+                <td>{myVal === undefined ? "—" : myVal ? "✔" : "✖"}</td>
+                <td>{oppVal === undefined ? "—" : oppVal ? "✔" : "✖"}</td>
               </tr>
             );
           })}

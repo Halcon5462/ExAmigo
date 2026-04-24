@@ -76,7 +76,7 @@ class TaskAdmin(admin.ModelAdmin):
         'correct_answers__answer_text',
     )
 
-    readonly_fields = ('created_at', 'preview_image')
+    readonly_fields = ('created_at',  'preview_image')
 
     fieldsets = (
         ('Основная информация', {
@@ -84,7 +84,7 @@ class TaskAdmin(admin.ModelAdmin):
             'classes': ('wide',),
         }),
         ('Содержание', {
-            'fields': ('description', 'image', 'preview_image'),
+            'fields': ('description', 'formula', 'image', 'preview_image', 'file'),
             'classes': ('collapse',),
         }),
         ('Метаданные', {

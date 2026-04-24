@@ -155,3 +155,45 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 match.opponent.id: exam2.id,
             }
         }
+    
+    async def handle_finish(self, user, data):
+        match = await Match.objects.select_related("host", "opponent").aget(id=self.match_id)
+
+        if user.id == match.host.id:
+            match.host_finished = True
+        elif match.opponent and user.id == match.opponent.id:
+            match.opponent_finished = True
+        else:
+            return
+
+        await match.asave()
+
+        # уведомляем всех
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "player_finished",
+                "user_id": user.id,
+            }
+        )
+
+        # если оба закончили — финал
+        if match.host_finished and match.opponent_finished:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "match_finished"
+                }
+            )
+    
+    async def player_finished(self, event):
+        await self.send_json({
+            "type": "player_finished",
+            "user_id": event["user_id"],
+        })
+
+
+    async def match_finished(self, event):
+        await self.send_json({
+            "type": "match_finished"
+        })
