@@ -164,15 +164,6 @@ return (
 
          <StatsBlock stats={stats} />
 
-         <PurchasedItemList
-             products={products}
-             selectingId={selectingId}
-             selectedFrameId={selectedFrameId}
-             selectedBackgroundId={selectedBackgroundId}
-             onSelectFrame={handleSelectFrame}
-             onSelectBackground={handleSelectBackground}
-         />
-
      </div>
  );
 };

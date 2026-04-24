@@ -49,8 +49,7 @@ const SubjectStatisticsPage = () => {
                 </p>
             </div>
 
-            <StatisticsChart data={stats} />
-            <TaskStatisticsSection stats={stats} />
+            <StatisticsChart data={stats} />    
             <TasksList stats={stats} />
         </div>
     );
