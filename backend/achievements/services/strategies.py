@@ -41,6 +41,10 @@ class FirstTryStrategy(BaseAchievementStrategy):
         if not context.get("first_time"):
             return False
 
+        required_subject = (achievement.condition or {}).get("subject")
+        if required_subject and context.get("subject") != required_subject:
+            return False
+
         progress, _ = UserAchievementProgress.objects.get_or_create(
             user=user,
             achievement=achievement,
