@@ -36,6 +36,28 @@ class TaskViewSet(ModelViewSet):
 
         return Response({"correct": is_correct})
 
+    @action(detail=True, methods=["get"])
+    def get_queryset(self):
+        qs = Task.objects.prefetch_related("correct_answers")
+
+        subject = self.request.query_params.get("subject")
+        order_kim = self.request.query_params.get("order_KIM")
+        type_ = self.request.query_params.get("type")
+        difficulty = self.request.query_params.get("difficulty")
+        author = self.request.query_params.get("author")
+
+        if subject:
+            qs = qs.filter(subject=subject)
+        if order_kim:
+            qs = qs.filter(order_KIM=order_kim)
+        if type_:
+            qs = qs.filter(type=type_)
+        if difficulty:
+            qs = qs.filter(difficulty=difficulty)
+        if author:
+            qs = qs.filter(author=author)
+
+        return qs
 
 class TaskSetViewSet(ModelViewSet):
     """CRUD for TaskSet (комплекты заданий)"""
@@ -275,4 +297,62 @@ class FinishExamView(APIView):
 
         return Response({
             "score": exam.score
+        })
+
+class SubjectChoicesView(APIView):
+    def get(self, request):
+        return Response([
+            {"value": v, "label": l}
+            for v, l in SubjectChoices.choices
+        ])
+
+class TaskFilterOptionsView(APIView):
+    def get(self, request):
+        tasks = Task.objects.all()
+
+        def _as_int(value):
+            if value is None:
+                return None
+            try:
+                return int(round(float(value)))
+            except (TypeError, ValueError):
+                return None
+
+        orders_raw = (
+            tasks.exclude(order_KIM__isnull=True)
+            .values_list("order_KIM", flat=True)
+            .distinct()
+        )
+        orders = sorted({v for v in (_as_int(x) for x in orders_raw) if v is not None})
+
+        difficulties_raw = (
+            tasks.exclude(difficulty__isnull=True)
+            .values_list("difficulty", flat=True)
+            .distinct()
+        )
+        difficulties = sorted({v for v in (_as_int(x) for x in difficulties_raw) if v is not None})
+
+        types_raw = (
+            tasks.exclude(type__isnull=True)
+            .exclude(type__exact="")
+            .values_list("type", flat=True)
+            .distinct()
+        )
+        types = sorted({t.strip() for t in types_raw if isinstance(t, str) and t.strip()})
+
+        authors_raw = (
+            tasks.exclude(author=None)
+            .values_list("author__name", flat=True)
+            .distinct()
+        )
+        authors = sorted({a.strip() for a in authors_raw if isinstance(a, str) and a.strip()})
+
+        return Response({
+            "subjects": [
+                {"value": v, "label": l} for v, l in SubjectChoices.choices
+            ],
+            "orders": orders,
+            "types": types,
+            "difficulties": difficulties,
+            "authors": authors,
         })

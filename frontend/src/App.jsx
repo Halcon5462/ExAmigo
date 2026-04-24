@@ -11,6 +11,7 @@ import TestMatchPage from './pages/MatchPage';
 import ProfilePage from './pages/ProfilePage';
 import Shop from './pages/Shop';
 import TaskBank from './pages/TaskBank';
+import TaskList from "./pages/TaskList";
 import TaskCreator from './pages/TaskCreator';
 import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
 import TaskSetCreator from './pages/TaskSetCreator';
@@ -147,6 +148,7 @@ function App() {
                     <Route element={<ProtectedRoute user={user} />}>
                         <Route path="/" element={<HomePage user={user} />} />
                         <Route path="/tasks" element={<TaskBank />} />
+                        <Route path="/tasks/results" element={<TaskList />} />
                         <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/achievements" element={<AchievementsPage onLogout={handleLogout} />} />
