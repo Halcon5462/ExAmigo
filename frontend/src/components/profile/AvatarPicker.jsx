@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import api from '../utils/api';
+import api from '../../utils/api';
 
 const fallbackAvatar = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="100%25" height="100%25" fill="%23FFD54F"/><circle cx="88" cy="108" r="18" fill="%23000"/><circle cx="168" cy="108" r="18" fill="%23000"/><path d="M70 170 Q128 220 186 170" stroke="%23000" stroke-width="12" fill="none" stroke-linecap="round"/></svg>';
 

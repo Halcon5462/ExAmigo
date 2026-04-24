@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import api from '../utils/api';
-import CreateTaskSetFilters from '../components/Filter/CreateTaskSetFilters';
-import { SUBJECT_OPTIONS } from '../utils/subjectOptions';
+import api from '../../utils/api';
+import CreateTaskSetFilters from '../../components/Filter/CreateTaskSetFilters';
+import { SUBJECT_OPTIONS } from '../../utils/subjectOptions';
 
 const TaskSetCreator = () => {
   const [tasks, setTasks] = useState([]);

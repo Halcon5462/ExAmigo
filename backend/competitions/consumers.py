@@ -4,6 +4,14 @@ from channels.db import database_sync_to_async
 from .models import Match
 from taskBank.models import ExamSession
 
+from rest_framework_simplejwt.tokens import AccessToken
+from django.contrib.auth import get_user_model
+from urllib.parse import parse_qs
+
+from taskBank.models import TaskSet
+
+User = get_user_model()
+
 
 class MatchConsumer(AsyncWebsocketConsumer):
 
@@ -14,12 +22,24 @@ class MatchConsumer(AsyncWebsocketConsumer):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.room_group_name = f"match_{self.match_id}"
 
+        query = parse_qs(self.scope["query_string"].decode())
+        token = query.get("token")
+        if token:
+            try:
+                access = AccessToken(token[0])
+                user = await database_sync_to_async(User.objects.get)(id=access["user_id"])
+                self.scope["user"] = user
+            except Exception:
+                pass
+
+
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
         await self.accept()
+        await self.send_json({"type": "connected"})
 
     async def disconnect(self, close_code):
         """
@@ -62,6 +82,9 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         # если это хост — просто ждём
         if user.id == match.host.id:
+            await self.send_json({
+                "type": "waiting"
+            })
             return
 
         # если уже есть opponent — не пускаем
@@ -87,6 +110,11 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 "exam_data": exam_data
             }
         )
+
+        await self.send_json({
+            "type": "match_start",
+            "exam_data": exam_data
+        })
 
     async def handle_answer(self, user, data):
         """
@@ -134,6 +162,16 @@ class MatchConsumer(AsyncWebsocketConsumer):
 
         taskset = match.task_set  # ВАЖНО: матч должен хранить task_set
 
+        # fallback для тестов
+        if taskset is None:
+            taskset = TaskSet.objects.create(
+                name="Test TaskSet",
+                subject="test",
+                author=match.host
+            )
+            match.task_set = taskset
+            match.save(update_fields=["task_set"])
+
         exam1 = ExamSession.objects.create(
             user=match.host,
             task_set=taskset,
@@ -155,3 +193,45 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 match.opponent.id: exam2.id,
             }
         }
+    
+    async def handle_finish(self, user, data):
+        match = await Match.objects.select_related("host", "opponent").aget(id=self.match_id)
+
+        if user.id == match.host.id:
+            match.host_finished = True
+        elif match.opponent and user.id == match.opponent.id:
+            match.opponent_finished = True
+        else:
+            return
+
+        await match.asave()
+
+        # уведомляем всех
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "player_finished",
+                "user_id": user.id,
+            }
+        )
+
+        # если оба закончили — финал
+        if match.host_finished and match.opponent_finished:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "match_finished"
+                }
+            )
+    
+    async def player_finished(self, event):
+        await self.send_json({
+            "type": "player_finished",
+            "user_id": event["user_id"],
+        })
+
+
+    async def match_finished(self, event):
+        await self.send_json({
+            "type": "match_finished"
+        })

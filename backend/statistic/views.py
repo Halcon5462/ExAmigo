@@ -1,4 +1,4 @@
-﻿from django.db import transaction
+from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -127,9 +127,9 @@ class TaskSubmitView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-        cleaned_user_answer = "".join(user_answer.split()).lower()
+        cleaned_user_answer = "".join(user_answer.replace(',', '.').split()).lower()
         is_correct = any(
-            "".join(answer.answer_text.split()).lower() == cleaned_user_answer
+            "".join(answer.answer_text.replace(',', '.').split()).lower() == cleaned_user_answer
             for answer in task.correct_answers.all()
         )
         reward = 0
@@ -175,7 +175,7 @@ class TaskSubmitView(APIView):
                     AchievementService.handle_event(
                         user=user,
                         event="first_try",
-                        context={"first_time": True},
+                        context={"first_time": True, "subject": task.subject},
                     )
 
                 AchievementService.handle_event(

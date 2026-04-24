@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductItem from './ProductItem.jsx';
+import ProductItem from '../ProductItem.jsx';
 
 const InventoryBlock = ({
   products,

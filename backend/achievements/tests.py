@@ -79,6 +79,22 @@ class AchievementServiceTests(TestCase):
             target=1,
             icon=SimpleUploadedFile("first.jpg", b"icon-data", content_type="image/jpeg"),
         )
+        self.first_try_math_achievement = Achievement.objects.create(
+            name="С первого раза (математика)",
+            description="Описание",
+            action_type="first_try",
+            target=1,
+            icon=SimpleUploadedFile("first_math.jpg", b"icon-data", content_type="image/jpeg"),
+            condition={"subject": "math"},
+        )
+        self.first_try_rus_achievement = Achievement.objects.create(
+            name="С первого раза (русский)",
+            description="Описание",
+            action_type="first_try",
+            target=1,
+            icon=SimpleUploadedFile("first_rus.jpg", b"icon-data", content_type="image/jpeg"),
+            condition={"subject": "rus"},
+        )
         self.difficulty_achievement = Achievement.objects.create(
             name="Мастер",
             description="Описание",
@@ -121,6 +137,26 @@ class AchievementServiceTests(TestCase):
             UserAchievementProgress.objects.filter(
                 user=self.user,
                 achievement=self.first_try_achievement,
+            ).exists()
+        )
+
+    def test_first_try_strategy_respects_subject_condition(self):
+        AchievementService.handle_event(
+            self.user,
+            "first_try",
+            context={"first_time": True, "subject": "math"},
+        )
+
+        self.assertTrue(
+            UserAchievement.objects.filter(
+                user=self.user,
+                achievement=self.first_try_math_achievement,
+            ).exists()
+        )
+        self.assertFalse(
+            UserAchievement.objects.filter(
+                user=self.user,
+                achievement=self.first_try_rus_achievement,
             ).exists()
         )
 

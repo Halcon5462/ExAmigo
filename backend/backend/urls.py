@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/streak/', include('streak.urls')),
     path("api/match/", include("competitions.urls")),
     path('api/statistic/', include('statistic.urls')),
+    path('api/helpAi/', include('helpAi.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import AchievementsList from '../components/AchievementsList.jsx';
-import api from '../utils/api';
+import AchievementsList from '../../components/profile/AchievementsList.jsx';
+import api from '../../utils/api.js';
 
 const AchievementsPage = ({ onLogout }) => {
     const [achievements, setAchievements] = useState([]);
@@ -29,12 +29,12 @@ const AchievementsPage = ({ onLogout }) => {
     }, [navigate, onLogout]);
 
     if (loading) {
-        return <div className="loading">Р—Р°РіСЂСѓР·РєР° РґРѕСЃС‚РёР¶РµРЅРёР№...</div>;
+        return <div className="loading">Загрузка...</div>;
     }
 
     return (
         <div className="profile-container">
-            <h1>Р”РѕСЃС‚РёР¶РµРЅРёСЏ</h1>
+            <h1>Ваши достижения:</h1>
             <AchievementsList achievements={achievements} />
         </div>
     );

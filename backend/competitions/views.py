@@ -11,7 +11,7 @@ class CreateMatchView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        subject = request.data.get("subject")
+        subject = request.data.get("subject", "prof_math")
 
         if not subject:
             return Response({"error": "subject required"}, status=400)
