@@ -1,45 +1,32 @@
 image: python:3.12-slim
 
 variables:
-  GIT_STRATEGY: clone
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
 
 stages:
   - style
   - test
-  - coverage
   - build
   - documentation
 
-# =====================
-# CACHE
-# =====================
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - backend/.cache/pip
-    - backend/.venv/
+    - .pip-cache/
     - frontend/node_modules/
 
-# =====================
-# BACKEND SETUP
-# =====================
 .backend_setup:
   before_script:
     - cd backend
     - pip install --upgrade pip
-    - pip install -r requirements.txt
-    - python manage.py makemigrations
+    - pip install -r requirements.txt --prefer-binary
     - python manage.py migrate
 
-# =====================
-# STYLE
-# =====================
 pylint:
   stage: style
   extends: .backend_setup
   script:
     - pylint --fail-under=6 --ignore-paths="docs/*" .
-    - echo "Pylint complete."
 
 pycodestyle:
   stage: style
@@ -47,52 +34,26 @@ pycodestyle:
   script:
     - pycodestyle --max-line-length=120 . || true
 
-# =====================
-# TESTS
-# =====================
-unittest:
-  stage: test
-  extends: .backend_setup
-  script:
-    - python manage.py test
-
-# =====================
-# COVERAGE
-# =====================
 coverage:
-  stage: coverage
+  stage: test
   extends: .backend_setup
   script:
     - pip install coverage
     - coverage run manage.py test
     - coverage report -m
-    - coverage html
-  artifacts:
-    paths:
-      - backend/htmlcov/
 
-# =====================
-# FRONTEND BUILD
-# =====================
 frontend-build:
   stage: build
   image: node:20-alpine
   cache:
-    key: frontend-cache
     paths:
       - frontend/node_modules/
   before_script:
     - cd frontend
-    - npm install
+    - npm ci
   script:
     - npm run build
-  artifacts:
-    paths:
-      - frontend/build/
 
-# =====================
-# DOCS
-# =====================
 sphinx:
   stage: documentation
   before_script:
@@ -100,6 +61,3 @@ sphinx:
   script:
     - cd docs
     - make html
-  artifacts:
-    paths:
-      - docs/build/
