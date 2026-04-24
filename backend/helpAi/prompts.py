@@ -7,8 +7,8 @@ def build_hint_prompt(task, level):
 """
 
 
-    # if task.formula:
-    #     base += f"\nФормула:\n{task.formula}\n"
+    if task.formula:
+        base += f"\nФормула:\n{task.formula}\n"
 
     rules = """
 ОФОРМЛЕНИЕ Подсказки:
@@ -48,12 +48,16 @@ def build_hint_prompt(task, level):
 
 
 def build_question_prompt(task, question):
-    return f"""
+    base = f"""
 Ты помогаешь ученику решать задания ЕГЭ.
 
 Задание:
 {task.description}
-
+"""
+    if task.formula:
+        base += f"\nФормула:\n{task.formula}\n"
+        
+    base+="""
 Вопрос ученика:
 {question}
 
@@ -64,3 +68,7 @@ def build_question_prompt(task, question):
 - Не давай финальный ответ
 - Пиши простым текстом, без LaTeX
 """
+
+    return base
+
+
