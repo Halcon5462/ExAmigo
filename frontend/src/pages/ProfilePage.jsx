@@ -151,7 +151,7 @@ return (
 
         <UserBalance />
 
-        <AchievementsBlock achievements={achievements} />
+        <AchievementsBlock achievements={achievements} toAbsoluteMediaUrl={toAbsoluteMediaUrl} />
 
         <InventoryBlock
             products={products}
