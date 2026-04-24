@@ -7,7 +7,7 @@ stages:
   - style
   - test
   - build
-  - documentation
+  # - documentation
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -55,10 +55,11 @@ frontend-build:
   script:
     - npm run build
 
-sphinx:
-  stage: documentation
-  before_script:
-    - apt-get update && apt-get install -y make
-  script:
-    - cd docs
-    - make html
+# sphinx:
+#   stage: documentation
+#   before_script:
+#     - apt-get update && apt-get install -y make
+#     - pip install -r backend/requirements.txt
+#   script:
+#     - cd docs
+#     - make html
