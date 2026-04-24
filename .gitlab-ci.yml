@@ -96,7 +96,7 @@ frontend-build:
 sphinx:
   stage: documentation
   before_script:
-    - apk add --no-cache make
+    - apt-get update && apt-get install -y make
   script:
     - cd docs
     - make html
