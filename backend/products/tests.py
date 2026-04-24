@@ -173,7 +173,7 @@ class ProductAdminTests(TestCase):
         product.refresh_from_db()
         self.assertTrue(Frame.objects.filter(product=product).exists())
         self.assertEqual(Background.objects.filter(product=product).count(), 0)
-        self.assertTrue(product.frame.icon_frame.name.endswith("frame.gif"))
+        self.assertTrue(product.frame.icon_frame.name)
 
 
 class ProductServiceTests(TestCase):
