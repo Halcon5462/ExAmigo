@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import TaskBankFilters from '../components/Filter/TaskBankFilters';
+import api from '../../utils/api';
+import TaskBankFilters from '../../components/Filter/TaskBankFilters';
 
 const TaskBank = () => {
     const [options, setOptions] = useState({});

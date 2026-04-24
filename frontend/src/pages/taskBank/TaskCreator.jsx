@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import api from '../utils/api';
-import '../static/css/task.css';
+import api from '../../utils/api';
+import '../../static/css/task.css';
 
 const TaskCreator = () => {
     const [tasks, setTasks] = useState([]);

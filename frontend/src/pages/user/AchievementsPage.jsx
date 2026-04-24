@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import AchievementsList from '../components/AchievementsList.jsx';
-import api from '../utils/api';
+import AchievementsList from '../../components/profile/AchievementsList.jsx';
+import api from '../../utils/api.js';
 
 const AchievementsPage = ({ onLogout }) => {
     const [achievements, setAchievements] = useState([]);

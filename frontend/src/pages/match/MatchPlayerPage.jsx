@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import TaskSetPlayer from "./TaskSetPlayer";
-import OpponentProgressBar from "../components/match/OpponentProgressBar";
-import MatchResultScreen from "../components/match/MatchResultScreen";
+import TaskSetPlayer from "../taskSet/TaskSetPlayer";
+import OpponentProgressBar from "../../components/match/OpponentProgressBar";
+import MatchResultScreen from "../../components/match/MatchResultScreen";
 
 const MatchPlayer = () => {
   const { matchId } = useParams();

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import UserInfo from '../components/UserInfo.jsx';
-import AchievementsBlock from '../components/AchievementsBlock.jsx';
-import InventoryBlock from '../components/InventoryBlock.jsx';
-import StatsBlock from '../components/StatsBlock.jsx';
-import UserBalance from '../components/UserBalance.jsx';
-import PurchasedItemList from '../components/PurchasedItemList.jsx';
-import '../static/css/profile.css';
+import api from '../../utils/api.js';
+import UserInfo from '../../components/profile/UserInfo.jsx';
+import AchievementsBlock from '../../components/profile/AchievementsBlock.jsx';
+import InventoryBlock from '../../components/profile/InventoryBlock.jsx';
+import StatsBlock from '../../components/profile/StatsBlock.jsx';
+import UserBalance from '../../components/profile/UserBalance.jsx';
+import PurchasedItemList from '../../components/profile/PurchasedItemList.jsx';
+import '../../static/css/profile.css';
 
 const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refreshEquipped }) => {
     const [user, setUser] = useState(initialUser);

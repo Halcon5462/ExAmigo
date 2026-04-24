@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import TaskItem from '../components/TaskItem';
+import api from '../../utils/api';
+import TaskItem from '../../components/task/TaskItem';
 
 const TaskList = () => {
     const [tasks, setTasks] = useState([]);

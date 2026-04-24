@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import api from '../../utils/api';
 
 const TaskSetAutoGenerator = () => {
     const [tasks, setTasks] = useState([]);

@@ -1,6 +1,6 @@
 import '../static/css/header.css';
 import '../static/css/style.css';
-import Streak from './Streak';
+import Streak from './profile/Streak';
 
 const Header = () => {
     return (
