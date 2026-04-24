@@ -10,7 +10,7 @@ class AchievementListSerializer(serializers.ModelSerializer):
     current_value = serializers.IntegerField(default=0)
     progress_percent = serializers.SerializerMethodField()
     is_obtained = serializers.BooleanField()
-    earned_at = serializers.DateTimeField()
+    earned_at = serializers.DateTimeField(required=False, allow_null=True)
 
     class Meta:
         model = Achievement

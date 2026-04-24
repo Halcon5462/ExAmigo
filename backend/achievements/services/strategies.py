@@ -20,6 +20,10 @@ class SolveTasksStrategy(BaseAchievementStrategy):
         """
         Обрабатывает событие и возвращает True, если ачивка выполнена.
         """
+        required_subject = (achievement.condition or {}).get("subject")
+        if required_subject and context.get("subject") != required_subject:
+            return False
+
         progress, _ = UserAchievementProgress.objects.get_or_create(
             user=user,
             achievement=achievement,
@@ -39,6 +43,10 @@ class FirstTryStrategy(BaseAchievementStrategy):
         Обрабатывает событие и возвращает True, если ачивка выполнена.
         """
         if not context.get("first_time"):
+            return False
+
+        required_subject = (achievement.condition or {}).get("subject")
+        if required_subject and context.get("subject") != required_subject:
             return False
 
         progress, _ = UserAchievementProgress.objects.get_or_create(
