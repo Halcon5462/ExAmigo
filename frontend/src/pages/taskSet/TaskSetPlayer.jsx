@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import api from "../utils/api";
-import TaskItem from "../components/task/TaskItem";
-import "../static/css/setPlayer.css";
+import api from "../../utils/api";
+import TaskItem from "../../components/task/TaskItem";
+import "../../static/css/setPlayer.css";
 
-import TaskNavigation from "../components/taskSetPlayer/TaskNavigation";
-import TaskHeader from "../components/taskSetPlayer/TaskHeader";
-import TaskStats from "../components/taskSetPlayer/TaskStats";
-import useExamTimer from "../components/taskSetPlayer/UseExamTimer";
+import TaskNavigation from "../../components/taskSetPlayer/TaskNavigation";
+import TaskHeader from "../../components/taskSetPlayer/TaskHeader";
+import TaskStats from "../../components/taskSetPlayer/TaskStats";
+import useExamTimer from "../../components/taskSetPlayer/UseExamTimer";
 
 const TaskSetPlayer = ({
   forcedTasksetId = null,

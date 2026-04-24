@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import '../static/css/taskset.css';
+import api from '../../utils/api';
+import '../../static/css/taskset.css';
 
 const TaskSetList = () => {
     const [tasksets, setTasksets] = useState([]);
