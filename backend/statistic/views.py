@@ -1,4 +1,4 @@
-﻿from django.db import transaction
+from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -175,7 +175,7 @@ class TaskSubmitView(APIView):
                     AchievementService.handle_event(
                         user=user,
                         event="first_try",
-                        context={"first_time": True},
+                        context={"first_time": True, "subject": task.subject},
                     )
 
                 AchievementService.handle_event(
