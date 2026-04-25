@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import api from "../../utils/api";
+import React, { useState } from 'react';
+import api from '../../utils/api';
 
 const AskSection = ({ taskId }) => {
-    const [question, setQuestion] = useState("");
-    const [answer, setAnswer] = useState("");
+    const [question, setQuestion] = useState('');
+    const [answer, setAnswer] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleAsk = async () => {
@@ -12,46 +12,56 @@ const AskSection = ({ taskId }) => {
         setLoading(true);
 
         try {
-            const res = await api.post("/helpAi/ask/", {
+            const res = await api.post('/helpAi/ask/', {
                 task_id: taskId,
-                question
+                question,
             });
 
             setAnswer(res.data.answer);
-
         } catch (err) {
-            alert("Ошибка");
+            alert('Ошибка');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div style={{ marginTop: "15px" }}>
-            <input
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Задать вопрос (100 💰)"
-                style={{ width: "100%" }}
-            />
+        <section className="task-help task-help_ai">
+            <div className="task-help__header">
+                <div>
+                    <h3 className="task-help__title text">Вопрос к ИИ</h3>
+                    <p className="task-help__description description_text">
+                        Сформулируйте вопрос по задаче. Ответ придет без раскрытия лишнего контекста.
+                    </p>
+                </div>
+                <span className="task-help__badge text_mini">100 💰</span>
+            </div>
 
-            <button onClick={handleAsk}>
-                {loading ? "Думаю..." : "Спросить"}
-            </button>
+            <div className="task-help__ask-row">
+                <input
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    placeholder="Введите вопрос по задаче"
+                    className="task-help__input description_text"
+                />
+
+                <button
+                    type="button"
+                    className="task-help__submit btn_text"
+                    onClick={handleAsk}
+                    disabled={loading || !question.trim()}
+                >
+                    {loading ? 'Думаю...' : 'Спросить у ИИ'}
+                </button>
+            </div>
 
             {answer && (
-                <div style={{
-                    marginTop: "10px",
-                    background: "#eef",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    whiteSpace: "pre-line"
-                }}>
-                    <b>Ответ:</b>
-                    <p>{answer}</p>
+                <div className="task-help__answer">
+                    <div className="task-help__answer-title">Ответ</div>
+                    <p className="task-help__answer-text description_text">{answer}</p>
                 </div>
             )}
-        </div>
+        </section>
     );
 };
 
