@@ -73,12 +73,42 @@
     box-shadow: 0 10px 24px rgba(73, 85, 101, 0.06);
 }
 
+.task-help__collapsed {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    margin-top: 18px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    background: #fff;
+    color: var(--base-dark);
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(73, 85, 101, 0.06);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-help__collapsed:hover {
+    transform: translateY(-1px);
+    border-color: rgba(74, 151, 118, 0.45);
+    box-shadow: 0 14px 28px rgba(73, 85, 101, 0.1);
+}
+
 .task-help__header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 16px;
     margin-bottom: 14px;
+}
+
+.task-help__header-side {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .task-help__title {
@@ -101,6 +131,23 @@
     background: rgba(196, 234, 195, 0.5);
     color: var(--dark-green);
     white-space: nowrap;
+}
+
+.task-help__toggle {
+    min-height: 38px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    background: #fff;
+    color: var(--base-dark);
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-help__toggle:hover {
+    transform: translateY(-1px);
+    border-color: rgba(74, 151, 118, 0.45);
+    box-shadow: 0 10px 20px rgba(73, 85, 101, 0.08);
 }
 
 .task-help__actions {
@@ -237,6 +284,10 @@
         border-radius: 18px;
     }
 
+    .task-help__collapsed {
+        width: 100%;
+    }
+
     .task-help__header,
     .task-help__ask-row {
         grid-template-columns: 1fr;
@@ -245,6 +296,11 @@
         align-items: stretch;
     }
 
+    .task-help__header-side {
+        justify-content: stretch;
+    }
+
+    .task-help__toggle,
     .task-help__submit {
         width: 100%;
     }
@@ -253,7 +309,6 @@
         width: 100%;
     }
 }
-
 
 .taskCreator {
     max-width: 600px;
