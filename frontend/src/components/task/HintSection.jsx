@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import api from '../../utils/api';
 
 const HintSection = ({ taskId, prices }) => {
     const [hints, setHints] = useState({});
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleGetHint = async (level) => {
         if (hints[level]) {
@@ -39,6 +40,19 @@ const HintSection = ({ taskId, prices }) => {
         return `-${prices[level] ?? '?'} 💰`;
     };
 
+    if (!isExpanded) {
+        return (
+            <button
+                type="button"
+                className="task-help__collapsed btn_text"
+                onClick={() => setIsExpanded(true)}
+                aria-expanded={false}
+            >
+                Показать подсказки
+            </button>
+        );
+    }
+
     return (
         <section className="task-help task-help_hints">
             <div className="task-help__header">
@@ -48,34 +62,46 @@ const HintSection = ({ taskId, prices }) => {
                         Открывайте подсказки по уровням, если хотите двигаться к решению постепенно.
                     </p>
                 </div>
+                <button
+                    type="button"
+                    className="task-help__toggle btn_text"
+                    onClick={() => setIsExpanded((prev) => !prev)}
+                    aria-expanded={isExpanded}
+                >
+                    {isExpanded ? 'Скрыть' : 'Показать'}
+                </button>
             </div>
 
-            <div className="task-help__actions">
-                {[1, 2, 3].map((level) => (
-                    <button
-                        key={level}
-                        type="button"
-                        className={`task-help__chip ${selectedLevel === level ? 'task-help__chip_active' : ''}`}
-                        onClick={() => handleGetHint(level)}
-                    >
-                        <span>Уровень {level}</span>
-                        <span className="task-help__chip-meta">{getMeta(level)}</span>
-                    </button>
-                ))}
-            </div>
+            {isExpanded && (
+                <>
+                    <div className="task-help__actions">
+                        {[1, 2, 3].map((level) => (
+                            <button
+                                key={level}
+                                type="button"
+                                className={`task-help__chip ${selectedLevel === level ? 'task-help__chip_active' : ''}`}
+                                onClick={() => handleGetHint(level)}
+                            >
+                                <span>Уровень {level}</span>
+                                <span className="task-help__chip-meta">{getMeta(level)}</span>
+                            </button>
+                        ))}
+                    </div>
 
-            {Object.keys(hints).length > 0 && (
-                <div className="task-help__content">
-                    {Object.entries(hints).map(([lvl, text]) => (
-                        <article
-                            key={lvl}
-                            className={`task-help__card ${Number(selectedLevel) === Number(lvl) ? 'task-help__card_active' : ''}`}
-                        >
-                            <div className="task-help__card-title">Уровень {lvl}</div>
-                            <p className="task-help__card-text description_text">{text}</p>
-                        </article>
-                    ))}
-                </div>
+                    {Object.keys(hints).length > 0 && (
+                        <div className="task-help__content">
+                            {Object.entries(hints).map(([lvl, text]) => (
+                                <article
+                                    key={lvl}
+                                    className={`task-help__card ${Number(selectedLevel) === Number(lvl) ? 'task-help__card_active' : ''}`}
+                                >
+                                    <div className="task-help__card-title">Уровень {lvl}</div>
+                                    <p className="task-help__card-text description_text">{text}</p>
+                                </article>
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
         </section>
     );
