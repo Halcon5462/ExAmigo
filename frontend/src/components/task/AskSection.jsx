@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../../utils/api';
 
 const AskSection = ({ taskId }) => {
-    const [question, setQuestion] = useState('');
+    const [question, setQuestion] = useState("");
     const [answer, setAnswer] = useState('');
     const [loading, setLoading] = useState(false);
 

@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 
-const HintSection = ({ taskId }) => {
+const HintSection = ({ taskId, prices }) => {
     const [hints, setHints] = useState({});
     const [selectedLevel, setSelectedLevel] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [prices, setPrices] = useState({});
-
-    useEffect(() => {
-        api.get('/helpAi/prices/').then((res) => {
-            setPrices(res.data);
-        });
-    }, []);
 
     const handleGetHint = async (level) => {
         if (hints[level]) {
