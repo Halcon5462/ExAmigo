@@ -1,0 +1,91 @@
+.task-list-page {
+    min-height: calc(100vh - 76px);
+    padding: 34px 24px 56px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.92), rgba(250, 250, 250, 0.84) 42%, rgba(238, 243, 255, 0.7) 100%);
+}
+
+.task-list-page_status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-list-page__hero,
+.task-list-page__content {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+}
+
+.task-list-page__hero {
+    margin-bottom: 24px;
+}
+
+.task-list-page__back-button {
+    min-height: 48px;
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    background: #fff;
+    color: var(--base-dark);
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(73, 85, 101, 0.08);
+    transition: 0.2s ease;
+}
+
+.task-list-page__back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(73, 85, 101, 0.1);
+}
+
+.task-list-page__hero-copy {
+    padding: 26px 28px;
+    border-radius: 22px;
+    border: 1px solid rgba(100, 116, 139, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 14px 40px rgba(73, 85, 101, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.task-list-page__eyebrow {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: var(--dark-blue);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.task-list-page__title {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 40px);
+}
+
+.task-list-page__description {
+    margin: 0;
+    color: var(--dark-grey);
+}
+
+.task-list-page__empty {
+    padding: 28px;
+    border-radius: 22px;
+    border: 1px solid rgba(100, 116, 139, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 14px 40px rgba(73, 85, 101, 0.08);
+}
+
+@media (max-width: 768px) {
+    .task-list-page {
+        padding: 24px 16px 42px;
+    }
+
+    .task-list-page__hero-copy,
+    .task-list-page__empty {
+        padding: 20px 16px;
+        border-radius: 20px;
+    }
+
+    .task-list-page__back-button {
+        width: 100%;
+    }
+}

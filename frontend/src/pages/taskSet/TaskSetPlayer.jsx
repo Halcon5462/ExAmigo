@@ -55,6 +55,14 @@ const TaskSetPlayer = ({
     setServerScore(null);
   };
 
+  const [prices, setPrices] = useState({});
+
+    useEffect(() => {
+        api.get('/helpAi/prices/').then((res) => {
+            setPrices(res.data);
+        });
+    }, []);
+
   useEffect(() => {
     const fetchSet = async () => {
       try {
@@ -233,6 +241,7 @@ const TaskSetPlayer = ({
           initialAnswer={answers[task.id] || ""}
           initialCorrect={checked[task.id]}
           onAnswered={handleAnswered}
+          prices={prices}
         />
       )}
     </div>

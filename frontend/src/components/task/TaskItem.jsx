@@ -8,7 +8,7 @@ import AskSection from "./AskSection";
 import { BlockMath } from 'react-katex'
 import 'katex/dist/katex.min.css';
 
-const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect }) => {
+const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect, prices }) => {
   const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
   const [result, setResult] = useState(
     initialCorrect === true ? 'correct' : initialCorrect === false ? 'wrong' : null
@@ -125,7 +125,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       )}
       {!examSessionId && 
       <>
-        <HintSection taskId={task.id} />
+        <HintSection taskId={task.id} prices={prices} />
         <AskSection taskId={task.id} />
       </>
       }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import '../../static/css/taskSetAutoGenerator.css';
 
 const TaskSetAutoGenerator = () => {
     const [tasks, setTasks] = useState([]);
@@ -8,7 +9,7 @@ const TaskSetAutoGenerator = () => {
     const [error, setError] = useState(null);
 
     const [subject, setSubject] = useState('');
-    const [mode, setMode] = useState('full'); // 'full' | 'custom'
+    const [mode, setMode] = useState('full');
     const [selectedNumbers, setSelectedNumbers] = useState([]);
     const [name, setName] = useState('');
 
@@ -33,7 +34,7 @@ const TaskSetAutoGenerator = () => {
     const subjects = [...new Map(
         tasks
             .filter((t) => t.subject)
-            .map((t) => [t.subject, t.subject_display || t.subject])
+            .map((t) => [t.subject, t.subject_display || t.subject]),
     ).entries()].map(([value, label]) => ({ value, label }));
     const selectedSubjectLabel = subjects.find((item) => item.value === subject)?.label || subject;
 
@@ -81,33 +82,49 @@ const TaskSetAutoGenerator = () => {
     };
 
     if (loading) {
-        return <div>Загрузка данных для генерации комплекта...</div>;
+        return <div className="adaptive-generator-page adaptive-generator-page_status">Загрузка данных для генерации комплекта...</div>;
     }
 
     if (error) {
-        return <div>{error}</div>;
+        return <div className="adaptive-generator-page adaptive-generator-page_status">{error}</div>;
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h2>Адаптивный вариант по статистике</h2>
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '10px' }}>
-                    <label>
-                        Название варианта (необязательно):{' '}
+        <div className="adaptive-generator-page">
+            <section className="adaptive-generator-page__hero">
+                <div className="adaptive-generator-page__hero-copy">
+                    <span className="adaptive-generator-page__eyebrow text_mini">Персональная сборка</span>
+                    <h1 className="adaptive-generator-page__title text">Адаптивный вариант по статистике</h1>
+                    <p className="adaptive-generator-page__description description_text">
+                        Выберите предмет и режим генерации. Система соберет вариант на основе доступных заданий и сразу откроет его для решения.
+                    </p>
+                </div>
+
+                <div className="adaptive-generator-page__hero-note">
+                    <span className="adaptive-generator-page__hero-note-value text">{availableNumbers.length}</span>
+                    <span className="adaptive-generator-page__hero-note-label description_text">
+                        доступных номеров для выбранного предмета
+                    </span>
+                </div>
+            </section>
+
+            <form onSubmit={handleSubmit} className="adaptive-generator-form">
+                <div className="adaptive-generator-form__grid">
+                    <label className="adaptive-generator-form__field">
+                        <span className="adaptive-generator-form__label text_mini">Название варианта</span>
                         <input
                             type="text"
+                            className="adaptive-generator-form__input"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Например: Тренировка по математике"
                         />
                     </label>
-                </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                    <label>
-                        Предмет:{' '}
+                    <label className="adaptive-generator-form__field">
+                        <span className="adaptive-generator-form__label text_mini">Предмет</span>
                         <select
+                            className="adaptive-generator-form__input"
                             value={subject}
                             onChange={(e) => {
                                 setSubject(e.target.value);
@@ -124,67 +141,82 @@ const TaskSetAutoGenerator = () => {
                     </label>
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                    <div>Режим создания комплекта:</div>
-                    <label style={{ marginRight: '15px' }}>
-                        <input
-                            type="radio"
-                            value="full"
-                            checked={mode === 'full'}
-                            onChange={() => setMode('full')}
-                        />{' '}
-                        Полный комплект по предмету
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            value="custom"
-                            checked={mode === 'custom'}
-                            onChange={() => setMode('custom')}
-                            disabled={!subject}
-                        />{' '}
-                        Выбрать номера заданий КИМ
-                    </label>
+                <div className="adaptive-generator-form__section">
+                    <div className="adaptive-generator-form__section-title text">Режим создания комплекта</div>
+                    <div className="adaptive-generator-form__mode-list">
+                        <label className={`adaptive-generator-form__mode ${mode === 'full' ? 'adaptive-generator-form__mode_active' : ''}`}>
+                            <input
+                                type="radio"
+                                value="full"
+                                checked={mode === 'full'}
+                                onChange={() => setMode('full')}
+                            />
+                            <span className="description_text">Полный комплект по предмету</span>
+                        </label>
+
+                        <label className={`adaptive-generator-form__mode ${mode === 'custom' ? 'adaptive-generator-form__mode_active' : ''}`}>
+                            <input
+                                type="radio"
+                                value="custom"
+                                checked={mode === 'custom'}
+                                onChange={() => setMode('custom')}
+                                disabled={!subject}
+                            />
+                            <span className="description_text">Выбрать номера заданий КИМ</span>
+                        </label>
+                    </div>
                 </div>
 
                 {mode === 'custom' && subject && (
-                    <div style={{ marginBottom: '10px' }}>
-                        <div>Номера заданий КИМ по предмету {selectedSubjectLabel}:</div>
+                    <div className="adaptive-generator-form__section">
+                        <div className="adaptive-generator-form__section-head">
+                            <div>
+                                <div className="adaptive-generator-form__section-title text">Номера заданий КИМ</div>
+                                <p className="adaptive-generator-form__section-text description_text">
+                                    Выбран предмет: {selectedSubjectLabel}
+                                </p>
+                            </div>
+                            <div className="adaptive-generator-form__counter text_mini">
+                                Выбрано: {selectedNumbers.length}
+                            </div>
+                        </div>
+
                         {availableNumbers.length === 0 && (
-                            <div>Для этого предмета нет заданий в банке.</div>
+                            <div className="adaptive-generator-form__empty description_text">
+                                Для этого предмета пока нет заданий в банке.
+                            </div>
                         )}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+
+                        <div className="adaptive-generator-form__chips">
                             {availableNumbers.map((num) => (
                                 <label
                                     key={num}
-                                    style={{
-                                        border: '1px solid #ccc',
-                                        padding: '4px 8px',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
+                                    className={`adaptive-generator-form__chip ${selectedNumbers.includes(num) ? 'adaptive-generator-form__chip_active' : ''}`}
                                 >
                                     <input
                                         type="checkbox"
                                         checked={selectedNumbers.includes(num)}
                                         onChange={() => toggleNumber(num)}
-                                        style={{ marginRight: '4px' }}
                                     />
-                                    №{num}
+                                    <span>№{num}</span>
                                 </label>
                             ))}
                         </div>
                     </div>
                 )}
 
-                <button type="submit" disabled={!subject || (mode === 'custom' && selectedNumbers.length === 0)}>
-                    Сгенерировать и начать вариант
-                </button>
+                <div className="adaptive-generator-form__actions">
+                    <button
+                        type="submit"
+                        className="adaptive-generator-form__submit btn_text"
+                        disabled={!subject || (mode === 'custom' && selectedNumbers.length === 0)}
+                    >
+                        Сгенерировать и начать вариант
+                    </button>
+                </div>
             </form>
         </div>
     );
 };
 
 export default TaskSetAutoGenerator;
-
-

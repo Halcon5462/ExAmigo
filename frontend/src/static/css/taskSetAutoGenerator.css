@@ -1,0 +1,273 @@
+.adaptive-generator-page {
+    min-height: calc(100vh - 76px);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 34px 24px 56px;
+    background:
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.92), rgba(250, 250, 250, 0.84) 42%, rgba(238, 243, 255, 0.7) 100%);
+}
+
+.adaptive-generator-page_status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+}
+
+.adaptive-generator-page__hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.adaptive-generator-page__hero-copy,
+.adaptive-generator-page__hero-note,
+.adaptive-generator-form {
+    border-radius: 22px;
+    border: 1px solid rgba(100, 116, 139, 0.12);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 14px 40px rgba(73, 85, 101, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.adaptive-generator-page__hero-copy {
+    padding: 28px 32px;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.95), transparent 55%),
+        rgba(255, 255, 255, 0.88);
+}
+
+.adaptive-generator-page__eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.adaptive-generator-page__title {
+    margin: 0 0 10px;
+    font-size: clamp(30px, 4vw, 42px);
+}
+
+.adaptive-generator-page__description {
+    max-width: 680px;
+    margin: 0;
+    color: var(--dark-blue);
+}
+
+.adaptive-generator-page__hero-note {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 28px;
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.adaptive-generator-page__hero-note-value {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.adaptive-generator-page__hero-note-label {
+    color: var(--dark-grey);
+}
+
+.adaptive-generator-form {
+    padding: 28px 32px 32px;
+}
+
+.adaptive-generator-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.adaptive-generator-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.adaptive-generator-form__label {
+    color: var(--dark-blue);
+}
+
+.adaptive-generator-form__input {
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--base-dark);
+    font: inherit;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.adaptive-generator-form__input:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(74, 151, 118, 0.12);
+}
+
+.adaptive-generator-form__section {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(228, 239, 234, 0.95);
+}
+
+.adaptive-generator-form__section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.adaptive-generator-form__section-title {
+    margin-bottom: 6px;
+}
+
+.adaptive-generator-form__section-text {
+    margin: 0;
+    color: var(--dark-grey);
+}
+
+.adaptive-generator-form__counter {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--light-grey);
+    color: var(--dark-green);
+}
+
+.adaptive-generator-form__mode-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.adaptive-generator-form__mode {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    border-radius: 18px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.adaptive-generator-form__mode:hover {
+    transform: translateY(-2px);
+    border-color: rgba(74, 151, 118, 0.45);
+}
+
+.adaptive-generator-form__mode_active {
+    border-color: var(--green);
+    box-shadow: 0 14px 28px rgba(74, 151, 118, 0.12);
+    background: rgba(196, 234, 195, 0.18);
+}
+
+.adaptive-generator-form__mode input,
+.adaptive-generator-form__chip input {
+    accent-color: var(--green);
+}
+
+.adaptive-generator-form__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.adaptive-generator-form__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(100, 116, 139, 0.18);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.adaptive-generator-form__chip_active {
+    border-color: var(--green);
+    background: rgba(196, 234, 195, 0.28);
+    box-shadow: 0 10px 20px rgba(74, 151, 118, 0.12);
+}
+
+.adaptive-generator-form__empty {
+    margin-bottom: 14px;
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px dashed rgba(100, 116, 139, 0.18);
+    color: var(--dark-grey);
+}
+
+.adaptive-generator-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 28px;
+}
+
+.adaptive-generator-form__submit {
+    min-height: 50px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 16px;
+    background: var(--green);
+    color: var(--base-light);
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(74, 151, 118, 0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.adaptive-generator-form__submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: var(--dark-green);
+}
+
+.adaptive-generator-form__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+@media (max-width: 900px) {
+    .adaptive-generator-page__hero {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .adaptive-generator-page {
+        padding: 24px 16px 42px;
+    }
+
+    .adaptive-generator-page__hero-copy,
+    .adaptive-generator-page__hero-note,
+    .adaptive-generator-form {
+        padding: 16px;
+        border-radius: 24px;
+    }
+
+    .adaptive-generator-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adaptive-generator-form__section-head,
+    .adaptive-generator-form__actions {
+        flex-direction: column;
+    }
+
+    .adaptive-generator-form__submit {
+        width: 100%;
+    }
+}
