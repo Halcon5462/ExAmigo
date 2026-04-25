@@ -10,6 +10,14 @@ const TaskList = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
+    const [prices, setPrices] = useState({});
+
+    useEffect(() => {
+        api.get('/helpAi/prices/').then((res) => {
+            setPrices(res.data);
+        });
+    }, []);
+
     useEffect(() => {
         const fetchTasks = async () => {
             setLoading(true);
@@ -54,7 +62,7 @@ const TaskList = () => {
                             Ничего не найдено. Попробуйте изменить фильтры.
                         </div>
                     )
-                    : tasks.map((task) => <TaskItem key={task.id} task={task} />)}
+                    : tasks.map((task) => <TaskItem key={task.id} task={task} prices={prices} />)}
             </section>
         </div>
     );
