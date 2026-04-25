@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import api from "../../utils/api";
+import React, { useState, useEffect } from 'react';
+import api from '../../utils/api';
 
 const HintSection = ({ taskId }) => {
     const [hints, setHints] = useState({});
@@ -8,7 +8,7 @@ const HintSection = ({ taskId }) => {
     const [prices, setPrices] = useState({});
 
     useEffect(() => {
-        api.get("/helpAi/prices/").then(res => {
+        api.get('/helpAi/prices/').then((res) => {
             setPrices(res.data);
         });
     }, []);
@@ -22,60 +22,69 @@ const HintSection = ({ taskId }) => {
         setLoading(true);
 
         try {
-            const res = await api.post("/helpAi/hint/", {
+            const res = await api.post('/helpAi/hint/', {
                 task_id: taskId,
                 level,
             });
 
-            setHints(prev => ({
+            setHints((prev) => ({
                 ...prev,
-                [level]: res.data.hint
+                [level]: res.data.hint,
             }));
 
             setSelectedLevel(level);
-
         } catch (err) {
-            alert(err.response?.data?.error || "Ошибка");
+            alert(err.response?.data?.error || 'Ошибка');
         } finally {
             setLoading(false);
         }
     };
 
-    const getText = (level) => {
-        if (loading) return "Думаем...";
-        if (hints[level]) return "✓";
-        return `-${prices[level] ?? "?"} 💰`;
+    const getMeta = (level) => {
+        if (loading) return 'Думаем...';
+        if (hints[level]) return 'Открыто';
+        return `-${prices[level] ?? '?'} 💰`;
     };
 
     return (
-        <div style={{ marginTop: "15px" }}>
-            <div style={{ display: "flex", gap: "10px" }}>
-                {[1,2,3].map(level => (
-                    <button key={level} onClick={() => handleGetHint(level)}>
-                        Уровень {level} {getText(level)}
+        <section className="task-help task-help_hints">
+            <div className="task-help__header">
+                <div>
+                    <h3 className="task-help__title text">Подсказки</h3>
+                    <p className="task-help__description description_text">
+                        Открывайте подсказки по уровням, если хотите двигаться к решению постепенно.
+                    </p>
+                </div>
+            </div>
+
+            <div className="task-help__actions">
+                {[1, 2, 3].map((level) => (
+                    <button
+                        key={level}
+                        type="button"
+                        className={`task-help__chip ${selectedLevel === level ? 'task-help__chip_active' : ''}`}
+                        onClick={() => handleGetHint(level)}
+                    >
+                        <span>Уровень {level}</span>
+                        <span className="task-help__chip-meta">{getMeta(level)}</span>
                     </button>
                 ))}
             </div>
 
             {Object.keys(hints).length > 0 && (
-                <div style={{ marginTop: "10px" }}>
+                <div className="task-help__content">
                     {Object.entries(hints).map(([lvl, text]) => (
-                        <div
+                        <article
                             key={lvl}
-                            style={{
-                                background: selectedLevel == lvl ? "#e6f7ff" : "#f9f9f9",
-                                padding: "10px",
-                                marginTop: "5px",
-                                borderRadius: "5px"
-                            }}
+                            className={`task-help__card ${Number(selectedLevel) === Number(lvl) ? 'task-help__card_active' : ''}`}
                         >
-                            <b>Уровень {lvl}</b>
-                            <p style={{ whiteSpace: "pre-line" }}>{text}</p>
-                        </div>
+                            <div className="task-help__card-title">Уровень {lvl}</div>
+                            <p className="task-help__card-text description_text">{text}</p>
+                        </article>
                     ))}
                 </div>
             )}
-        </div>
+        </section>
     );
 };
 
