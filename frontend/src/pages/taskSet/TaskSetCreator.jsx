@@ -228,6 +228,12 @@ const TaskSetCreator = () => {
               </p>
             )}
 
+            <div className="taskset-creator-form__actions">
+              <button type="submit" className="taskset-creator-form__submit btn_text">
+                {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
+              </button>
+            </div>
+
             {filteredTasks.length === 0 ? (
               <div className="taskset-creator-form__empty description_text">
                 Нет заданий, соответствующих фильтрам.
@@ -290,12 +296,6 @@ const TaskSetCreator = () => {
             </p>
           </section>
         )}
-
-        <div className="taskset-creator-form__actions">
-          <button type="submit" className="taskset-creator-form__submit btn_text">
-            {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
-          </button>
-        </div>
       </form>
     </div>
   );
