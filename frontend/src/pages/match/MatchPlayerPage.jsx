@@ -1,24 +1,31 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import TaskSetPlayer from "../taskSet/TaskSetPlayer";
 import OpponentProgressBar from "../../components/match/OpponentProgressBar";
 import MatchResultScreen from "../../components/match/MatchResultScreen";
+import "../../static/css/match.css";
 
 const MatchPlayer = () => {
   const { matchId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const { examId, tasksetId, totalTasks } = location.state || {};
 
   const socketRef = useRef(null);
 
-  const [taskOrder, setTaskOrder] = useState([]);
   const [tasks, setTasks] = useState([]);
-
+  const [answers, setAnswers] = useState({});
   const [opponentProgress, setOpponentProgress] = useState({});
   const [myChecked, setMyChecked] = useState({});
   const [screen, setScreen] = useState("playing");
 
   const myId = JSON.parse(localStorage.getItem("user")).id;
+
+  useEffect(() => {
+    if (!examId || !tasksetId || !totalTasks) {
+      navigate("/match", { replace: true });
+    }
+  }, [examId, navigate, tasksetId, totalTasks]);
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -48,15 +55,14 @@ const MatchPlayer = () => {
 
   const handleExternalAnswer = (taskId, answer, correct, taskList) => {
     setTasks(taskList);
+    setAnswers((prev) => ({
+      ...prev,
+      [taskId]: answer,
+    }));
     setMyChecked((prev) => ({
       ...prev,
       [taskId]: correct,
     }));
-
-    setTaskOrder((prev) => {
-      if (prev.includes(taskId)) return prev;
-      return [...prev, taskId];
-    });
 
     socketRef.current?.send(
       JSON.stringify({ action: "answer", task_id: taskId, correct })
@@ -71,12 +77,28 @@ const MatchPlayer = () => {
     if (myDone) {
       setScreen("waiting");
     }
-  }, [myChecked, opponentProgress, totalTasks]);
+  }, [myChecked, totalTasks]);
+
+  const myCorrectCount = useMemo(
+    () => Object.values(myChecked).filter(Boolean).length,
+    [myChecked]
+  );
+
+  const opponentAnsweredCount = useMemo(
+    () => Object.keys(opponentProgress).length,
+    [opponentProgress]
+  );
+
+  const opponentCorrectCount = useMemo(
+    () => Object.values(opponentProgress).filter(Boolean).length,
+    [opponentProgress]
+  );
 
   if (screen === "finished") {
     return (
       <MatchResultScreen
         myChecked={myChecked}
+        answers={answers}
         opponentProgress={opponentProgress}
         tasks={tasks}
       />
@@ -84,7 +106,36 @@ const MatchPlayer = () => {
   }
 
   if (screen === "waiting") {
-    return <div>Ожидание соперника...</div>;
+    return (
+      <div className="match-play-page">
+        <section className="match-play-page__waiting">
+          <div className="match-play-page__waiting-head">
+            <span className="match-play-page__waiting-indicator" />
+            <h1 className="match-play-page__waiting-title text">Ожидание соперника</h1>
+          </div>
+
+          <p className="match-play-page__waiting-description description_text">
+            Вы уже завершили свой набор заданий. Как только второй игрок закончит попытку,
+            матч автоматически перейдёт на экран результатов.
+          </p>
+
+          <div className="match-play-page__waiting-grid">
+            <div className="match-play-page__waiting-card">
+              <span className="text_mini">Ваш счёт</span>
+              <strong>{myCorrectCount}</strong>
+            </div>
+            <div className="match-play-page__waiting-card">
+              <span className="text_mini">Соперник решил</span>
+              <strong>{opponentAnsweredCount} / {totalTasks}</strong>
+            </div>
+            <div className="match-play-page__waiting-card">
+              <span className="text_mini">Верных у соперника</span>
+              <strong>{opponentCorrectCount}</strong>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
 
   const handleFinishMatch = () => {
@@ -96,18 +147,34 @@ const MatchPlayer = () => {
   };
 
   return (
-    <div style={{ padding: "10px" }}>
-      <OpponentProgressBar
-        progress={opponentProgress}
-        taskIds={tasks.map(t => t.id)}
-      />
+    <div className="match-play-page">
+      <section className="match-play-page__topbar">
+        <div className="match-play-page__topbar-main">
+          <span className="match-play-page__match-id text_mini">Матч #{matchId}</span>
+          <div className="match-play-page__topbar-stats">
+            <span className="match-play-page__topbar-stat text_mini">Ваш прогресс: {Object.keys(myChecked).length} / {totalTasks || tasks.length || 0}</span>
+            <span className="match-play-page__topbar-stat text_mini">Верных: {myCorrectCount}</span>
+            <span className="match-play-page__topbar-stat text_mini">Соперник решил: {opponentAnsweredCount}</span>
+          </div>
+        </div>
+      </section>
 
-      <TaskSetPlayer
-        forcedTasksetId={tasksetId}
-        forcedExamId={examId}
-        externalOnAnswered={handleExternalAnswer}
-        matchEnd={handleFinishMatch}
-      />
+      <div className="match-play-page__board">
+        <OpponentProgressBar
+          progress={opponentProgress}
+          taskIds={tasks.map((task) => task.id)}
+          compact
+        />
+      </div>
+
+      <div className="match-play-page__content">
+        <TaskSetPlayer
+          forcedTasksetId={tasksetId}
+          forcedExamId={examId}
+          externalOnAnswered={handleExternalAnswer}
+          matchEnd={handleFinishMatch}
+        />
+      </div>
     </div>
   );
 };
