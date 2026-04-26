@@ -44,7 +44,7 @@ CONTRIBUTING
 
 Каждый коммит ДОЛЖЕН соответствовать формату:
 
-<type>(<scope>) #<task_number> <описание>
+"<type>(<scope>) #<task_number> <описание>"
 
 Где:
 
