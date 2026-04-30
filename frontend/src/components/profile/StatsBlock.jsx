@@ -13,8 +13,8 @@ const StatsBlock = ({ stats }) => {
           <div className="profilePage_statLabel description_text">Всего заданий</div>
         </div>
         <div className="profilePage_statCard">
-          <div className="profilePage_statValue">{stats.completedTasks ?? '-'}</div>
-          <div className="profilePage_statLabel description_text">Выполнено</div>
+          <div className="profilePage_statValue">{stats.incorrectAnswers ?? '-'}</div>
+          <div className="profilePage_statLabel description_text">Неправильные ответы</div>
         </div>
         <div className="profilePage_statCard">
           <div className="profilePage_statValue">{stats.correctAnswers ?? '-'}</div>
