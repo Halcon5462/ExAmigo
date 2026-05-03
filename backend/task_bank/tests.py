@@ -6,11 +6,13 @@ from django.utils import timezone
 from rest_framework.test import APIClient, APIRequestFactory
 
 from account.models import UserAccount
-from statistic.models import TaskProgress, TaskStatistics
+from statistic.models import TaskProgress, TaskStatistics, TaskAttempt
 from task_bank.ege_scoring import SubjectChoices
 from task_bank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
 from task_bank.serializers import TaskSerializer, TaskSetSerializer
-from task_bank.services import TaskSetGenerator, exam_time_left, finish_exam_session, get_target_difficulty, pick_task
+from task_bank.services import TaskSetGenerator, get_target_difficulty
+from task_bank.services import exam_time_left, finish_exam_session, pick_task
+
 
 
 class TaskBankModelAndServiceTests(TestCase):
@@ -64,7 +66,6 @@ class TaskBankModelAndServiceTests(TestCase):
         self.assertEqual(exam_time_left(exam), 180)
 
     def test_finish_exam_session_counts_correct_attempts(self):
-        from statistic.models import TaskAttempt
 
         exam = ExamSession.objects.create(
             user=self.user,
@@ -182,7 +183,7 @@ class TaskBankModelAndServiceTests(TestCase):
         self.assertIn(second_task.id, [task.id for task in tasks])
 
 
-class Task_bankSerializerTests(TestCase):
+class TaskBankSerializerTests(TestCase):  # pylint: disable=too-many-ancestors
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = UserAccount.objects.create_user(
@@ -416,7 +417,12 @@ class TaskBankApiTests(TestCase):
         response = self.client.post(f"/api/taskBank/tasksets/{taskset.id}/start-exam/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(ExamSession.objects.filter(id=response.data["exam_id"], user=self.user).exists())
+        self.assertTrue(
+            ExamSession.objects.filter(
+                id=response.data["exam_id"],
+                user=self.user
+            ).exists()
+        )
 
     def test_exam_detail_auto_finishes_expired_exam(self):
         taskset = TaskSet.objects.create(
@@ -454,6 +460,11 @@ class TaskBankApiTests(TestCase):
             score=3,
             is_finished=True,
         )
+
+        response = self.client.post(f"/api/taskBank/exams/{exam.id}/finish/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["score"], 3)
 
         response = self.client.post(f"/api/taskBank/exams/{exam.id}/finish/")
 
