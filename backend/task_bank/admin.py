@@ -44,14 +44,12 @@ class DifficultyListFilter(admin.SimpleListFilter):
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
     inlines = [TaskCorrectAnswerInline]
-
-
     list_display = (
         'id',
         'colored_subject',
         'order_KIM',
-        'difficulty',  
-        'colored_difficulty', 
+        'difficulty',
+        'colored_difficulty',
         'author',
         'created_at',
         'has_image',
@@ -76,7 +74,7 @@ class TaskAdmin(admin.ModelAdmin):
         'correct_answers__answer_text',
     )
 
-    readonly_fields = ('created_at',  'preview_image')
+    readonly_fields = ('created_at', 'preview_image')
 
     fieldsets = (
         ('Основная информация', {
@@ -192,6 +190,7 @@ class TaskAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     list_per_page = 25
 
+
 @admin.register(TaskCorrectAnswer)
 class TaskCorrectAnswerAdmin(admin.ModelAdmin):
     list_display = ('id', 'task_link', 'answer_text', 'task_subject')
@@ -220,6 +219,7 @@ class TaskSetItemInline(admin.TabularInline):
     extra = 1
     autocomplete_fields = ["task"]
     ordering = ("order",)
+
 
 @admin.register(TaskSet)
 class TaskSetAdmin(admin.ModelAdmin):
@@ -275,6 +275,7 @@ class ExamSessionAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-started_at",)
+
 
 @admin.register(TaskSetItem)
 class TaskSetItemAdmin(admin.ModelAdmin):
