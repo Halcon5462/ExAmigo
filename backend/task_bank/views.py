@@ -4,18 +4,18 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 from django.db import transaction
 
-from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem, ExamSession, TaskSetType
+from .models import Task, TaskSet, TaskSetItem, ExamSession, TaskSetType
 from .ege_scoring import SubjectChoices
 from .serializers import TaskSerializer, TaskSetSerializer
 
 from .services import exam_time_left, finish_exam_session
 from .services import TaskSetGenerator
-from django.utils import timezone
-from django.db.models import F
 
-class TaskViewSet(ModelViewSet):
+
+class TaskViewSet(ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     ViewSet для работы с заданиями.
     """
@@ -59,11 +59,19 @@ class TaskViewSet(ModelViewSet):
 
         return qs
 
-class TaskSetViewSet(ModelViewSet):
-    """CRUD for TaskSet (комплекты заданий)"""
+
+class TaskSetViewSet(ModelViewSet):  # pylint: disable=too-many-ancestors
+    """CRUD для TaskSet (комплекты заданий)"""
+
     queryset = TaskSet.objects.prefetch_related('items__task').all()
     serializer_class = TaskSetSerializer
-    @action(detail=False, methods=["post"], url_path="generate-exam", permission_classes=[IsAuthenticated])
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="generate-exam",
+        permission_classes=[IsAuthenticated]
+    )
     def generate_exam(self, request):
         """
         Генерирует экзаменационный вариант.
@@ -75,8 +83,8 @@ class TaskSetViewSet(ModelViewSet):
         if not subject:
             return Response({"error": "subject required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        value_to_label = {v: l for v, l in SubjectChoices.choices}
-        label_to_value = {l: v for v, l in SubjectChoices.choices}
+        value_to_label = dict(SubjectChoices.choices)
+        label_to_value = dict((l, v) for v, l in SubjectChoices.choices)
 
         allowed_values = list(value_to_label.keys())
         allowed_labels = list(label_to_value.keys())
@@ -85,7 +93,10 @@ class TaskSetViewSet(ModelViewSet):
             return Response(
                 {
                     "error": "invalid subject",
-                    "allowed_subjects": [{"value": v, "label": l} for v, l in SubjectChoices.choices]
+                    "allowed_subjects": [
+                        {"value": v, "label": l}
+                        for v, l in SubjectChoices.choices
+                    ]
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -193,7 +204,9 @@ class TaskSetViewSet(ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        name = request.data.get("name") or f"Адаптивный вариант {subject} от {timezone.now().strftime('%d.%m.%Y %H:%M')}"
+        name = request.data.get("name") or f"Адаптивный вариант {subject} от {
+            timezone.now().strftime('%d.%m.%Y %H:%M')
+        }"
 
         task_set = TaskSet.objects.create(
             name=name,
@@ -299,12 +312,14 @@ class FinishExamView(APIView):
             "score": exam.score
         })
 
+
 class SubjectChoicesView(APIView):
     def get(self, request):
         return Response([
             {"value": v, "label": l}
             for v, l in SubjectChoices.choices
         ])
+
 
 class TaskFilterOptionsView(APIView):
     def get(self, request):
