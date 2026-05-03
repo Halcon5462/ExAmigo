@@ -14,7 +14,6 @@ from task_bank.services import TaskSetGenerator, get_target_difficulty
 from task_bank.services import exam_time_left, finish_exam_session, pick_task
 
 
-
 class TaskBankModelAndServiceTests(TestCase):
     def setUp(self):
         self.user = UserAccount.objects.create_user(
