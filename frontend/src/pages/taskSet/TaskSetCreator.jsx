@@ -10,7 +10,7 @@ const TaskSetCreator = () => {
   const [name, setName] = useState('');
   const [setType, setSetType] = useState('training');
   const [subject, setSubject] = useState('');
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
@@ -101,7 +101,6 @@ const TaskSetCreator = () => {
       setName('');
       setSetType('training');
       setSubject('');
-      setIsPublic(false);
       setSelected({});
       setFilters({});
     } catch (e) {
@@ -188,17 +187,6 @@ const TaskSetCreator = () => {
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
-          </label>
-
-          <label className="taskset-creator-form__field taskset-creator-form__field_toggle">
-            <span className="taskset-creator-form__label text_mini">Доступ</span>
-            <span className={`taskset-creator-toggle ${isPublic ? 'taskset-creator-toggle_active' : ''}`}>
-              <input type="checkbox" checked={isPublic} onChange={e => setIsPublic(e.target.checked)} />
-              <span className="taskset-creator-toggle__control" />
-              <span className="taskset-creator-toggle__text description_text">
-                {isPublic ? 'Публичный вариант' : 'Приватный вариант'}
-              </span>
-            </span>
           </label>
         </div>
 
