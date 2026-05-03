@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
 from statistic.models import TaskProgress
+from .models import Task, TaskCorrectAnswer, TaskSet, TaskSetItem
 
 
 class TaskCorrectAnswerSerializer(serializers.ModelSerializer):
@@ -58,6 +58,7 @@ class TaskSerializer(serializers.ModelSerializer):
             return TaskProgress.objects.filter(user=user, task=obj).exists()
         return False
 
+
 class TaskSetItemSerializer(serializers.ModelSerializer):
     """
     Сериализатор для элементов набора заданий.
@@ -65,6 +66,7 @@ class TaskSetItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskSetItem
         fields = ['id', 'task', 'order']
+
 
 class TaskSetSerializer(serializers.ModelSerializer):
     """
@@ -80,7 +82,20 @@ class TaskSetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskSet
-        fields = ['id', 'name', 'type', 'subject', 'subject_display', 'average_difficulty', 'is_public', 'author', 'author_name', 'author_email', 'created_at', 'items']
+        fields = [
+            'id',
+            'name',
+            'type',
+            'subject',
+            'subject_display',
+            'average_difficulty',
+            'is_public',
+            'author',
+            'author_name',
+            'author_email',
+            'created_at',
+            'items'
+        ]
         read_only_fields = ['author', 'created_at']
 
     def create(self, validated_data):
