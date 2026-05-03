@@ -9,6 +9,7 @@ from django.conf import settings
 
 User = get_user_model()
 
+
 class JWTAuthMiddleware(BaseMiddleware):
     """
     Поддержка JWT из query string ?token=<ACCESS_TOKEN>
