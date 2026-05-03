@@ -154,7 +154,10 @@ class AccountApiTests(TestCase):
             "/api/account/avatar/change/",
             {
                 "avatar_id": self.avatar.id,
-                "avatar": SimpleUploadedFile("custom.jpg", b"custom-avatar", content_type="image/jpeg"),
+                "avatar": SimpleUploadedFile(
+                    "custom.jpg",
+                    b"custom-avatar",
+                    content_type="image/jpeg"),
             },
             format="multipart",
         )
@@ -191,7 +194,10 @@ class AccountApiTests(TestCase):
 
         response = self.client.post(
             "/api/account/avatar/change/",
-            {"avatar": SimpleUploadedFile("custom.jpg", b"custom-avatar", content_type="image/jpeg")},
+            {"avatar": SimpleUploadedFile(
+                "custom.jpg",
+                b"custom-avatar",
+                content_type="image/jpeg")},
             format="multipart",
         )
 
