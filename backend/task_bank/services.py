@@ -1,9 +1,7 @@
-from django.utils import timezone
-
 import random
-
-from .models import Task
+from django.utils import timezone
 from statistic.models import TaskStatistics, TaskProgress
+from .models import Task
 
 
 def exam_time_left(exam):
@@ -31,7 +29,6 @@ def finish_exam_session(exam):
     return exam
 
 
-
 def get_target_difficulty(stats: TaskStatistics | None) -> int:
     """
     Определяет целевую сложность задания на основе статистики пользователя.
@@ -43,10 +40,9 @@ def get_target_difficulty(stats: TaskStatistics | None) -> int:
 
     if accuracy < 0.6:
         return random.choice([1, 2])
-    elif accuracy < 0.85:
+    if accuracy < 0.85:
         return random.choice([3, 4])
-    else:
-        return random.choice([4, 5])
+    return random.choice([4, 5])
 
 
 def pick_task(user, subject: str, number: int, difficulty: int) -> Task | None:
@@ -116,7 +112,7 @@ class TaskSetGenerator:
 
         for number in task_numbers:
             if match:
-                difficulty = None 
+                difficulty = None
             else:
                 stats = TaskStatistics.objects.filter(
                     user=user,
