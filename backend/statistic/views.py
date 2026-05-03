@@ -6,8 +6,8 @@ from rest_framework.views import APIView
 
 from achievements.services.achievement_service import AchievementService
 from shop.services import WalletService
-from taskBank.models import ExamSession, Task
-from taskBank.services import exam_time_left, finish_exam_session
+from task_bank.models import ExamSession, Task
+from task_bank.services import exam_time_left, finish_exam_session
 
 from .models import TaskAttempt, TaskProgress, TaskStatistics
 from .serializers import TaskStatisticsSerializer

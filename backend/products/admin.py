@@ -162,6 +162,7 @@ class BackgroundAdmin(admin.ModelAdmin):
     search_fields = ("product__name",)
     autocomplete_fields = ("product",)
 
+
 @admin.register(UserProduct)
 class UserProductAdmin(admin.ModelAdmin):
     list_display = ("user", "product", "purchased_at")
@@ -178,4 +179,3 @@ class UserEquippedItemAdmin(admin.ModelAdmin):
     search_fields = ("profile__email", "profile__name", "product__name")
     autocomplete_fields = ("profile", "product")
     readonly_fields = ("equipped_at",)
-

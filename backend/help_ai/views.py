@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db import IntegrityError
 import requests
 
-from taskBank.models import Task
+from task_bank.models import Task
 from shop.services import WalletService
 from shop.choices import TransactionReason
 

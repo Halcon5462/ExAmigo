@@ -78,9 +78,13 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         is_limited = attrs.get("is_limited", getattr(self.instance, "is_limited", False))
         stock = attrs.get("stock", getattr(self.instance, "stock", None))
         if is_limited and stock is None:
-            raise serializers.ValidationError({"stock": "Для лимитированного товара нужно указать stock."})
+            raise serializers.ValidationError({
+                "stock": "Для лимитированного товара нужно указать stock."
+            })
         if is_limited and stock is not None and stock <= 0:
-            raise serializers.ValidationError({"stock": "stock должен быть > 0 для лимитированного товара."})
+            raise serializers.ValidationError({
+                "stock": "stock должен быть > 0 для лимитированного товара."
+            })
         return attrs
 
     def _apply_related_images(self, product: Product, *, icon_frame, image_background):
@@ -89,14 +93,16 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         """
         if icon_frame is not None:
             if product.type != ProductType.FRAME:
-                raise serializers.ValidationError({"icon_frame": "icon_frame можно задавать только для type=frame."})
+                raise serializers.ValidationError({
+                    "icon_frame": "icon_frame можно задавать только для type=frame."
+                })
             product.frame.icon_frame = icon_frame
             product.frame.save(update_fields=["icon_frame"])
 
         if image_background is not None:
             if product.type != ProductType.BACKGROUND:
                 raise serializers.ValidationError(
-                    {"image_background": "image_background можно задавать только для type=background."}
+                    {"image_background": "image_background можно задавать только для background"}
                 )
             product.background.image_background = image_background
             product.background.save(update_fields=["image_background"])
@@ -109,7 +115,11 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         image_background = validated_data.pop("image_background", None)
         product = super().create(validated_data)
         product.refresh_from_db()
-        self._apply_related_images(product, icon_frame=icon_frame, image_background=image_background)
+        self._apply_related_images(
+            product,
+            icon_frame=icon_frame,
+            image_background=image_background
+        )
         return product
 
     def update(self, instance, validated_data):
@@ -120,7 +130,11 @@ class ProductWriteSerializer(serializers.ModelSerializer):
         image_background = validated_data.pop("image_background", None)
         product = super().update(instance, validated_data)
         product.refresh_from_db()
-        self._apply_related_images(product, icon_frame=icon_frame, image_background=image_background)
+        self._apply_related_images(
+            product,
+            icon_frame=icon_frame,
+            image_background=image_background
+        )
         return product
 
 

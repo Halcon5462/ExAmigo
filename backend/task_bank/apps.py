@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class TaskbankConfig(AppConfig):
-    name = 'taskBank'
+    name = 'task_bank'

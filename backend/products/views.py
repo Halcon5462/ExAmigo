@@ -1,5 +1,4 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
-from django.db import transaction as db_transaction
 from django.db.models import F, Q, BooleanField, Exists, OuterRef, Value, IntegerField, Subquery
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -9,6 +8,7 @@ from rest_framework.views import APIView
 from .models import Product, UserEquippedItem, UserProduct
 from .serializers import ProductSerializer, ProductWriteSerializer, PurchaseSerializer
 from .services import ProductService, equip_product
+
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """
@@ -23,7 +23,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(viewsets.ModelViewSet):  # pylint: disable=too-many-ancestors
     """
     ViewSet для продуктов.
     """
@@ -127,7 +127,10 @@ class EquipProductView(APIView):
         """
         user_product_id = request.data.get("user_product_id")
         if not user_product_id:
-            return Response({"error": "user_product_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "error": "user_product_id is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             product = equip_product(request.user, int(user_product_id))

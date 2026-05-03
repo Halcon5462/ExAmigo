@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from taskBank.ege_scoring import SubjectChoices
+from task_bank.ege_scoring import SubjectChoices
 
 
 class TaskAttempt(models.Model):
@@ -13,9 +13,9 @@ class TaskAttempt(models.Model):
         on_delete=models.CASCADE,
         related_name="attempts",
     )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    task = models.ForeignKey("task_bank.Task", on_delete=models.CASCADE)
     exam_session = models.ForeignKey(
-        "taskBank.ExamSession",
+        "task_bank.ExamSession",
         null=True,
         blank=True,
         on_delete=models.CASCADE,
@@ -35,7 +35,7 @@ class TaskProgress(models.Model):
         on_delete=models.CASCADE,
         related_name="task_progress",
     )
-    task = models.ForeignKey("taskBank.Task", on_delete=models.CASCADE)
+    task = models.ForeignKey("task_bank.Task", on_delete=models.CASCADE)
     first_solved_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -8,8 +8,8 @@ from account.models import UserAccount
 from shop.models import WalletTransaction
 from statistic.models import TaskAttempt, TaskProgress, TaskStatistics
 from statistic.services import update_task_statistics
-from taskBank.ege_scoring import SubjectChoices
-from taskBank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
+from task_bank.ege_scoring import SubjectChoices
+from task_bank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
 
 
 class StatisticServiceTests(TestCase):

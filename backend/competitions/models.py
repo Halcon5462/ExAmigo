@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from taskBank.models import TaskSet
+from task_bank.models import TaskSet
 
 
 class Match(models.Model):
