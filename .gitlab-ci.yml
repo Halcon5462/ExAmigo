@@ -27,13 +27,13 @@ pylint:
   stage: style
   extends: .backend_setup
   script:
-    - pylint --fail-under=6 --ignore-paths="docs/*" .
+    - pylint --fail-under=9 --ignore-paths="docs/*" .
 
 pycodestyle:
   stage: style
   extends: .backend_setup
   script:
-    - pycodestyle --max-line-length=120 . || true
+    - pycodestyle --max-line-length=120 .
 
 coverage:
   stage: test

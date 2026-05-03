@@ -5,6 +5,7 @@ from .models import UserStreak
 
 User = get_user_model()
 
+
 @receiver(post_save, sender=User)
 def create_user_streak(sender, instance, created, **kwargs):
     if created:

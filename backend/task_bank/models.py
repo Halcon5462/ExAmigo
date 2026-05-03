@@ -44,9 +44,8 @@ class Task(models.Model):
         null=True,
         related_name='tasks',
         verbose_name="Автор",
-        )
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-
 
     @property
     def primary_score(self):
@@ -55,18 +54,17 @@ class Task(models.Model):
         """
         return get_task_score(self.subject, self.order_KIM)
 
-
     class Meta:
         ordering = ['subject', 'order_KIM']
         verbose_name = "Задание"
         verbose_name_plural = "Задания"
 
-
     def __str__(self):
         """
         Возвращает строку с информацией о задании.
         """
-        return f"Задание {self.id}: {self.subject} - №{self.order_KIM} (сложность {self.difficulty}/5)"
+        return f"Задание {self.id}: {self.subject} - №{self.order_KIM} сложность {self.difficulty}"
+
 
 class TaskCorrectAnswer(models.Model):
     """
@@ -78,6 +76,7 @@ class TaskCorrectAnswer(models.Model):
         related_name='correct_answers',
     )
     answer_text = models.TextField(max_length=25, verbose_name='Правильный ответ')
+
 
 class TaskSet(models.Model):
     """Набор заданий (комплект)"""

@@ -32,4 +32,4 @@ class AchievementService:
                         achievement=achievement,
                     )
         except (OperationalError, ProgrammingError):
-            return
+            pass

@@ -2,6 +2,7 @@ import os
 from django.conf import settings
 from django.http import FileResponse, Http404
 
+
 def download_file(request, filename):
     """
     Скачивает файл.

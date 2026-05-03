@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+
 class UserStreak(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -36,22 +37,21 @@ class UserStreak(models.Model):
 
     def update_streak(self):
         today = timezone.now().date()
-        
+
         if self.last_activity_date is None:
             self.current_streak = 1
         else:
             days_diff = (today - self.last_activity_date).days
-            
+
             if days_diff == 1:
                 self.current_streak += 1
             elif days_diff == 0:
                 return self
             else:
                 self.current_streak = 1
-        
-        if self.current_streak > self.best_streak:
-            self.best_streak = self.current_streak
-        
+
+        self.best_streak = max(self.best_streak, self.current_streak)
+
         self.last_activity_date = today
         self.save()
         return self
