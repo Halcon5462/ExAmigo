@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from rest_framework_simplejwt.exceptions import TokenError
 
-from taskBank.models import ExamSession, TaskSet
+from task_bank.models import ExamSession, TaskSet
 
 from .models import Match
 

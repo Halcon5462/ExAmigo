@@ -201,7 +201,7 @@ class TaskCorrectAnswerAdmin(admin.ModelAdmin):
 
     def task_link(self, obj):
         """Ссылка на задание в админке"""
-        url = reverse('admin:taskBank_task_change', args=[obj.task.id])
+        url = reverse('admin:task_bank_task_change', args=[obj.task.id])
         return format_html('<a href="{}">{}</a>', url, obj.task)
 
     task_link.short_description = 'Задание'

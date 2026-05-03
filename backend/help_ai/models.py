@@ -7,7 +7,7 @@ class TaskHint(models.Model):
     level - уровень подсказки(частичное/полное решение)
     '''
     task = models.ForeignKey(
-        "taskBank.Task",
+        "task_bank.Task",
         on_delete=models.CASCADE,
         related_name="hints"
     )

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
+
 class ProductType(models.TextChoices):
     """
     Типы продуктов.
@@ -47,9 +48,13 @@ class Product(models.Model):
         """
         if self.is_limited:
             if self.stock is None:
-                raise ValidationError({"stock": "Для лимитированного товара нужно указать stock."})
+                raise ValidationError({
+                    "stock": "Для лимитированного товара нужно указать stock."
+                })
             if self.stock <= 0:
-                raise ValidationError({"stock": "stock должен быть > 0 для лимитированного товара."})
+                raise ValidationError({
+                    "stock": "stock должен быть > 0 для лимитированного товара."
+                })
 
     @property
     def remaining(self) -> int | None:

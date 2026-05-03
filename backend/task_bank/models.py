@@ -132,7 +132,7 @@ class ExamSession(models.Model):
     )
 
     task_set = models.ForeignKey(
-        "taskBank.TaskSet",
+        "task_bank.TaskSet",
         on_delete=models.CASCADE,
         related_name="exam_sessions"
     )

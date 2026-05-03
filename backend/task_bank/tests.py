@@ -7,10 +7,10 @@ from rest_framework.test import APIClient, APIRequestFactory
 
 from account.models import UserAccount
 from statistic.models import TaskProgress, TaskStatistics
-from taskBank.ege_scoring import SubjectChoices
-from taskBank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
-from taskBank.serializers import TaskSerializer, TaskSetSerializer
-from taskBank.services import TaskSetGenerator, exam_time_left, finish_exam_session, get_target_difficulty, pick_task
+from task_bank.ege_scoring import SubjectChoices
+from task_bank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
+from task_bank.serializers import TaskSerializer, TaskSetSerializer
+from task_bank.services import TaskSetGenerator, exam_time_left, finish_exam_session, get_target_difficulty, pick_task
 
 
 class TaskBankModelAndServiceTests(TestCase):
@@ -106,14 +106,14 @@ class TaskBankModelAndServiceTests(TestCase):
 
         self.assertEqual(result.score, 7)
 
-    @patch("taskBank.services.random.choice", return_value=2)
+    @patch("task_bank.services.random.choice", return_value=2)
     def test_get_target_difficulty_returns_easy_for_missing_stats(self, mocked_choice):
         difficulty = get_target_difficulty(None)
 
         self.assertEqual(difficulty, 2)
         mocked_choice.assert_called_once_with([1, 2])
 
-    @patch("taskBank.services.random.choice", return_value=4)
+    @patch("task_bank.services.random.choice", return_value=4)
     def test_get_target_difficulty_uses_middle_band_for_average_accuracy(self, mocked_choice):
         stats = TaskStatistics.objects.create(
             user=self.user,
@@ -175,14 +175,14 @@ class TaskBankModelAndServiceTests(TestCase):
             correct_count=10,
         )
 
-        with patch("taskBank.services.random.choice", side_effect=[2, 4]):
+        with patch("task_bank.services.random.choice", side_effect=[2, 4]):
             tasks = TaskSetGenerator.generate(self.user, SubjectChoices.MATH, [1, 2])
 
         self.assertEqual([task.order_KIM for task in tasks], [1, 2])
         self.assertIn(second_task.id, [task.id for task in tasks])
 
 
-class TaskBankSerializerTests(TestCase):
+class Task_bankSerializerTests(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.user = UserAccount.objects.create_user(

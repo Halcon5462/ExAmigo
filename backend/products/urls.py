@@ -11,4 +11,3 @@ urlpatterns = [
     path("equipped/", EquippedItemsView.as_view(), name="equipped-items"),
     path("", include(router.urls)),
 ]
-

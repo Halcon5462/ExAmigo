@@ -2,8 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from taskBank.services import TaskSetGenerator
-from taskBank.models import TaskSet, TaskSetType, TaskSetItem
+from task_bank.services import TaskSetGenerator
+from task_bank.models import TaskSet, TaskSetType, TaskSetItem
 
 from .models import Match
 
