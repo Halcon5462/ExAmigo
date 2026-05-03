@@ -6,7 +6,6 @@ def build_hint_prompt(task, level):
 {task.description}
 """
 
-
     if task.formula:
         base += f"\nФормула:\n{task.formula}\n"
 
@@ -22,7 +21,7 @@ def build_hint_prompt(task, level):
 - Markdown
 - LaTeX
 """
-    base+=rules
+    base += rules
 
     if level == 1:
         return base + """
@@ -31,14 +30,14 @@ def build_hint_prompt(task, level):
 1 короткое предложение.
 """
 
-    elif level == 2:
+    if level == 2:
         return base + """
 Объясни идею решения.
 Не давай полный ответ.
 2-3 предложения.
 """
 
-    elif level == 3:
+    if level == 3:
         return base + """
 Почти реши задачу.
 Покажи шаги решения и дай ответ
@@ -56,8 +55,8 @@ def build_question_prompt(task, question):
 """
     if task.formula:
         base += f"\nФормула:\n{task.formula}\n"
-        
-    base+="""
+
+    base += """
 Вопрос ученика:
 {question}
 
@@ -70,5 +69,3 @@ def build_question_prompt(task, question):
 """
 
     return base
-
-

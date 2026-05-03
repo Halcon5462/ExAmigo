@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class TaskHint(models.Model):
     '''
     Модель полученной подсказки для кеширования
