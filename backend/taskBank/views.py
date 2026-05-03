@@ -70,7 +70,7 @@ class TaskSetViewSet(ModelViewSet):
         """
         subject = request.data.get("subject")
         name = request.data.get("name") or "Экзамен"
-        is_public = bool(request.data.get("is_public", False))
+        is_public = False
 
         if not subject:
             return Response({"error": "subject required"}, status=status.HTTP_400_BAD_REQUEST)

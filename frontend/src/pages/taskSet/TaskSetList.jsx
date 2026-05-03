@@ -68,6 +68,7 @@ const TaskSetList = () => {
             const query = filters.searchQuery.toLowerCase();
             if (!ts.name.toLowerCase().includes(query)) return false;
         }
+        if (!ts.is_public) return false;
         return true;
     });
 
