@@ -1,8 +1,7 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from .models import UserWallet, WalletTransaction
+from .models import UserWallet
 from .serializers import (
     UserWalletSerializer,
     WalletTransactionSerializer,
@@ -12,7 +11,7 @@ from .serializers import (
 from .services import WalletService
 
 
-class WalletViewSet(viewsets.ReadOnlyModelViewSet):
+class WalletViewSet(viewsets.ReadOnlyModelViewSet):  # pylint: disable=too-many-ancestors
     """
     ViewSet для просмотра кошелька и транзакций пользователя.
     """
@@ -31,7 +30,7 @@ class WalletViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['get'])
     def my_wallet(self, request):
         """Получить информацию о своем кошельке"""
-        wallet, created = UserWallet.objects.get_or_create(user=request.user)
+        wallet, _ = UserWallet.objects.get_or_create(user=request.user)
         serializer = self.get_serializer(wallet)
         return Response(serializer.data)
 
