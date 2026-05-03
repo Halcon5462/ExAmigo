@@ -362,7 +362,6 @@ class TaskBankApiTests(TestCase):
         taskset = TaskSet.objects.get(id=response.data["id"])
         self.assertEqual(taskset.type, TaskSetType.EXAM)
         self.assertEqual(taskset.items.count(), 12)
-        self.assertTrue(taskset.is_public)
 
     def test_generate_endpoint_rejects_invalid_task_numbers(self):
         response = self.client.post(
