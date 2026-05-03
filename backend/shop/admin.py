@@ -19,4 +19,3 @@ class UserWalletAdmin(admin.ModelAdmin):
 class WalletTransactionAdmin(admin.ModelAdmin):
     list_display = ("wallet", "amount", "reason", "created_at")
     list_filter = ("reason", "created_at")
-
