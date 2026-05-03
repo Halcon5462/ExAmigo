@@ -3,7 +3,10 @@ import time
 
 
 class RequestLoggingMiddleware:
-    """Регистрирует каждый HTTP-запрос/ответ с указанием продолжительности и контекста пользователя."""
+    """
+    Регистрирует каждый HTTP-запрос/ответ
+    с указанием продолжительности и контекста пользователя.
+    """
 
     def __init__(self, get_response):
         self.get_response = get_response
