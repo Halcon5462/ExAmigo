@@ -10,6 +10,7 @@ class SubjectChoices(models.TextChoices):
     PHYSICS = "physics", "Физика"
     INFORM = "informatic", "Информатика"
 
+
 EGE_TASK_SCORES = {
     SubjectChoices.MATH: {
         1: 1, 2: 1, 3: 1, 4: 1, 5: 1,
@@ -39,6 +40,7 @@ EGE_TASK_SCORES = {
         27: 22,
     }
 }
+
 
 def get_task_score(subject, order_kim):
     """
