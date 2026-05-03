@@ -1,19 +1,24 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from channels.db import database_sync_to_async
-from .models import Match
-from taskBank.models import ExamSession
-
-from rest_framework_simplejwt.tokens import AccessToken
-from django.contrib.auth import get_user_model
 from urllib.parse import parse_qs
 
-from taskBank.models import TaskSet
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import AccessToken
+
+from rest_framework_simplejwt.exceptions import TokenError
+
+from taskBank.models import ExamSession, TaskSet
+
+from .models import Match
 
 User = get_user_model()
 
 
 class MatchConsumer(AsyncWebsocketConsumer):
+    match_id = None
+    room_group_name = None
 
     async def connect(self):
         """
@@ -29,7 +34,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 access = AccessToken(token[0])
                 user = await database_sync_to_async(User.objects.get)(id=access["user_id"])
                 self.scope["user"] = user
-            except Exception:
+            except (TokenError, ObjectDoesNotExist, KeyError):
                 pass
 
         await self.channel_layer.group_add(
@@ -40,7 +45,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
         await self.accept()
         await self.send_json({"type": "connected"})
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, code):
         """
         Отключение от матча
         """
@@ -49,7 +54,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    async def receive(self, text_data):
+    async def receive(self, text_data=None, bytes_data=None):
         """
         Действие пользователя
         """
@@ -62,11 +67,15 @@ class MatchConsumer(AsyncWebsocketConsumer):
             return
 
         handler = getattr(self, f"handle_{action}", None)
-        if not handler:
-            await self.send_json({"type": "error", "message": "Unknown action"})
+
+        if handler is None or not callable(handler):
+            await self.send_json({
+                "type": "error",
+                "message": "Unknown action"
+            })
             return
 
-        await handler(user, data)
+        await handler(user, data)  # pylint: disable=not-callable
 
     async def send_json(self, data):
         await self.send(text_data=json.dumps(data))
