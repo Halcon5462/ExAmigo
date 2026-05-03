@@ -1,5 +1,5 @@
 import requests
-from django.conf import settings
+from rest_framework.response import Response
 
 DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
 DEEPSEEK_API_KEY = 'sk-06332664920b4d1f957d9cb75d2a2169'

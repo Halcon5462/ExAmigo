@@ -1,18 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
 from django.db import IntegrityError
+import requests
 
 from taskBank.models import Task
-from .models import TaskHint
-
-from .prompts import build_hint_prompt, build_question_prompt
-from .services import generate_hint
-
 from shop.services import WalletService
 from shop.choices import TransactionReason
+
+from .models import TaskHint
+from .prompts import build_hint_prompt, build_question_prompt
+from .services import generate_hint
 from .constants import HINT_PRICES
+
 
 class HintView(APIView):
     permission_classes = [IsAuthenticated]
@@ -49,13 +49,13 @@ class HintView(APIView):
             return Response(
                 {"error": "Недостаточно средств"},
                 status=403
-        )
+            )
 
         prompt = build_hint_prompt(task, level)
 
         try:
             hint_text = generate_hint(prompt)
-        except Exception:
+        except requests.exceptions.RequestException:
             WalletService.change_balance(
                 user=request.user,
                 amount=price,
@@ -65,9 +65,9 @@ class HintView(APIView):
             return Response(
                 {"error": "Ошибка генерации подсказки"},
                 status=500
-        )
+            )
 
-        #сохранение
+        # сохранение
         try:
             TaskHint.objects.create(
                 task=task,
@@ -111,13 +111,13 @@ class AskQuestionView(APIView):
             return Response(
                 {"error": "Недостаточно средств"},
                 status=403
-        )
+            )
 
         prompt = build_question_prompt(task, question)
 
         try:
             answer = generate_hint(prompt)
-        except Exception:
+        except requests.exceptions.RequestException:
             WalletService.change_balance(
                 user=request.user,
                 amount=price,
@@ -127,7 +127,7 @@ class AskQuestionView(APIView):
             return Response(
                 {"error": "Ошибка генерации ответа на вопрос"},
                 status=500
-        )
+            )
 
         return Response({
             "answer": answer,

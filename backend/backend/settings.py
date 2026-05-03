@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'tools',
     'streak',
     'competitions',
-    'helpAi',
+    'help_ai',
 ]
 
 MIDDLEWARE = [
