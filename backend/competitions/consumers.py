@@ -32,7 +32,6 @@ class MatchConsumer(AsyncWebsocketConsumer):
             except Exception:
                 pass
 
-
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -157,7 +156,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
     def create_exam_sessions(self, match):
         """
         Создаем сессию
-        Используем уже готовый TaskSet 
+        Используем уже готовый TaskSet
         """
 
         taskset = match.task_set  # ВАЖНО: матч должен хранить task_set
@@ -193,7 +192,7 @@ class MatchConsumer(AsyncWebsocketConsumer):
                 match.opponent.id: exam2.id,
             }
         }
-    
+
     async def handle_finish(self, user, data):
         match = await Match.objects.select_related("host", "opponent").aget(id=self.match_id)
 
@@ -223,13 +222,12 @@ class MatchConsumer(AsyncWebsocketConsumer):
                     "type": "match_finished"
                 }
             )
-    
+
     async def player_finished(self, event):
         await self.send_json({
             "type": "player_finished",
             "user_id": event["user_id"],
         })
-
 
     async def match_finished(self, event):
         await self.send_json({
