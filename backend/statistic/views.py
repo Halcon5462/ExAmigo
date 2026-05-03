@@ -1,4 +1,4 @@
-from django.db import transaction
+from django.db import transaction, DatabaseError
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,12 +8,11 @@ from achievements.services.achievement_service import AchievementService
 from shop.services import WalletService
 from task_bank.models import ExamSession, Task
 from task_bank.services import exam_time_left, finish_exam_session
+from streak.services import update_user_streak
 
 from .models import TaskAttempt, TaskProgress, TaskStatistics
 from .serializers import TaskStatisticsSerializer
 from .services import update_task_statistics
-
-from streak.services import update_user_streak
 
 
 class TaskStatisticsListView(generics.ListAPIView):
@@ -149,7 +148,7 @@ class TaskSubmitView(APIView):
                 try:
                     update_user_streak(user)
                     print(f"🔥 Серия обновлена для пользователя {user.email}")
-                except Exception as e:
+                except DatabaseError as e:
                     print(f"❌ Ошибка при обновлении серии: {e}")
                 _, created = TaskProgress.objects.get_or_create(user=user, task=task)
                 if created:
@@ -196,5 +195,3 @@ class TaskSubmitView(APIView):
             response_data["new_balance"] = transaction_data["new_balance"]
 
         return Response(response_data)
-
-
