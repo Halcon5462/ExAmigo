@@ -7,6 +7,7 @@ stages:
   - style
   - test
   - build
+  - migrate
   # - documentation
 
 cache:
@@ -20,27 +21,25 @@ cache:
     - cd backend
     - pip install --upgrade pip
     - pip install -r requirements.txt --prefer-binary
-    - python manage.py makemigrations
-    - python manage.py migrate
 
 pylint:
   stage: style
   extends: .backend_setup
   script:
-    - pylint --fail-under=9 --ignore-paths="docs/*" .
+    - pylint --fail-under=9 --ignore-paths="docs/*,migrations/*" .
 
 pycodestyle:
   stage: style
   extends: .backend_setup
   script:
-    - pycodestyle --max-line-length=120 .
+    - pycodestyle --max-line-length=120 --exclude=migrations,venv .
 
 coverage:
   stage: test
   extends: .backend_setup
   script:
     - pip install coverage
-    - coverage run manage.py test
+    - coverage run manage.py test --keepdb
     - coverage report -m
 
 frontend-build:
@@ -54,6 +53,12 @@ frontend-build:
     - npm ci
   script:
     - npm run build
+
+migrate:
+  stage: migrate
+  extends: .backend_setup
+  script:
+    - python manage.py migrate
 
 # sphinx:
 #   stage: documentation
