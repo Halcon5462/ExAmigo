@@ -23,3 +23,13 @@
 12. Facade; shop/services.py - WalletService; единый сервис скрывает работу с кошельком пользователя, транзакциями, начислениями наград и проверкой баланса.
 
 13. Observer; shop/models.py - сигнал post_save для User; после создания пользователя автоматически вызывается обработчик создания кошелька.
+
+14. DTO (Data Transfer Object); statistic/serializers.py - TaskStatisticsSerializer; сериализатор преобразует модель TaskStatistics в формат API-ответа и добавляет вычисляемое поле accuracy_percent без изменения бизнес-логики модели.
+
+15. Service Layer; statistic/services.py - update_task_statistics(); бизнес-логика обновления статистики вынесена из представлений в отдельный сервис, который инкапсулирует получение/создание и обновление агрегированных данных по попыткам пользователя.
+
+16. Observer; streak/signals.py - create_user_streak(); использование post_save сигнала на модель User обеспечивает автоматическое создание UserStreak при регистрации пользователя, реализуя реакцию на событие изменения состояния системы.
+
+17. Active Record; task_bank/models.py - Task, TaskSet, ExamSession, TaskSetItem; модели используют Django ORM для хранения и изменения данных, а также содержат вычисляемые свойства (primary_score, total_primary_score), совмещая данные и поведение объекта.
+
+18. Service Layer; task_bank/services.py - TaskSetGenerator, exam_time_left, finish_exam_session, pick_task, get_target_difficulty; бизнес-логика генерации заданий, выбора задач, управления экзаменом и расчёта сложности вынесена в отдельный слой сервисов, не зависящий от HTTP-уровня.
