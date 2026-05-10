@@ -1,6 +1,20 @@
 [MASTER]
-ignore-patterns = migrations
+load-plugins=pylint_django
+django-settings-module=backend.settings
 ignore-paths = .*[/\\]migrations[/\\].*
+ignore=
+    migrations,
+    venv,
+    .venv,
+    node_modules,
+    static,
+    media
+
+ignore-patterns=
+    .*_pb2.py,
+    .*generated.*,
+    .*migrations.*
+
 
 [MESSAGES CONTROL]
 disable =
@@ -19,3 +33,6 @@ disable =
 
 [FORMAT]
 max-line-length = 100
+
+[TYPECHECK]
+ignored-modules=cv2

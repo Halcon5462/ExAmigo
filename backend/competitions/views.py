@@ -2,16 +2,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from task_bank.services import TaskSetGenerator
+from task_bank.models import TaskSet, TaskSetType, TaskSetItem
+
 from .models import Match
-from taskBank.services import TaskSetGenerator
-from taskBank.models import TaskSet, TaskSetType, TaskSetItem
 
 
 class CreateMatchView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        subject = request.data.get("subject")
+        subject = request.data.get("subject", "prof_math")
 
         if not subject:
             return Response({"error": "subject required"}, status=400)

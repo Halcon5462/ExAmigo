@@ -24,13 +24,14 @@ INSTALLED_APPS = [
     'corsheaders',
     'account',
     'achievements',
-    'taskBank',
+    'task_bank',
     'shop',
     'statistic',
     'products.apps.ProductsConfig',
     'tools',
     'streak',
     'competitions',
+    'help_ai',
 ]
 
 MIDDLEWARE = [

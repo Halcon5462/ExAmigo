@@ -1,5 +1,4 @@
 import asyncio
-import json
 
 from channels.testing import WebsocketCommunicator
 from rest_framework.test import APIClient

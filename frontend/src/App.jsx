@@ -4,22 +4,24 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
 import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
-import AchievementsPage from './pages/AchievementsPage';
+import AchievementsPage from './pages/user/AchievementsPage';
 import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import TestMatchPage from './pages/MatchPage';
-import ProfilePage from './pages/ProfilePage';
+import LoginPage from './pages/user/LoginPage';
+import TestMatchPage from './pages/match/MatchPage';
+import ProfilePage from './pages/user/ProfilePage';
 import Shop from './pages/Shop';
-import TaskBank from './pages/TaskBank';
-import TaskCreator from './pages/TaskCreator';
-import TaskSetAutoGenerator from './pages/TaskSetAutoGenerator';
-import TaskSetCreator from './pages/TaskSetCreator';
-import TaskSetList from './pages/TaskSetList';
-import TaskSetPlayer from './pages/TaskSetPlayer';
-import MatchPlayerPage from "./pages/MatchPlayerPage";
-import MatchCreatePage from "./pages/MatchCreatePage";
-import StatisticMainPage from './pages/StatisticMainPage';
-import SubjectStatisticsPage from './pages/SubjectStatisticsPage';
+import TaskBank from './pages/taskBank/TaskBank';
+import TaskList from "./pages/taskBank/TaskList";
+import TaskCreator from './pages/taskBank/TaskCreator';
+import TaskSetAutoGenerator from './pages/taskSet/TaskSetAutoGenerator';
+import TaskSetCreator from './pages/taskSet/TaskSetCreator';
+import TaskSetList from './pages/taskSet/TaskSetList';
+import TaskSetPlayer from './pages/taskSet/TaskSetPlayer';
+import MatchPlayerPage from "./pages/match/MatchPlayerPage";
+import MatchCreatePage from "./pages/match/MatchCreatePage";
+import StatisticMainPage from './pages/user/StatisticMainPage';
+import SubjectStatisticsPage from './pages/user/SubjectStatisticsPage';
+import TestPage from './pages/TestPage';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -146,6 +148,7 @@ function App() {
                     <Route element={<ProtectedRoute user={user} />}>
                         <Route path="/" element={<HomePage user={user} />} />
                         <Route path="/tasks" element={<TaskBank />} />
+                        <Route path="/tasks/results" element={<TaskList />} />
                         <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/achievements" element={<AchievementsPage onLogout={handleLogout} />} />
@@ -157,6 +160,9 @@ function App() {
                         <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
                         <Route path="/statistics" element={<StatisticMainPage />} />
                         <Route path="/statistics/:subject" element={<SubjectStatisticsPage />} />
+
+                        <Route path="/test" element={<TestPage />} />
+
                         <Route
                             path="/profile"
                             element={

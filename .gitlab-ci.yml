@@ -1,0 +1,70 @@
+image: python:3.12-slim
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
+
+stages:
+  - style
+  - test
+  - build
+  - migrate
+  # - documentation
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pip-cache/
+    - frontend/node_modules/
+
+.backend_setup:
+  before_script:
+    - cd backend
+    - pip install --upgrade pip
+    - pip install -r requirements.txt --prefer-binary
+
+pylint:
+  stage: style
+  extends: .backend_setup
+  script:
+    - pylint --load-plugins="" --fail-under=9 --ignore-paths="migrations/*,docs/*" .
+
+pycodestyle:
+  stage: style
+  extends: .backend_setup
+  script:
+    - pycodestyle --max-line-length=120 --exclude=migrations,venv .
+
+coverage:
+  stage: test
+  extends: .backend_setup
+  script:
+    - pip install coverage
+    - coverage run manage.py test --keepdb
+    - coverage report -m
+
+frontend-build:
+  stage: build
+  image: node:20-alpine
+  cache:
+    paths:
+      - frontend/node_modules/
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npm run build
+
+migrate:
+  stage: migrate
+  extends: .backend_setup
+  script:
+    - python manage.py migrate
+
+# sphinx:
+#   stage: documentation
+#   before_script:
+#     - apt-get update && apt-get install -y make
+#     - pip install -r backend/requirements.txt
+#   script:
+#     - cd docs
+#     - make html

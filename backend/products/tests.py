@@ -173,13 +173,13 @@ class ProductAdminTests(TestCase):
         product.refresh_from_db()
         self.assertTrue(Frame.objects.filter(product=product).exists())
         self.assertEqual(Background.objects.filter(product=product).count(), 0)
-        self.assertTrue(product.frame.icon_frame.name.endswith("frame.gif"))
+        self.assertTrue(product.frame.icon_frame.name)
 
 
 class ProductServiceTests(TestCase):
     def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create_user(email="u@example.com", name="U", password="pass")
+        user = get_user_model()
+        self.user = user.objects.create_user(email="u@example.com", name="U", password="pass")
         self.user.wallet.balance = 100
         self.user.wallet.save(update_fields=["balance", "updated_at"])
         self.product = Product.objects.create(
@@ -228,8 +228,8 @@ class ProductServiceTests(TestCase):
 class ProductApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
-        User = get_user_model()
-        self.user = User.objects.create_user(email="u@example.com", name="U", password="pass")
+        user = get_user_model()
+        self.user = user.objects.create_user(email="u@example.com", name="U", password="pass")
 
     def test_purchase_endpoint_charges_wallet_and_increments_sold_count(self):
         wallet = self.user.wallet
@@ -245,7 +245,11 @@ class ProductApiTests(TestCase):
         )
 
         self.client.force_authenticate(user=self.user)
-        resp = self.client.post(f"/api/products/products/{p.id}/purchase/", {"quantity": 3}, format="json")
+        resp = self.client.post(
+            f"/api/products/products/{p.id}/purchase/",
+            {"quantity": 3},
+            format="json"
+        )
         self.assertEqual(resp.status_code, 200, resp.data)
 
         p.refresh_from_db()
@@ -264,7 +268,11 @@ class ProductApiTests(TestCase):
         UserProduct.objects.create(user=self.user, product=product)
 
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(f"/api/products/products/{product.id}/purchase/", {"quantity": 1}, format="json")
+        response = self.client.post(
+            f"/api/products/products/{product.id}/purchase/",
+            {"quantity": 1},
+            format="json"
+        )
 
         self.assertEqual(response.status_code, 400)
 

@@ -98,6 +98,29 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.profilePage_sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.profilePage_sectionToggle {
+    background: var(--light-grey);
+    border: 1px solid var(--grey);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--base-dark);
+    transition: transform 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.profilePage_sectionToggle:hover {
+    background: #e9e9e9;
+    transform: translateY(-1px);
+}
+
 .profilePage_sectionTitle {
     font-size: 24px;
     font-weight: 600;
@@ -121,6 +144,68 @@
 
 .profilePage_achievement:hover {
     transform: translateX(4px);
+}
+
+.profilePage_achievementMain {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.profilePage_achievementIcon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex: 0 0 auto;
+}
+
+.profilePage_achievementInfo {
+    min-width: 0;
+}
+
+.profilePage_achievementReward {
+    margin-top: 6px;
+    color: var(--base-dark);
+}
+
+.profilePage_achievementProgress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.profilePage_progressBar {
+    width: 100%;
+    height: 10px;
+    background: white;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.profilePage_progressFill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 999px;
+    transition: width 0.2s;
+}
+
+.profilePage_progressMeta {
+    color: var(--dark-grey);
+}
+
+.profilePage_achievement.isLocked {
+    opacity: 0.9;
+}
+
+.profilePage_achievement.isLocked .profilePage_achievementIcon {
+    filter: blur(2px) grayscale(100%);
+}
+
+.profilePage_achievement.isLocked .profilePage_progressFill {
+    background: var(--grey);
 }
 
 .profilePage_achievementName {

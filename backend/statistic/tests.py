@@ -1,4 +1,4 @@
-﻿from datetime import timedelta
+from datetime import timedelta
 
 from django.test import TestCase
 from django.utils import timezone
@@ -8,8 +8,8 @@ from account.models import UserAccount
 from shop.models import WalletTransaction
 from statistic.models import TaskAttempt, TaskProgress, TaskStatistics
 from statistic.services import update_task_statistics
-from taskBank.ege_scoring import SubjectChoices
-from taskBank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
+from task_bank.ege_scoring import SubjectChoices
+from task_bank.models import ExamSession, Task, TaskCorrectAnswer, TaskSet, TaskSetItem, TaskSetType
 
 
 class StatisticServiceTests(TestCase):
@@ -36,7 +36,11 @@ class StatisticServiceTests(TestCase):
             first_time=True,
         )
 
-        stats = TaskStatistics.objects.get(user=self.user, subject=self.task.subject, order_KIM=self.task.order_KIM)
+        stats = TaskStatistics.objects.get(
+            user=self.user,
+            subject=self.task.subject,
+            order_KIM=self.task.order_KIM
+        )
         self.assertEqual(stats.attempts_count, 1)
         self.assertEqual(stats.correct_count, 1)
         self.assertEqual(stats.correct_first_try, 1)
@@ -59,7 +63,11 @@ class StatisticServiceTests(TestCase):
             first_time=False,
         )
 
-        stats = TaskStatistics.objects.get(user=self.user, subject=self.task.subject, order_KIM=self.task.order_KIM)
+        stats = TaskStatistics.objects.get(
+            user=self.user,
+            subject=self.task.subject,
+            order_KIM=self.task.order_KIM
+        )
         self.assertEqual(stats.attempts_count, 2)
         self.assertEqual(stats.correct_count, 0)
         self.assertEqual(stats.correct_first_try, 0)
@@ -121,7 +129,11 @@ class StatisticApiTests(TestCase):
         self.assertEqual(response.data[0]["order_KIM"], 1)
 
     def test_submit_requires_answer(self):
-        response = self.client.post(f"/api/statistic/task-progress/{self.task.id}/submit/", {}, format="json")
+        response = self.client.post(
+            f"/api/statistic/task-progress/{self.task.id}/submit/",
+            {},
+            format="json"
+        )
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.data["error"], "Answer required")
@@ -226,7 +238,11 @@ class StatisticApiTests(TestCase):
             format="json",
         )
 
-        stats = TaskStatistics.objects.get(user=self.user, subject=self.task.subject, order_KIM=self.task.order_KIM)
+        stats = TaskStatistics.objects.get(
+            user=self.user,
+            subject=self.task.subject,
+            order_KIM=self.task.order_KIM
+        )
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.data["correct"])
         self.assertEqual(response.data["reward"], 0)
@@ -242,7 +258,11 @@ class StatisticApiTests(TestCase):
         )
 
         self.user.wallet.refresh_from_db()
-        stats = TaskStatistics.objects.get(user=self.user, subject=self.task.subject, order_KIM=self.task.order_KIM)
+        stats = TaskStatistics.objects.get(
+            user=self.user,
+            subject=self.task.subject,
+            order_KIM=self.task.order_KIM
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["correct"])
         self.assertTrue(response.data["first_time"])
@@ -263,7 +283,11 @@ class StatisticApiTests(TestCase):
         )
 
         self.user.wallet.refresh_from_db()
-        stats = TaskStatistics.objects.get(user=self.user, subject=self.task.subject, order_KIM=self.task.order_KIM)
+        stats = TaskStatistics.objects.get(
+            user=self.user,
+            subject=self.task.subject,
+            order_KIM=self.task.order_KIM
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.data["correct"])
         self.assertFalse(response.data["first_time"])
@@ -287,4 +311,3 @@ class StatisticApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data["tasks"]), 1)
         self.assertEqual(response.data["tasks"][0]["accuracy_percent"], 60)
-

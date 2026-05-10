@@ -1,6 +1,5 @@
-from django.db import transaction as db_transaction
-from django.utils import timezone
 from typing import Optional, Dict, Any
+from django.db import transaction as db_transaction
 from .models import UserWallet, WalletTransaction
 from .choices import TransactionReason
 
@@ -36,7 +35,13 @@ class WalletService:
     }
 
     @classmethod
-    def change_balance(cls, user, amount: int, reason: str, description: str = "") -> Optional[Dict[str, Any]]:
+    def change_balance(
+            cls,
+            user,
+            amount: int,
+            reason: str,
+            description: str = ""
+    ) -> Optional[Dict[str, Any]]:
         """
         Изменяет баланс пользователя и создает запись о транзакции.
 
@@ -80,7 +85,12 @@ class WalletService:
         }
 
     @classmethod
-    def add_task_reward(cls, user, task_difficulty: str, task_title: str = "") -> Optional[Dict[str, Any]]:
+    def add_task_reward(
+        cls,
+        user,
+        task_difficulty: str,
+        task_title: str = "",
+    ) -> Optional[Dict[str, Any]]:
         """
         Начисляет награду за выполнение задачи.
 
@@ -96,7 +106,10 @@ class WalletService:
             raise ValueError(f"Неизвестная сложность задачи: {task_difficulty}")
 
         amount = cls.TASK_REWARDS[task_difficulty]
-        description = f"Задача: {task_title}" if task_title else f"Задача сложности {task_difficulty}"
+        if task_title:
+            description = f"Задача: {task_title}"
+        else:
+            description = f"Задача сложности {task_difficulty}"
 
         return cls.change_balance(
             user=user,
@@ -106,8 +119,12 @@ class WalletService:
         )
 
     @classmethod
-    def add_achievement_reward(cls, user, achievement_code: str, achievement_name: str = "") -> Optional[
-        Dict[str, Any]]:
+    def add_achievement_reward(
+        cls,
+        user,
+        achievement_code: str,
+        achievement_name: str = ""
+    ) -> Optional[Dict[str, Any]]:
         """
         Начисляет награду за получение ачивки.
 
@@ -124,7 +141,10 @@ class WalletService:
         else:
             amount = cls.ACHIEVEMENT_REWARDS[achievement_code]
 
-        description = f"Ачивка: {achievement_name}" if achievement_name else f"Ачивка {achievement_code}"
+        if achievement_name:
+            description = f"Ачивка: {achievement_name}"
+        else:
+            description = f"Ачивка {achievement_code}"
 
         return cls.change_balance(
             user=user,

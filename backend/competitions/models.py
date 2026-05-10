@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from taskBank.models import TaskSet
+from task_bank.models import TaskSet
 
 
 class Match(models.Model):
@@ -42,3 +42,5 @@ class Match(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
+    host_finished = models.BooleanField(default=False)
+    opponent_finished = models.BooleanField(default=False)

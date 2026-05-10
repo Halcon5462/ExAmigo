@@ -5,7 +5,6 @@ from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .choices import TransactionReason
-from products.models import Product
 
 User = get_user_model()
 
