@@ -1,17 +1,29 @@
-Приложение account
-==================
+Account
+=======
 
-Модели
-------
+Модуль управления учетными записями пользователей и авторизацией.
+
 .. automodule:: account.models
    :members:
+   :undoc-members:
+   :show-inheritance:
 
-Вьюхи
------
-.. automodule:: account.views
-   :members:
-
-Сериализаторы
--------------
 .. automodule:: account.serializers
    :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: account.views
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: account.urls
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: account.admin
+   :members:
+   :undoc-members:
+   :show-inheritance:
