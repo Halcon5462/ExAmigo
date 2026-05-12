@@ -54,4 +54,19 @@
 - Страницы в src/pages
 - Компоненты для страниц в src/components
 - Маршрутизация происходит в src/App.jsx
+
+## Документация
+
+Документация по backend-проекту находится в папке `docs`.
+
+Сборка HTML:
+
+- `cd docs`
+- `make html` (или `sphinx-build -b html . _build/html`)
+
+Готовый сайт будет доступен в `docs/_build/html/index.html`.
+
+Документация автоматически собирается и деплоится на GitHub Pages при пуше в основную ветку через GitHub Actions.
+
+В `backend/requirements.txt` уже указаны зависимости Sphinx.
 - 
