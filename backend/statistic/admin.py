@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TaskAttempt, TaskProgress
+from .models import TaskAttempt, TaskProgress, TaskStatistics
 
 
 @admin.register(TaskAttempt)
@@ -48,3 +48,27 @@ class TaskProgressAdmin(admin.ModelAdmin):
         "task",
     )
     ordering = ("-first_solved_at",)
+
+
+@admin.register(TaskStatistics)
+class TaskStatisticsAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "subject",
+        "order_KIM",
+        "attempts_count",
+        "correct_first_try",
+        "correct_count",
+        "last_attempt_at",
+    )
+    list_filter = (
+        "subject",
+        "last_attempt_at",
+    )
+    search_fields = (
+        "user__email",
+    )
+    ordering = ("-last_attempt_at",)
+    autocomplete_fields = (
+        "user",
+    )
