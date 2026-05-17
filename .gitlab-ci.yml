@@ -5,9 +5,9 @@ variables:
 
 stages:
   - style
+  - documentation
   - test
   - build
-  - documentation
   - migrate
 
 cache:
@@ -60,6 +60,7 @@ sphinx:
   script:
     - cd docs
     - sphinx-build -b html source build/html -W
+    - cd ../
   artifacts:
     paths:
       - docs/build/html
