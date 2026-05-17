@@ -1,9 +1,9 @@
 import requests
+import os
 from rest_framework.response import Response
 
 DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
-DEEPSEEK_API_KEY = 'sk-06332664920b4d1f957d9cb75d2a2169'
-
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
 def generate_hint(prompt):
     try:
