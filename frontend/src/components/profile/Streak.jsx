@@ -54,11 +54,21 @@ const Streak = () => {
   if (streak.loading) return null;
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-      <span style={{ fontSize: '18px', color: isActiveToday() ? '#ff9500' : '#888' }}>🔥</span>
-      <span style={{ fontSize: '14px', fontWeight: 'bold' }}>{streak.current}</span>
-    </div>
-  );
+  <div className="streak">
+    <span
+      className="streak_fire"
+      style={{
+        color: isActiveToday() ? '#ff9500' : '#999'
+      }}
+    >
+      🔥
+    </span>
+
+    <span className="streak_count">
+      {streak.current}
+    </span>
+  </div>
+);
 };
 
 export default Streak;
