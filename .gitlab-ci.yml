@@ -7,7 +7,7 @@ stages:
   - style
   - test
   - build
-  # - documentation
+  - documentation
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -55,11 +55,20 @@ frontend-build:
   script:
     - npm run build
 
-# sphinx:
-#   stage: documentation
-#   before_script:
-#     - apt-get update && apt-get install -y make
-#     - pip install -r backend/requirements.txt
-#   script:
-#     - cd docs
-#     - make html
+sphinx:
+  stage: documentation
+  extends: .backend_setup
+
+  before_script:
+    - apt-get update && apt-get install -y make
+    - export PYTHONPATH=$CI_PROJECT_DIR/backend
+    - export DJANGO_SETTINGS_MODULE=backend.settings
+    - cd docs
+
+  script:
+    - sphinx-build -b html source build/html -W
+
+  artifacts:
+    paths:
+      - docs/build/html
+    expire_in: 1 week

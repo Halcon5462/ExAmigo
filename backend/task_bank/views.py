@@ -156,11 +156,14 @@ class TaskSetViewSet(ModelViewSet):  # pylint: disable=too-many-ancestors
         Генерация комплекта заданий на основе статистики пользователя.
 
         Ожидаемый формат body:
-        {
-            "subject": "MATH",
-            "mode": "full" | "custom",
-            "task_numbers": [1, 2, 3]   # для режима custom
-        }
+
+        .. code-block:: json
+
+            {
+                "subject": "MATH",
+                "mode": "full | custom",
+                "task_numbers": [1, 2, 3]
+            }
         """
         user = request.user
         subject = request.data.get("subject")
@@ -204,9 +207,8 @@ class TaskSetViewSet(ModelViewSet):  # pylint: disable=too-many-ancestors
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        name = request.data.get("name") or f"Адаптивный вариант {subject} от {
-            timezone.now().strftime('%d.%m.%Y %H:%M')
-        }"
+        timestamp = timezone.now().strftime("%d.%m.%Y %H:%M")
+        name = request.data.get("name") or f"Адаптивный вариант {subject} от {timestamp}"
 
         task_set = TaskSet.objects.create(
             name=name,
