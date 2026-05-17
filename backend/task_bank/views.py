@@ -97,19 +97,6 @@ class TaskSetViewSet(ModelViewSet):  # pylint: disable=too-many-ancestors
 
     @action(detail=False, methods=["post"], url_path="generate")
     def generate(self, request):
-        """
-        Генерация комплекта заданий на основе статистики пользователя.
-
-        Ожидаемый формат body:
-
-        .. code-block:: json
-
-            {
-                "subject": "MATH",
-                "mode": "full | custom",
-                "task_numbers": [1, 2, 3]
-            }
-        """
         user = request.user
         subject = request.data.get("subject")
         mode = request.data.get("mode", "full")
