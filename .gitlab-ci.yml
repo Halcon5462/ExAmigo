@@ -4,8 +4,8 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
 
 stages:
-  - style
   - documentation
+  - style
   - test
   - build
   - migrate
