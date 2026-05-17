@@ -66,7 +66,7 @@ const TaskBankFilters = ({ options, filters, onFilterChange }) => {
 
             <label className="task-bank-filters__field">
                 <span className="task-bank-filters__label text_mini">Номер</span>
-                <select name="orderKIM" value={filters.orderKIM || ''} onChange={handleChange} className="task-bank-filters__select">
+                <select name="order_KIM" value={filters.order_KIM || ''} onChange={handleChange} className="task-bank-filters__select">
                     <option value="">Все номера</option>
                     {normalizedOrders.map((order) => (
                         <option key={order} value={String(order)}>{order}</option>
