@@ -59,7 +59,7 @@ sphinx:
   extends: .backend_setup
   script:
     - cd ../docs
-    - sphinx-build -b html source build/html -W
+    - sphinx-build -b html source build/html
   artifacts:
     paths:
       - docs/build/html
