@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import api from '../../utils/api';
+import { getSubjectLabel } from '../../utils/subjectOptions';
 import '../../static/css/statistics.css';
 
 const StatisticMainPage = () => {
@@ -54,7 +55,7 @@ const StatisticMainPage = () => {
                             className="statisticsPage_subjectButton btn_text"
                             onClick={() => navigate(`/statistics/${subject}`)}
                         >
-                            {subject}
+                            {getSubjectLabel(subject)}
                         </button>
                     ))}
                 </div>

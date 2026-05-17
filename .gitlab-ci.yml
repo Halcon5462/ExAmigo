@@ -4,11 +4,11 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.pip-cache"
 
 stages:
+  - documentation
   - style
   - test
   - build
   - migrate
-  # - documentation
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -54,17 +54,19 @@ frontend-build:
   script:
     - npm run build
 
+sphinx:
+  stage: documentation
+  extends: .backend_setup
+  script:
+    - cd ../docs
+    - sphinx-build -b html source build/html
+  artifacts:
+    paths:
+      - docs/build/html
+
 migrate:
   stage: migrate
   extends: .backend_setup
   script:
     - python manage.py migrate
 
-# sphinx:
-#   stage: documentation
-#   before_script:
-#     - apt-get update && apt-get install -y make
-#     - pip install -r backend/requirements.txt
-#   script:
-#     - cd docs
-#     - make html
