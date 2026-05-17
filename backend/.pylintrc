@@ -8,7 +8,8 @@ ignore=
     .venv,
     node_modules,
     static,
-    media
+    media,
+    rename_tables.py,
 
 ignore-patterns=
     .*_pb2.py,
