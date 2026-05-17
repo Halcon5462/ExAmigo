@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import CreateTaskSetFilters from '../../components/Filter/CreateTaskSetFilters';
 import { SUBJECT_OPTIONS } from '../../utils/subjectOptions';
@@ -14,6 +15,8 @@ const TaskSetCreator = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (setType !== 'training') return;
@@ -71,9 +74,22 @@ const TaskSetCreator = () => {
     });
   };
 
+  const startExam = async (setId) => {
+    try {
+      const resp = await api.post(`/taskBank/tasksets/${setId}/start-exam/`);
+      const examId = resp.data?.exam_id;
+      navigate(`/tasksets/play/${setId}?exam=${examId}`);
+      } catch (e) {
+      console.error(e);
+      alert('Не удалось начать экзамен');
+      }
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let resp
       if (setType === 'exam') {
         if (!subject) {
           alert('Выберите предмет');
@@ -84,8 +100,9 @@ const TaskSetCreator = () => {
           subject,
           is_public: isPublic,
         };
-        await api.post('/taskBank/tasksets/generate-exam/', payload);
+        resp = await api.post('/taskBank/tasksets/generate-exam/', payload);
         alert('Экзамен создан');
+        startExam(resp.data.id)
       } else {
         const items = Object.entries(selected).map(([taskId, order]) => ({ task: Number(taskId), order }));
         const payload = {
@@ -95,8 +112,12 @@ const TaskSetCreator = () => {
           is_public: isPublic,
           items,
         };
-        await api.post('/taskBank/tasksets/', payload);
+        resp = await api.post('/taskBank/tasksets/', payload);
         alert('Комплект создан');
+        const created = resp.data;
+        if (created?.id) {
+            navigate(`/tasksets/play/${created.id}`);
+        }
       }
       setName('');
       setSetType('training');
@@ -188,6 +209,11 @@ const TaskSetCreator = () => {
               ))}
             </select>
           </label>
+          <div className="taskset-creator-form__actions">
+            <button type="submit" className="taskset-creator-form__submit btn_text">
+              {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
+            </button>
+          </div>
         </div>
 
         {setType === 'training' && (
@@ -215,12 +241,6 @@ const TaskSetCreator = () => {
                 Показано заданий по предмету: {filteredTasks.length}
               </p>
             )}
-
-            <div className="taskset-creator-form__actions">
-              <button type="submit" className="taskset-creator-form__submit btn_text">
-                {setType === 'exam' ? 'Сгенерировать экзамен' : 'Создать комплект'}
-              </button>
-            </div>
 
             {filteredTasks.length === 0 ? (
               <div className="taskset-creator-form__empty description_text">

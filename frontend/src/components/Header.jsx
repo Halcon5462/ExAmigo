@@ -7,20 +7,48 @@ const Header = () => {
         <header>
             <div className="logo">
                 <img src="/images/logo.svg" alt="Exam Service logo" />
-                <h2>Exam Service</h2>
+                <h2>ExAmigo</h2>
             </div>
-            <nav>
-                <a href="/">Главная</a>
-                <a href="/tasks">Банк заданий</a>
-                <a href="/tasks/create">Создать задание</a>
-                <a href="/shop">Магазин</a>
-                <a href="/profile">Профиль</a>
-                <a href="/tasksets">Список комплектов</a>
-                <a href="/tasksets/create">Создать комплект</a>
-                <a href="/tasksets/auto">Адаптивный вариант</a>
-                <a href="/match">Соревнования</a>
+
+            <nav className="nav">
+
+                <a href="/" className="nav_link">
+                    Главная
+                </a>
+
+                <div className="dropdown">
+                    <button className="dropdown_btn">
+                        Обучение
+                    </button>
+
+                    <div className="dropdown_content">
+                        <a href="/tasks">Банк заданий</a>
+                        <a href="/tasksets">Комплекты</a>
+                        <a href="/tasksets/auto">Адаптивный вариант</a>
+                        <a href="/tasksets/create">Создать комплект</a>
+                    </div>
+                </div>
+
+                <a href="/match" className="nav_link">
+                    Соревнования
+                </a>
+
+                <div className="dropdown">
+                    <button className="dropdown_btn">
+                        Аккаунт
+                    </button>
+
+                    <div className="dropdown_content">
+                        <a href="/profile">Профиль</a>
+                        <a href="/shop">Магазин</a>
+                    </div>
+                </div>
+
             </nav>
-            <Streak />
+
+            <div className="header_right">
+                <Streak />
+            </div>
         </header>
     );
 };
