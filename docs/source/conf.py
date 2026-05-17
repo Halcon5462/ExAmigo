@@ -1,16 +1,19 @@
-import os
 import sys
-
-import django
 
 BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "../../backend")
 )
 sys.path.insert(0, BASE_DIR)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+try:
+    import django
+    import os
 
-django.setup()
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+    django.setup()
+except Exception:
+    pass
+
 
 project = "ExAmigo"
 author = "Republicans"
