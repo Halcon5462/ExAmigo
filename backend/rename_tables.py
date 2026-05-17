@@ -1,20 +1,17 @@
 from django.db import connection
 
 RENAME_TABLES = {
-"taskBank_task": "task_bank_task",
-"taskBank_topic": "task_bank_topic",
-"taskBank_variant": "task_bank_variant",
-"taskBank_taskset": "task_bank_taskset",
-"taskBank_tasksetitem": "task_bank_tasksetitem",
-"taskBank_taskcorrectanswer": "task_bank_taskcorrectanswer",
-"taskBank_examsession": "task_bank_examsession",
-
-"helpAi_taskhint": "help_ai_taskhint",
+    "taskBank_task": "task_bank_task",
+    "taskBank_topic": "task_bank_topic",
+    "taskBank_variant": "task_bank_variant",
+    "taskBank_taskset": "task_bank_taskset",
+    "taskBank_tasksetitem": "task_bank_tasksetitem",
+    "taskBank_taskcorrectanswer": "task_bank_taskcorrectanswer",
+    "taskBank_examsession": "task_bank_examsession",
+    "helpAi_taskhint": "help_ai_taskhint",
 }
 
 with connection.cursor() as cursor:
-
-
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table';"
     )
@@ -49,6 +46,5 @@ with connection.cursor() as cursor:
         cursor.execute(sql)
 
         print(f"[OK] {old_name} -> {new_name}")
-
 
     print("\nDONE")
