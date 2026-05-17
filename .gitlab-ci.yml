@@ -58,9 +58,8 @@ sphinx:
   stage: documentation
   extends: .backend_setup
   script:
-    - cd docs
+    - cd ../docs
     - sphinx-build -b html source build/html -W
-    - cd ../
   artifacts:
     paths:
       - docs/build/html
