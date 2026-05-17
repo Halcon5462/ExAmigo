@@ -132,6 +132,21 @@ SQLite / PostgreSQL
 
 Логи сохраняются в backend/logs/
 
+## Документация
+
+Документация по backend-проекту находится в папке `docs`.
+
+Сборка HTML:
+
+- `cd docs`
+- `make html` (или `sphinx-build -b html . _build/html`)
+
+Готовый сайт будет доступен в `docs/_build/html/index.html`.
+
+Документация автоматически собирается и деплоится на GitHub Pages при пуше в основную ветку через GitHub Actions.
+
+В `backend/requirements.txt` уже указаны зависимости Sphinx.
+
 
 ## Философия и ключевые фишки проекта
 
@@ -219,3 +234,4 @@ SQLite / PostgreSQL
 Найдите вписанный угол. Ответ дайте в градусах.
 
 **Ответ:** `32`
+>>>>>>> README.md

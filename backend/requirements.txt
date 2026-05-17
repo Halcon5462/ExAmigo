@@ -4,6 +4,8 @@ djangorestframework-simplejwt==5.5.1
 django-cors-headers==4.9.0
 Pillow
 sphinx
+sphinx-rtd-theme      
+myst_parser
 channels
 daphne
 pycodestyle
