@@ -4,3 +4,5 @@ export const SUBJECT_OPTIONS = [
   { value: 'physics', label: 'Физика' },
   { value: 'informatic', label: 'Информатика' },
 ];
+
+export const getSubjectLabel = (subject) => SUBJECT_OPTIONS.find((option) => option.value === subject)?.label || subject;
