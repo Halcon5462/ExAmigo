@@ -1,14 +1,20 @@
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 
 SECRET_KEY = 'django-insecure-06#!@fkg#*&@_ubc_pe#m)!p(q*y#-m7)iqi2-^urydh(c!2mu'
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "188.127.251.235",
+    "localhost",
+    "127.0.0.1",
+]
 
 INSTALLED_APPS = [
     "daphne",
