@@ -1,0 +1,35 @@
+1. Strategy; achievements/services/strategies.py и achievements/services/achievement_service.py; разные алгоритмы обработки достижений вынесены в отдельные классы стратегий и выбираются по типу события во время выполнения.
+
+2. Factory Method; achievements/services/factory.py; создание и выбор подходящей стратегии достижения инкапсулированы в отдельной фабрике по типу события.
+
+3. Facade; achievements/services/achievement_service.py; единый метод handle_event скрывает сложную логику проверки достижений, обновления прогресса и выдачи наград.
+
+4. State; competitions/models.py и competitions/consumers.py; матч имеет состояния waiting, started, finished, а логика работы комнаты зависит от текущего состояния матча.
+
+5. Command; competitions/consumers.py - receive(); входящие websocket-команды join, answer, finish маршрутизируются в отдельные методы-обработчики handle_*.
+
+6. Mediator; competitions/consumers.py; взаимодействие игроков в матче происходит не напрямую, а через MatchConsumer, который координирует обмен событиями между участниками.
+
+7. Facade; help_ai/services.py - generate_hint(); единый метод скрывает детали взаимодействия с внешним AI API: HTTP-запрос, авторизацию, обработку ошибок и разбор ответа.
+
+8. Proxy; help_ai/views.py - HintView.post(); перед обращением к внешнему AI сервису выполняется проверка локального кеша подсказок, что снижает количество внешних запросов.
+
+9. Facade; products/services.py - ProductService.purchase_product(); единый метод скрывает сложную логику покупки товара: проверку доступности, списание средств, фиксацию покупки и обновление остатков.
+
+10. Factory Method; products/views.py - ProductViewSet.get_serializer_class(); выбор и создание подходящего сериализатора выполняется в зависимости от действия пользователя.
+
+11. Proxy; products/services.py - equip_product(); доступ к экипировке товара осуществляется только через объект покупки UserProduct, подтверждающий владение товаром.
+
+12. Facade; shop/services.py - WalletService; единый сервис скрывает работу с кошельком пользователя, транзакциями, начислениями наград и проверкой баланса.
+
+13. Observer; shop/models.py - сигнал post_save для User; после создания пользователя автоматически вызывается обработчик создания кошелька.
+
+14. DTO (Data Transfer Object); statistic/serializers.py - TaskStatisticsSerializer; сериализатор преобразует модель TaskStatistics в формат API-ответа и добавляет вычисляемое поле accuracy_percent без изменения бизнес-логики модели.
+
+15. Service Layer; statistic/services.py - update_task_statistics(); бизнес-логика обновления статистики вынесена из представлений в отдельный сервис, который инкапсулирует получение/создание и обновление агрегированных данных по попыткам пользователя.
+
+16. Observer; streak/signals.py - create_user_streak(); использование post_save сигнала на модель User обеспечивает автоматическое создание UserStreak при регистрации пользователя, реализуя реакцию на событие изменения состояния системы.
+
+17. Active Record; task_bank/models.py - Task, TaskSet, ExamSession, TaskSetItem; модели используют Django ORM для хранения и изменения данных, а также содержат вычисляемые свойства (primary_score, total_primary_score), совмещая данные и поведение объекта.
+
+18. Service Layer; task_bank/services.py - TaskSetGenerator, exam_time_left, finish_exam_session, pick_task, get_target_difficulty; бизнес-логика генерации заданий, выбора задач, управления экзаменом и расчёта сложности вынесена в отдельный слой сервисов, не зависящий от HTTP-уровня.

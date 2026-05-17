@@ -9,6 +9,7 @@ myst_parser
 channels
 daphne
 pycodestyle
-pylint
-pylint-django
+pylint==3.3.1
+astroid==3.3.8
+pylint-django==2.6.1
 coverage
