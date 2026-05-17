@@ -5,6 +5,7 @@ from rest_framework.response import Response
 DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
+
 def generate_hint(prompt):
     try:
         response = requests.post(
