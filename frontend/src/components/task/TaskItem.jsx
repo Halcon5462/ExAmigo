@@ -7,6 +7,7 @@ import AskSection from "./AskSection";
 
 import { BlockMath } from 'react-katex'
 import 'katex/dist/katex.min.css';
+import '../../static/css/filter.css';
 
 const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, initialAnswer, initialCorrect, prices }) => {
   const [userAnswer, setUserAnswer] = useState(initialAnswer || "");
@@ -16,6 +17,8 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
   const [reward, setReward] = useState(0);
   const [firstTime, setFirstTime] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const [activeImage, setActiveImage] = useState(null);
 
   const checkAnswer = async () => {
     if (locked || disabledByTime) return;
@@ -47,6 +50,14 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         setReward(0);
         setFirstTime(null);
     }
+  };
+
+  const openImage = (src) => {
+    setActiveImage(src);
+  };
+
+  const closeImage = () => {
+      setActiveImage(null);
   };
 
   const downloadFile = async (url) => {
@@ -82,17 +93,27 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       <p className="task-type text_mini">Тип: {task.type}</p>
       {task.image && (
         <div className="image-container">
-          <img src={task.image} alt='Ошибка загрузки картинки'/>
+          <img
+            src={task.image}
+            alt='Ошибка загрузки картинки'
+            className='task-image'
+            onClick={() => openImage(task.image)}
+          />
         </div>
+      )}
+      {activeImage && (
+          <div className="image-lightbox" onClick={closeImage}>
+              <img src={activeImage} className="image-lightbox__img" />
+          </div>
       )}
       <div className="task-description description_text">
           <p style={{ whiteSpace: "pre-line" }}>{task.description}</p>
           {task.formula && (
-            <BlockMath math={task.formula} />
+            <BlockMath math={task.formula} className='katex-display'/>
           )}
       </div>
       {task.file && (
-        <button onClick={() => downloadFile(task.file)}>
+        <button onClick={() => downloadFile(task.file)} className='btn_green'>
           Скачать файл
         </button>
       )}
