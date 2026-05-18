@@ -84,7 +84,7 @@ const TaskSetList = () => {
 
     return (
         <div className="taskset-list">
-            <h1 className="taskset-list_title text">Список комплектов заданий</h1>
+            <h1 className="taskset-list_title text smoke">Список комплектов заданий</h1>
 
             <div className="taskset-filters">
                 <select name="testType" value={filters.testType} onChange={handleFilterChange}>
