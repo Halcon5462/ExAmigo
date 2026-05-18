@@ -13,6 +13,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 ALLOWED_HOSTS = [
     "188.127.251.235",
     "examigo.pro",
+    'localhost',
 ]
 
 INSTALLED_APPS = [

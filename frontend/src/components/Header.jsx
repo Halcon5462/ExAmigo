@@ -1,10 +1,17 @@
+import { useState } from 'react';
+
 import '../static/css/header.css';
 import '../static/css/style.css';
+
 import Streak from './profile/Streak';
 
 const Header = () => {
+
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     return (
         <header>
+
             <div className="logo">
                 <img src="/images/logo.svg" alt="Exam Service logo" />
                 <h2>ExAmigo</h2>
@@ -47,8 +54,33 @@ const Header = () => {
             </nav>
 
             <div className="header_right">
+
+                <div className="mobile_menu">
+
+                    <button
+                        className="mobile_menu_btn"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        ☰
+                    </button>
+
+                    <div className={`mobile_menu_content ${mobileMenuOpen ? 'active' : ''}`}>
+                        <a href="/">Главная</a>
+                        <a href="/tasks">Банк заданий</a>
+                        <a href="/tasksets">Комплекты</a>
+                        <a href="/tasksets/auto">Адаптивный вариант</a>
+                        <a href="/tasksets/create">Создать комплект</a>
+                        <a href="/match">Соревнования</a>
+                        <a href="/profile">Профиль</a>
+                        <a href="/shop">Магазин</a>
+                    </div>
+
+                </div>
+
                 <Streak />
+
             </div>
+
         </header>
     );
 };
