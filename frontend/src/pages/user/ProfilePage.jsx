@@ -134,7 +134,7 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
 
 return (
     <div className="profilePage">
-        <h1 className="profilePage_title text">Профиль пользователя</h1>
+        <h1 className="profilePage_title text smoke">Профиль пользователя</h1>
 
         <div className="profilePage_avatarBlock">
             <UserInfo
@@ -150,6 +150,8 @@ return (
 
         <UserBalance />
 
+        <StatsBlock stats={stats} />
+
         <AchievementsBlock achievements={achievements} toAbsoluteMediaUrl={toAbsoluteMediaUrl} />
 
         <InventoryBlock
@@ -161,10 +163,9 @@ return (
             onSelectBackground={handleSelectBackground}
          />
 
-         <StatsBlock stats={stats} />
-
      </div>
  );
 };
 
 export default ProfilePage;
+

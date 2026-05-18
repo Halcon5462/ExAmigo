@@ -37,7 +37,7 @@ const StatisticMainPage = () => {
 
     return (
         <div className="statisticsPage">
-            <div className="statisticsPage_header">
+            <div className="statisticsPage_header smoke">
                 <h1 className="statisticsPage_title text">Выбери предмет</h1>
                 <p className="statisticsPage_subtitle description_text">
                     Доступны только предметы, по которым у тебя уже есть статистика решений.

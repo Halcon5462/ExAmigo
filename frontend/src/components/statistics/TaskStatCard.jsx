@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { X, Check } from "lucide-react";
 
 const TaskStatCard = ({ item }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,10 @@ const TaskStatCard = ({ item }) => {
             >
                 <div className="taskStatCard_title text">Задание №{item.order_KIM}</div>
                 <div className="taskStatCard_summary description_text">
-                    ❌ {wrongAnswers} | ✅ {item.correct_count} | {getAccuracy()}%
+                    <span className="wrong">{wrongAnswers}</span>
+                    <span> / </span>
+                    <span className="correct">{item.correct_count}</span>
+                    <span> / {getAccuracy()}%</span>
                 </div>
             </button>
 
@@ -43,3 +47,4 @@ const TaskStatCard = ({ item }) => {
 };
 
 export default TaskStatCard;
+
