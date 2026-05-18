@@ -144,5 +144,3 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
 };
 
 export default TaskItem;
-
-export default TaskItem;
