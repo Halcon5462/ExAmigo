@@ -26,7 +26,7 @@ export default function TestMatchPage() {
     if (socketRef.current) socketRef.current.close();
 
     const token = localStorage.getItem("access");
-    const socket = new WebSocket(`ws://localhost:8000/ws/match/${id}/?token=${token}`);
+    const socket = new WebSocket(`ws://${window.location.hostname}:8000/ws/match/${id}/?token=${token}`);
 
     socket.onopen = () => addMessage("Подключение установлено для матча " + id);
     socket.onmessage = (event) => {
