@@ -29,16 +29,6 @@ const InventoryBlock = ({
                   selecting={selectingId === product.id}
                   selected={selectedFrameId === product.id}
               />
-              // <div key={item.id} className="profilePage_item">
-              //   <img src={item.icon} alt={item.name} />
-              //   <button
-              //     onClick={() => onSelectFrame(item)}
-              //     disabled={selectingId === item.id}
-              //     className={`btn_text ${selectedFrameId === item.id ? 'active' : ''}`}
-              //   >
-              //     {selectedFrameId === item.id ? 'Выбрано' : 'Выбрать'}
-              //   </button>
-              // </div>
             ))}
           </div>
         </>
@@ -56,16 +46,6 @@ const InventoryBlock = ({
                   selecting={selectingId === product.id}
                   selected={selectedBackgroundId === product.id}
               />
-              // <div key={item.id} className="profilePage_item">
-              //   <img src={item.icon} alt={item.name} />
-              //   <button
-              //     onClick={() => onSelectBackground(item)}
-              //     disabled={selectingId === item.id}
-              //     className={`btn_text ${selectedBackgroundId === item.id ? 'active' : ''}`}
-              //   >
-              //     {selectedBackgroundId === item.id ? 'Выбрано' : 'Выбрать'}
-              //   </button>
-              // </div>
             ))}
           </div>
         </>
