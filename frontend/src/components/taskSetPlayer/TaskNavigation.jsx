@@ -3,6 +3,9 @@ import { ArrowRightCircle, ArrowLeftCircle } from "lucide-react";
 const TaskNavigation = ({ taskIndex, tasksLength, goTo, finishExam }) => {
   return (
     <div className="set-nav">
+      <button className="btn_green" onClick={finishExam}>
+        Завершить
+      </button>
       {taskIndex !== 0 && (
         <ArrowLeftCircle
           className="arrow"
@@ -18,9 +21,8 @@ const TaskNavigation = ({ taskIndex, tasksLength, goTo, finishExam }) => {
           onClick={() => goTo(taskIndex + 1)}
         />
       ) : (
-        <button className="btn_green" onClick={finishExam}>
-          Завершить
-        </button>
+        <>
+        </>
       )}
     </div>
   );

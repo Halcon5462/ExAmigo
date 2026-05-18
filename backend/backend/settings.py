@@ -12,8 +12,8 @@ SECRET_KEY = 'django-insecure-06#!@fkg#*&@_ubc_pe#m)!p(q*y#-m7)iqi2-^urydh(c!2mu
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 ALLOWED_HOSTS = [
     "188.127.251.235",
-    "localhost",
-    "127.0.0.1",
+    "examigo.pro",
+    'localhost',
 ]
 
 INSTALLED_APPS = [

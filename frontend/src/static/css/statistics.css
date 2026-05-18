@@ -129,3 +129,51 @@
         height: 260px;
     }
 }
+
+.taskStatCard_summary .wrong {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.taskStatCard_summary .correct {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.streak {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.streak {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* контейнер иконки */
+.streak_fire {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* иконка */
+.streak_icon {
+    width: 18px;
+    height: 18px;
+    fill: #9a9a9a;
+}
+
+/* активное состояние */
+.streak_fire.active .streak_icon {
+    fill: #ff9500;
+}
+
+/* число */
+.streak_count {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--base-dark);
+}

@@ -172,3 +172,75 @@
         justify-content: stretch;
     }
 }
+
+.task-bank-page {
+    overflow-x: hidden;
+}
+
+.task-bank-filters {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.task-bank-filters__select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .task-bank-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .task-bank-filters {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+.task-bank-page__hero {
+    flex-wrap: wrap;
+}
+
+.katex-display {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.task-image {
+    max-width: 100%;
+    height: auto;
+    cursor: zoom-in;
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.task-image:hover {
+    transform: scale(1.01);
+}
+
+.image-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: zoom-out;
+}
+
+.image-lightbox__img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}

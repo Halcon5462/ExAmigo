@@ -38,7 +38,7 @@ const MatchCreatePage = () => {
         const token = localStorage.getItem("access");
 
         const socket = new WebSocket(
-            `ws://localhost:8000/ws/match/${matchId}/?token=${token}`
+            `ws://${window.location.hostname}:8000/ws/match/${matchId}/?token=${token}`
         );
 
         socket.onopen = () => {
