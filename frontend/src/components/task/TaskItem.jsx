@@ -114,14 +114,24 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
 
       {result == 'correct' && (
           <p style={{color: 'green'}}>
-              ✅ Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
+              Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
               {firstTime == false && "Вы уже проходили эту задачу ранее."}
               Это {task.primary_score} первичных баллов
           </p>
       )}
-      {result == 'wrong' && <p style={{color: 'red'}}>❌ Попробуйте еще раз.</p>}
+      {result === 'wrong' && examSessionId && (
+        <p style={{ color: 'red' }}>
+          Неверно. Переходим к следующему заданию.
+        </p>
+      )}
+
+      {result === 'wrong' && !examSessionId && (
+        <p style={{ color: 'red' }}>
+          Попробуйте еще раз.
+        </p>
+      )}
       {task.already_solved && (
-          <p style={{color: 'orange'}}>⚡ Вы уже проходили эту задачу ранее.</p>
+          <p style={{color: 'orange'}}>Вы уже проходили эту задачу ранее.</p>
       )}
       {!examSessionId && 
       <>
@@ -132,5 +142,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
     </div>
   );
 };
+
+export default TaskItem;
 
 export default TaskItem;
