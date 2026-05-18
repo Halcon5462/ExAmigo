@@ -1,4 +1,4 @@
-/* frontend/src/static/css/profile.css */
+
 
 .profilePage {
     max-width: 1000px;
@@ -403,4 +403,167 @@
 .profilePage_detailStatsBtn:hover {
     background: var(--dark-green);
     transform: translateY(-2px);
+}
+
+
+@media (max-width: 800px) {
+
+    .profilePage {
+        padding: 28px 16px;
+    }
+
+    .profilePage_card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profilePage_userInfo {
+        align-items: center;
+    }
+
+    .profilePage_avatarBlock {
+        justify-content: center;
+    }
+
+    .profilePage .user-balance {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profilePage_sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .profilePage_inventory {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .profilePage_statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .profilePage {
+        padding: 18px 10px;
+    }
+
+    .profilePage_title {
+        font-size: 20px;
+    }
+
+    .profilePage_card {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .profilePage_userInfo {
+        align-items: center;
+    }
+
+    .profilePage_avatarBlock {
+        padding: 16px;
+        justify-content: center;
+    }
+
+    .profilePage .user-balance {
+        padding: 14px 16px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .profilePage_sectionTitle {
+        font-size: 18px;
+    }
+
+    .profilePage_inventory {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .profilePage_statsGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .profilePage_statValue {
+        font-size: 24px;
+    }
+
+    .profilePage_achievementMain {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profilePage_achievementIcon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .profilePage_sectionToggle {
+        width: 100%;
+        text-align: center;
+    }
+
+    .profilePage_logoutBtn {
+        width: 100%;
+    }
+}
+
+
+.profilePage_inventory {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    align-items: stretch;
+}
+
+.profilePage_item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.profilePage_itemName,
+.profilePage_itemAuthor {
+    word-break: break-word;
+}
+
+.profilePage_itemButton,
+.profilePage_itemButtonRemove {
+    margin-top: auto;
+}
+
+
+@media (max-width: 600px) {
+    .profilePage_inventory {
+        grid-template-columns: 1fr;
+    }
+}
+
+.smoke {
+    position: relative;
+    z-index: 1;
+}
+
+.smoke::before {
+    content: "";
+    position: absolute;
+    inset: -40px -80px;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), transparent 60%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.25), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(255,255,255,0.2), transparent 60%);
+    filter: blur(6px);
+    z-index: -1;
+    pointer-events: none;
 }
