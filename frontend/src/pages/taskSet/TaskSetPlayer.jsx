@@ -213,7 +213,7 @@ const TaskSetPlayer = ({
   const task = tasks[taskIndex];
 
   return (
-    <div className="task-container">
+    <div className="task-container smoke">
       <TaskNavigation
         taskIndex={taskIndex}
         tasksLength={tasks.length}
