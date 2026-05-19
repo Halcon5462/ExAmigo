@@ -39,7 +39,7 @@ EGE_TASK_SCORES = {
         26: 1,
         27: 22,
     },
-    
+
     SubjectChoices.PHYSICS: {
         1: 1, 2: 1, 3: 2, 4: 1,
         5: 2, 6: 1, 7: 1,
@@ -52,7 +52,7 @@ EGE_TASK_SCORES = {
         24: 3,
         25: 3,
         26: 4,
-    }, 
+    },
 
     SubjectChoices.INFORM: {
         1: 1, 2: 1, 3: 1, 4: 1,
