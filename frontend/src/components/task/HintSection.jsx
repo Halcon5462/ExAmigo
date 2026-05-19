@@ -82,7 +82,7 @@ const HintSection = ({ taskId, prices }) => {
                                 className={`task-help__chip ${selectedLevel === level ? 'task-help__chip_active' : ''}`}
                                 onClick={() => handleGetHint(level)}
                             >
-                                <span>Уровень {level}</span>
+                                <span>{1 === level ? 'Намек' : 2 === level ? 'Подсказка' : 'Решение'}</span>
                                 <span className="task-help__chip-meta">{getMeta(level)}</span>
                             </button>
                         ))}
