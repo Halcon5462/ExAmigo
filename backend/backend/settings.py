@@ -14,6 +14,7 @@ ALLOWED_HOSTS = [
     "188.127.251.235",
     "examigo.pro",
     'localhost',
+    '127.0.0.1',
 ]
 
 INSTALLED_APPS = [
