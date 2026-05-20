@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import Header from './components/Header';
+import Header from './components/Header/Header';
 import api from './utils/api';
 
 import AppRoutes from './routes.jsx';
