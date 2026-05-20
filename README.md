@@ -1,8 +1,7 @@
 # Проект: Сервис для подготовки к экзаменам ExAmigo
 
-![Last Commit](https://img.shields.io/gitlab/last-commit/tkachenko/exam_service)
-![Commits](https://img.shields.io/gitlab/commits-since/tkachenko/exam_service/latest/main)
-![Pipeline](https://img.shields.io/gitlab/pipeline-status/tkachenko/exam_service/main)
+![Last Commit](https://img.shields.io/gitlab.informatics.ru/last-commit/2025-2026/kor/s102m/exam_service/)
+![GitLab commits](https://img.shields.io/gitlab.informatics.ru/commits-since/2025-2026/kor/s102m/exam_service/latest/main)
 
 ## Описание проекта
 
