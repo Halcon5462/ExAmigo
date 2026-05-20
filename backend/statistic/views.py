@@ -7,7 +7,7 @@ from task_bank.models import Task
 
 from .models import TaskStatistics
 from .serializers import TaskStatisticsSerializer
-from .services import validate_exam, process_task_submit, update_task_statistics
+from .services import validate_exam, process_task_submit
 
 
 class TaskStatisticsListView(generics.ListAPIView):

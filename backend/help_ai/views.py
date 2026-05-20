@@ -1,15 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db import IntegrityError
 import requests
 
 from task_bank.models import Task
 from shop.services import WalletService
 from shop.choices import TransactionReason
 
-from .models import TaskHint
-from .prompts import build_hint_prompt, build_question_prompt
+from .prompts import build_question_prompt
 from .services import (
     get_task,
     get_cached_hint,

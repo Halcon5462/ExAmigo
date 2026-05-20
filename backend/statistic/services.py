@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from achievements.services.achievement_service import AchievementService
 from shop.services import WalletService
-from task_bank.models import ExamSession, Task
+from task_bank.models import ExamSession
 from task_bank.services import exam_time_left, finish_exam_session
 from streak.services import update_user_streak
 
