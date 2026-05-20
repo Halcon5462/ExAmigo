@@ -12,7 +12,6 @@ import ProfilePage from './pages/user/ProfilePage';
 import Shop from './pages/Shop';
 import TaskBank from './pages/taskBank/TaskBank';
 import TaskList from "./pages/taskBank/TaskList";
-import TaskCreator from './pages/taskBank/TaskCreator';
 import TaskSetAutoGenerator from './pages/taskSet/TaskSetAutoGenerator';
 import TaskSetCreator from './pages/taskSet/TaskSetCreator';
 import TaskSetList from './pages/taskSet/TaskSetList';
@@ -149,7 +148,6 @@ function App() {
                         <Route path="/" element={<HomePage user={user} />} />
                         <Route path="/tasks" element={<TaskBank />} />
                         <Route path="/tasks/results" element={<TaskList />} />
-                        <Route path="/tasks/create" element={<TaskCreator />} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/achievements" element={<AchievementsPage onLogout={handleLogout} />} />
                         <Route path="/tasksets/create" element={<TaskSetCreator />} />
