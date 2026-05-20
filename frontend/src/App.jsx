@@ -1,31 +1,16 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Header from './components/Header';
-import ProtectedRoute from './components/ProtectedRoute';
 import api from './utils/api';
-import AchievementsPage from './pages/user/AchievementsPage';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/user/LoginPage';
-import TestMatchPage from './pages/match/MatchPage';
-import ProfilePage from './pages/user/ProfilePage';
-import Shop from './pages/Shop';
-import TaskBank from './pages/taskBank/TaskBank';
-import TaskList from "./pages/taskBank/TaskList";
-import TaskSetAutoGenerator from './pages/taskSet/TaskSetAutoGenerator';
-import TaskSetCreator from './pages/taskSet/TaskSetCreator';
-import TaskSetList from './pages/taskSet/TaskSetList';
-import TaskSetPlayer from './pages/taskSet/TaskSetPlayer';
-import MatchPlayerPage from "./pages/match/MatchPlayerPage";
-import MatchCreatePage from "./pages/match/MatchCreatePage";
-import StatisticMainPage from './pages/user/StatisticMainPage';
-import SubjectStatisticsPage from './pages/user/SubjectStatisticsPage';
-import TestPage from './pages/TestPage';
+
+import AppRoutes from './routes.jsx';
 
 function App() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [equipped, setEquipped] = useState(null);
+
     const equippedReqInFlight = useRef(false);
     const lastEquippedErrorAt = useRef(0);
 
@@ -86,14 +71,15 @@ function App() {
         try {
             if (equippedReqInFlight.current) return;
             equippedReqInFlight.current = true;
+
             const response = await api.get('/products/equipped/');
             setEquipped(response.data);
 
             const bg = response.data?.background;
             const bgImage =
-                bg?.background?.image_background
-                || bg?.image_background
-                || bg?.image;
+                bg?.background?.image_background ||
+                bg?.image_background ||
+                bg?.image;
 
             applyBackground(toAbsoluteMediaUrl(bgImage) || null);
         } catch (err) {
@@ -136,48 +122,16 @@ function App() {
 
     return (
         <BrowserRouter>
-            <div>
-                <Header />
-                <Routes>
-                    <Route
-                        path="/login"
-                        element={!user ? <LoginPage onLogin={handleLogin} /> : <Navigate to="/" replace />}
-                    />
+            <Header />
 
-                    <Route element={<ProtectedRoute user={user} />}>
-                        <Route path="/" element={<HomePage user={user} />} />
-                        <Route path="/tasks" element={<TaskBank />} />
-                        <Route path="/tasks/results" element={<TaskList />} />
-                        <Route path="/shop" element={<Shop />} />
-                        <Route path="/achievements" element={<AchievementsPage onLogout={handleLogout} />} />
-                        <Route path="/tasksets/create" element={<TaskSetCreator />} />
-                        <Route path="/tasksets" element={<TaskSetList />} />
-                        <Route path="/tasksets/play/:id" element={<TaskSetPlayer />} />
-                        <Route path="/match" element={<MatchCreatePage />} />
-                        <Route path="/match/play/:matchId" element={<MatchPlayerPage />} />
-                        <Route path="/tasksets/auto" element={<TaskSetAutoGenerator />} />
-                        <Route path="/statistics" element={<StatisticMainPage />} />
-                        <Route path="/statistics/:subject" element={<SubjectStatisticsPage />} />
-
-                        <Route path="/test" element={<TestPage />} />
-
-                        <Route
-                            path="/profile"
-                            element={
-                                <ProfilePage
-                                    user={user}
-                                    onLogout={handleLogout}
-                                    onUserUpdate={handleUserUpdate}
-                                    equipped={equipped}
-                                    refreshEquipped={fetchEquipped}
-                                />
-                            }
-                        />
-                    </Route>
-
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </div>
+            <AppRoutes
+                user={user}
+                handleLogin={handleLogin}
+                handleLogout={handleLogout}
+                handleUserUpdate={handleUserUpdate}
+                equipped={equipped}
+                fetchEquipped={fetchEquipped}
+            />
         </BrowserRouter>
     );
 }
