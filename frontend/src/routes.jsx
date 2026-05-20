@@ -24,8 +24,6 @@ import MatchPlayerPage from './pages/match/MatchPlayerPage';
 import StatisticMainPage from './pages/user/StatisticMainPage';
 import SubjectStatisticsPage from './pages/user/SubjectStatisticsPage';
 
-import TestPage from './pages/TestPage';
-
 export default function AppRoutes({
     user,
     handleLogin,
@@ -64,8 +62,6 @@ export default function AppRoutes({
 
                 <Route path="/statistics" element={<StatisticMainPage />} />
                 <Route path="/statistics/:subject" element={<SubjectStatisticsPage />} />
-
-                <Route path="/test" element={<TestPage />} />
 
                 <Route
                     path="/profile"
