@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 from rest_framework.response import Response
 
 DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
