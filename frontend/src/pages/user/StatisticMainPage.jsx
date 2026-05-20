@@ -1,38 +1,27 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { getSubjectLabel } from "../../utils/subjectOptions";
+import "../../static/css/statistics.css";
 
-import api from '../../utils/api';
-import { getSubjectLabel } from '../../utils/subjectOptions';
-import '../../static/css/statistics.css';
+import useStatisticSubjects from "../../utils/statistic/useStatisticSubjects";
 
 const StatisticMainPage = () => {
-    const [subjects, setSubjects] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchSubjects = async () => {
-            try {
-                const response = await api.get('/statistic/subjects/');
-                setSubjects(response.data);
-            } catch (err) {
-                console.error('Failed to load subjects statistics:', err);
-                setError('Не удалось загрузить список предметов.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchSubjects();
-    }, []);
+    const { subjects, loading, error } = useStatisticSubjects();
 
     if (loading) {
-        return <div className="statisticsPage statisticsPage_status">Загрузка...</div>;
+        return (
+            <div className="statisticsPage statisticsPage_status">
+                Загрузка...
+            </div>
+        );
     }
 
     if (error) {
-        return <div className="statisticsPage statisticsPage_status">{error}</div>;
+        return (
+            <div className="statisticsPage statisticsPage_status">
+                {error}
+            </div>
+        );
     }
 
     return (
@@ -45,7 +34,9 @@ const StatisticMainPage = () => {
             </div>
 
             {!subjects.length ? (
-                <div className="statisticsPage_empty description_text">Пока нет данных по предметам.</div>
+                <div className="statisticsPage_empty description_text">
+                    Пока нет данных по предметам.
+                </div>
             ) : (
                 <div className="statisticsPage_subjects">
                     {subjects.map((subject) => (
