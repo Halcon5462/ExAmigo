@@ -1,16 +1,22 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db import IntegrityError
 import requests
 
 from task_bank.models import Task
 from shop.services import WalletService
 from shop.choices import TransactionReason
 
-from .models import TaskHint
-from .prompts import build_hint_prompt, build_question_prompt
-from .services import generate_hint
+from .prompts import build_question_prompt
+from .services import (
+    get_task,
+    get_cached_hint,
+    charge_for_hint,
+    refund_hint,
+    save_hint,
+    generate_hint_for_task,
+    generate_hint,
+)
 from .constants import HINT_PRICES
 
 
@@ -24,63 +30,31 @@ class HintView(APIView):
         if level not in [1, 2, 3]:
             return Response({"error": "Неверный уровень"}, status=400)
 
-        try:
-            task = Task.objects.get(id=task_id)
-        except Task.DoesNotExist:
+        task = get_task(task_id)
+        if not task:
             return Response({"error": "Задание не найдено"}, status=404)
 
-        # КЕШ
-        cached_hint = task.hints.filter(level=level).first()
-        if cached_hint:
-            return Response({
-                "hint": cached_hint.hint,
-                "cached": True
-            })
+        cached = get_cached_hint(task, level)
+        if cached:
+            return Response({"hint": cached.hint, "cached": True})
 
-        price = HINT_PRICES.get(level, 2)
         try:
-            WalletService.change_balance(
-                user=request.user,
-                amount=-price,
-                reason=TransactionReason.PURCHASE,
-                description=f"Подсказка lvl {level} для задачи {task.id}"
-            )
+            price = charge_for_hint(request.user, task.id, level)
         except ValueError:
-            return Response(
-                {"error": "Недостаточно средств"},
-                status=403
-            )
-
-        prompt = build_hint_prompt(task, level)
+            return Response({"error": "Недостаточно средств"}, status=403)
 
         try:
-            hint_text = generate_hint(prompt)
+            hint_text = generate_hint_for_task(task, level)
         except requests.exceptions.RequestException:
-            WalletService.change_balance(
-                user=request.user,
-                amount=price,
-                reason=TransactionReason.ADMIN_ADJUSTMENT,
-                description="Возврат за ошибку генерации подсказки"
-            )
-            return Response(
-                {"error": "Ошибка генерации подсказки"},
-                status=500
-            )
+            refund_hint(request.user, price)
+            return Response({"error": "Ошибка генерации подсказки"}, status=500)
 
-        # сохранение
-        try:
-            TaskHint.objects.create(
-                task=task,
-                level=level,
-                hint=hint_text
-            )
-        except IntegrityError:
-            pass
+        save_hint(task, level, hint_text)
 
         return Response({
             "hint": hint_text,
             "cached": False,
-            "price": price
+            "price": price,
         })
 
 

@@ -1,7 +1,7 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
@@ -94,7 +94,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ========== НАШИ НАСТРОЙКИ ==========
 AUTH_USER_MODEL = 'account.UserAccount'
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -202,4 +201,14 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+        "OPTIONS": {
+            "timeout": 30
+        },
+    }
 }

@@ -145,7 +145,7 @@ class StatisticApiTests(TestCase):
             format="json",
         )
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_submit_rejects_finished_exam_session(self):
         exam = ExamSession.objects.create(
@@ -162,7 +162,7 @@ class StatisticApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Exam session finished")
+        self.assertEqual(response.data["error"], "finished")
 
     def test_submit_finishes_exam_when_time_is_over(self):
         exam = ExamSession.objects.create(
@@ -182,7 +182,7 @@ class StatisticApiTests(TestCase):
         exam.refresh_from_db()
         self.assertEqual(response.status_code, 400)
         self.assertTrue(exam.is_finished)
-        self.assertEqual(response.data["error"], "Exam time is over")
+        self.assertEqual(response.data["error"], "timeout")
 
     def test_submit_rejects_task_outside_exam_set(self):
         other_task = Task.objects.create(
@@ -206,7 +206,7 @@ class StatisticApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Task is not in this exam")
+        self.assertEqual(response.data["error"], "invalid_task")
 
     def test_submit_rejects_second_attempt_in_exam(self):
         exam = ExamSession.objects.create(
@@ -229,7 +229,7 @@ class StatisticApiTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.data["error"], "Only one attempt allowed in exam")
+        self.assertEqual(response.data["error"], "duplicate")
 
     def test_submit_incorrect_answer_creates_attempt_and_updates_stats(self):
         response = self.client.post(
