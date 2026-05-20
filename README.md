@@ -2,6 +2,8 @@
 
 ![Last Commit](https://img.shields.io/gitlab/last-commit/2025-2026%2Fkor%2Fs102m%2Fexam_service?gitlab_url=https://gitlab.informatics.ru)
 
+![Commits Last 4 Weeks](https://img.shields.io/badge/commits%20last%204%20weeks-258-brightgreen)
+
 ## Описание проекта
 
 Платформа для формирования и прохождения комплектов заданий для подготовки к экзаменам.
