@@ -1,7 +1,6 @@
 # Проект: Сервис для подготовки к экзаменам ExAmigo
 
-![Last Commit](https://img.shields.io/gitlab.informatics.ru/last-commit/2025-2026/kor/s102m/exam_service/)
-![GitLab commits](https://img.shields.io/gitlab.informatics.ru/commits-since/2025-2026/kor/s102m/exam_service/latest/main)
+![Last Commit](https://img.shields.io/gitlab/last-commit/2025-2026%2Fkor%2Fs102m%2Fexam_service?gitlab_url=https://gitlab.informatics.ru)
 
 ## Описание проекта
 
