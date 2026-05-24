@@ -92,9 +92,7 @@ def pick_task(user, subject: str, number: int, difficulty: int) -> Task | None:
         Task.objects.filter(
             subject=subject,
             order_KIM=number,
-        )
-        .order_by("?")
-        .first()
+        ).order_by("?").first()
     )
 
 
