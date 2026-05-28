@@ -22,11 +22,18 @@ const ProfilePage = ({ user: initialUser, onLogout, onUserUpdate, equipped, refr
     const navigate = useNavigate();
 
     const toAbsoluteMediaUrl = (url) => {
-        if (!url) return null;
-        if (typeof url !== 'string') return null;
-        if (url.startsWith('http://') || url.startsWith('https://')) return url;
-        const origin = new URL(api.defaults.baseURL).origin;
-        if (url.startsWith('/')) return `${origin}${url}`;
+        if (!url || typeof url !== 'string') return null;
+
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return url;
+        }
+
+        const origin = window.location.origin;
+
+        if (url.startsWith('/')) {
+            return `${origin}${url}`;
+        }
+
         return `${origin}/${url}`;
     };
 
