@@ -1,11 +1,11 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { buildWebSocketUrl } from "../websocket_url";
 
 export const useMatchSocket = ({
   subject,
   setShowModal,
   setStatus,
-  setCurrentMatchId,
 }) => {
   const socketRef = useRef(null);
   const navigate = useNavigate();
@@ -17,7 +17,9 @@ export const useMatchSocket = ({
     const token = localStorage.getItem("access");
 
     const socket = new WebSocket(
-      `ws://${window.location.hostname}:8000/ws/match/${matchId}/?token=${token}`
+      buildWebSocketUrl(
+        `/ws/match/${matchId}/?token=${encodeURIComponent(token || "")}`
+      )
     );
 
     socket.onopen = () => {
