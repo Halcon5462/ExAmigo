@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useRef } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import TaskSetPlayer from "../taskSet/TaskSetPlayer";
@@ -6,7 +6,7 @@ import MatchResultScreen from "../../components/match/MatchResultScreen";
 
 import "../../static/css/match.css";
 
-import matchSocketClient from "../../utils/match/matchSocketClient";
+import useMatchSocketClient from "../../utils/match/matchSocketClient";
 import { useMatchStats } from "../../utils/match/matchStats";
 
 import MatchTopBar from "../../components/matchPlayer/MatchTopBar";
@@ -32,9 +32,9 @@ const MatchPlayer = () => {
     if (!examId || !tasksetId || !totalTasks) {
       navigate("/match", { replace: true });
     }
-  }, [examId, tasksetId, totalTasks]);
+  }, [examId, tasksetId, totalTasks, navigate]);
 
-  const socketRef = matchSocketClient(matchId, myId, (data) => {
+  const socketRef = useMatchSocketClient(matchId, myId, (data) => {
     if (data.type === "progress" && data.user_id !== myId) {
       setOpponentProgress((prev) => ({
         ...prev,
@@ -69,26 +69,25 @@ const MatchPlayer = () => {
     );
   };
 
-  useEffect(() => {
-    if (!totalTasks) return;
-
-    if (Object.keys(myChecked).length === totalTasks) {
-      setScreen("waiting");
-    }
-  }, [myChecked, totalTasks]);
-
   const {
     myCorrectCount,
     opponentAnsweredCount,
     opponentCorrectCount,
   } = useMatchStats(myChecked, opponentProgress);
 
+  const visibleScreen =
+    screen === "playing" &&
+    totalTasks &&
+    Object.keys(myChecked).length === totalTasks
+      ? "waiting"
+      : screen;
+
   const handleFinishMatch = () => {
     socketRef.current?.send(JSON.stringify({ action: "finish" }));
     setScreen("waiting");
   };
 
-  if (screen === "finished") {
+  if (visibleScreen === "finished") {
     return (
       <MatchResultScreen
         myChecked={myChecked}
@@ -99,7 +98,7 @@ const MatchPlayer = () => {
     );
   }
 
-  if (screen === "waiting") {
+  if (visibleScreen === "waiting") {
     return (
       <MatchWaiting
         myCorrectCount={myCorrectCount}
