@@ -13,8 +13,16 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 ALLOWED_HOSTS = [
     "188.127.251.235",
     "examigo.pro",
-    'localhost',
-    '127.0.0.1',
+    "www.examigo.pro",
+    "localhost",
+    "127.0.0.1",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://examigo.pro",
+    "https://www.examigo.pro",
 ]
 
 INSTALLED_APPS = [
