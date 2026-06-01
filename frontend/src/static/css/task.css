@@ -385,3 +385,31 @@
     width: 100%;
     margin-top: 10px;
 }
+
+.correctAnswersBlock {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background-color: var(--light-grey);
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  max-width: fit-content;
+}
+
+.correctTitle {
+  color: var(--dark-green);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.correctAnswer {
+  color: var(--green);
+  font-size: 16px;
+  margin: 2px 0;
+}
+
+.correctAnswersBlock ul {
+  margin: 0;
+  padding-left: 18px;
+}

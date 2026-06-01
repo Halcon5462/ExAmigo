@@ -166,4 +166,9 @@ def process_task_submit(task, user, user_answer, exam):
     if transaction_data:
         response["new_balance"] = transaction_data["new_balance"]
 
+    if not is_correct:
+        response["correct_answers"] = list(
+            task.correct_answers.values_list("answer_text", flat=True)
+        )
+
     return response

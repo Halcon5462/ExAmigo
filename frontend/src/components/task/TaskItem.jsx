@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import api from "../../utils/api";
 import '../../static/css/task.css'
 
@@ -17,6 +17,7 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
   const [reward, setReward] = useState(0);
   const [firstTime, setFirstTime] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [answers, setAnswers] = useState([])
 
   const [activeImage, setActiveImage] = useState(null);
 
@@ -36,12 +37,13 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
             payload
         );
 
-        const { correct, reward, first_time } = response.data;
+        const { correct, reward, first_time, correct_answers } = response.data;
 
         setResult(correct ? 'correct' : 'wrong');
         setReward(reward);
         setFirstTime(first_time);
         onAnswered?.(task.id, userAnswer, correct);
+        setAnswers(correct_answers)
 
     } catch (err) {
         console.error("Ошибка проверки:", err);
@@ -134,11 +136,11 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
       {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
 
       {result == 'correct' && (
-          <p style={{color: 'green'}}>
-              Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
-              {firstTime == false && "Вы уже проходили эту задачу ранее."}
-              Это {task.primary_score} первичных баллов
-          </p>
+        <p style={{color: 'green'}}>
+            Верно! {reward > 0 && `Вы получили +${reward} монет.`}{" "}
+            {firstTime == false && "Вы уже проходили эту задачу ранее."}
+            Это {task.primary_score} первичных баллов
+        </p>
       )}
       {result === 'wrong' && examSessionId && (
         <p style={{ color: 'red' }}>
@@ -150,6 +152,16 @@ const TaskItem = ({ task, onAnswered, examSessionId, locked, disabledByTime, ini
         <p style={{ color: 'red' }}>
           Попробуйте еще раз.
         </p>
+      )}
+      {result === 'wrong' && (
+        <div className="correctAnswersBlock">
+          <p className="correctTitle">Правильные ответы:</p>
+          <ul>
+            {answers.map((ans, index) => (
+              <li key={index} className="correctAnswer">{ans}</li>
+            ))}
+          </ul>
+        </div>
       )}
       {task.already_solved && (
           <p style={{color: 'orange'}}>Вы уже проходили эту задачу ранее.</p>
